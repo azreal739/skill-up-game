@@ -1,0 +1,22 @@
+<main class="main">
+  <div class="content">
+    <div class="left-side">
+      <h1 class="app-header">{{ title }}</h1>
+      <div class="divider heading" role="separator" aria-label="Divider"></div>
+      <p>Welcome! To our up skilling game APP. 🎉</p>
+      <div class="pill-group top-nav">
+        <a class="pill" [routerLink]="['/tic-tac-toe']">
+          <span>Tic Tac Toe</span>
+        </a>
+        <a class="pill" [routerLink]="['/black-jack']">
+          <span>Black Jack</span>
+        </a>
+        <a class="pill" [routerLink]="['/about']">
+          <span>About</span>
+        </a>
+      </div>
+    </div>
+    <div class="divider" role="separator" aria-label="Divider"></div>
+  </div>
+  <router-outlet />
+</main>

@@ -1,0 +1,29 @@
+
+<div class="tic-tac-toe">
+  <h2 class="heading">Tic Tac Toe</h2>
+  <div class="details">
+    <div id="statusArea" class="status">
+      Next player: <span [ngStyle]="{
+        'color': currentPlayer === 'X' ? '#0000FF' : '#FF0000'
+      }">{{ currentPlayer }}</span>
+    </div>
+    <div id="winnerArea" class="winner" [ngStyle]="{
+           'color': winner ? '#4CAF50' : '#000000',
+           'font-weight': winner ? 'bold' : 'normal'
+         }">
+      Winner: <span>{{ winner || 'None' }}</span>
+    </div>
+  </div>
+    <section class="board">
+      <div class="row" *ngFor="let rowIndex of [0, 1, 2]">
+        <button *ngFor="let colIndex of [0, 1, 2]" class="square" (click)="handleClick(rowIndex * 3 + colIndex)"
+          [disabled]="board[rowIndex * 3 + colIndex] || winner" [ngStyle]="{
+                  'color': board[rowIndex * 3 + colIndex] === 'X' ? '#0000FF' : 
+                           (board[rowIndex * 3 + colIndex] === 'O' ? '#FF0000' : '#333')
+                }">
+          {{ board[rowIndex * 3 + colIndex] }}
+        </button>
+      </div>
+    </section>
+    <button (click)="resetGame()" class="reset-button">Reset</button>
+  </div>
