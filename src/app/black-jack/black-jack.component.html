@@ -1,34 +1,62 @@
 <div class="black-jack-container">
   <h2>Black Jack</h2>
+  <div class="game-result" *ngIf="gameOver">
+    <h3>{{ result }}</h3>
+    <button class="play-again-button" (click)="resetGame()">Play Again</button>
+  </div>
 
   <div class="game-board">
+    <!-- Disable the action buttons when the game is over -->
     <div class="player-area">
       <h3>Player's Hand ({{ playerScore }})</h3>
+      <button
+        class="player-action-button"
+        (click)="playerHit()"
+        [disabled]="gameOver"
+      >
+        Hit
+      </button>
+      <button
+        class="player-action-button"
+        (click)="stand()"
+        [disabled]="gameOver"
+      >
+        Stand
+      </button>
+      <!-- <button
+        class="player-action-button"
+        (click)="doubleDown()"
+        [disabled]="gameOver || playerCards.length > 2"
+      > -->
       <div class="cards">
-        <span *ngFor="let card of playerCards">| {{ card }} </span> |
-        <button class="player-action-button" (click)="playerHit()" [disabled]="gameOver">Hit</button>
-        <button class="player-action-button" (click)="stand()" [disabled]="gameOver">Stand</button>
-      </div>
-
-      <div class="player-area card-area" >
-        <div class="player-area" *ngFor="let card of playerCards">
-          {{ card }}
-          <div class="cards">
-            of Hearts
-          </div>
-        </div>
-      </div>
-
-      <div class="dealer-area">
-        <h3>Dealer's Hand ({{ dealerScore }})</h3>
-        <div class="cards">
-          <span *ngFor="let card of dealerCards">| {{ card }} </span> |
+        <div
+          *ngFor="let card of playerCards"
+          class="card"
+          [ngClass]="{
+            hearts: card.suit === '♥',
+            diamonds: card.suit === '♦'
+          }"
+        >
+          <span class="card-value">{{ card.value }}</span>
+          <span class="card-suit">{{ card.suit }}</span>
         </div>
       </div>
     </div>
-    <!-- Disable the action buttons when the game is over -->
-    <div class="game-result" *ngIf="gameOver">
-      <h3>{{ result }}</h3>
-      <button class="play-again-button" (click)="resetGame()">Play Again</button>
+    <div class="dealer-area">
+      <h3>Dealer's Hand ({{ dealerScore }})</h3>
+      <div class="cards">
+        <div
+          *ngFor="let card of dealerCards"
+          class="card"
+          [ngClass]="{
+            hearts: card.suit === '♥',
+            diamonds: card.suit === '♦'
+          }"
+        >
+        <span class="card-value">{{ card.value }}</span>
+        <span class="card-suit">{{ card.suit }}</span>
+        </div>
+      </div>
     </div>
   </div>
+</div>

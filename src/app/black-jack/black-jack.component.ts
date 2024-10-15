@@ -1,6 +1,11 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
+interface Card {
+  value: string;
+  suit: string;
+}
+
 @Component({
   selector: 'app-black-jack',
   standalone: true,
@@ -9,33 +14,39 @@ import { CommonModule } from '@angular/common';
   styleUrl: './black-jack.component.scss'
 })
 export class BlackJackComponent {
-  playerCards: string[] = [];
-  dealerCards: string[] = [];
+  playerCards: Card[] = [];
+  dealerCards: Card[] = [];
   playerScore: number = 0;
   dealerScore: number = 0;
   gameOver: boolean = false;
   result: string = '';
 
   deck = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+  private suits = ['♠', '♥', '♦', '♣'];
+
   
   // Function to calculate the score based on card values
-  calculateScore(cards: string[]): number {
+  calculateScore(cards: Card[]): number {
     let score = 0;
     cards.forEach(card => {
-      if (['J', 'Q', 'K'].includes(card)) {
+      if (['J', 'Q', 'K'].includes(card.value)) {
         score += 10;
-      } else if (card === 'A') {
+      } else if (card.value === 'A') {
         score += score + 11 > 21 ? 1 : 11;
       } else {
-        score += parseInt(card, 10);
+        score += parseInt(card.value, 10);
       }
     });
     return score;
   }
 
   // Player draws a card
-  drawCard(): string {
-    return this.deck[Math.floor(Math.random() * this.deck.length)];
+  drawCard(): Card {
+    let card: Card = {
+      value: this.getRandomCard(),
+      suit: this.getRandomSuit()
+    };
+    return card;
   }
 
   // Player takes a hit
@@ -52,7 +63,9 @@ export class BlackJackComponent {
   dealerPlay(): void {
     while (this.dealerScore < 17) {
       const card = this.drawCard();
+      // setInterval(() => {
       this.dealerCards.push(card);
+      // }, 1000);
       this.dealerScore = this.calculateScore(this.dealerCards);
     }
     this.checkGameOver(true);
@@ -89,5 +102,13 @@ export class BlackJackComponent {
     this.dealerScore = 0;
     this.gameOver = false;
     this.result = '';
+  }
+
+  private getRandomCard(): string {
+    return this.deck[Math.floor(Math.random() * this.deck.length)];
+  }
+
+  private getRandomSuit(): string {
+    return this.suits[Math.floor(Math.random() * this.suits.length)]; // Randomize for demo purposes
   }
 }

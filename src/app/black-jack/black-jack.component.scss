@@ -26,6 +26,7 @@
   
     .game-board {
       display: flex;
+      flex-direction: row;
       justify-content: space-around;
       margin: 20px 0;
   
@@ -44,15 +45,57 @@
       
         /* Add some box shadow for depth */
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-
-        &.card-area {
-          display: flex;
-          flex-direction: row;
-        }
   
         .cards {
-          margin: 10px 0;
+          display: flex;
+          gap: 10px;
+          justify-content: center;
+          margin: 20px 0;
+        }
+
+        .card {
+          position: relative;
+          width: 60px; /* Card width */
+          height: 90px; /* Card height */
+          background-color: white;
+          border-radius: 8px;
+          border: 2px solid #333;
+          display: flex;
+          justify-content: center;
+          align-items: center;
           font-size: 24px;
+          font-weight: bold;
+          color: black;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          transition: transform 0.2s ease-in-out;
+          cursor: pointer;
+        
+          /* Add card suit style (optional, for hearts or diamonds in red) */
+          &.hearts, &.diamonds {
+            color: red;
+
+            .card-suit {
+              color: red;
+            }
+          }
+        
+          /* Hover effect to give a raised effect */
+          &:hover {
+            transform: translateY(-5px);
+          }
+
+          .card-value {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: left;          
+          }
+
+          .card-suit {
+            font-size: 28px;
+          }
         }
 
         .player-action-button {
@@ -66,14 +109,21 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
+
+            &:disabled {
+              background-color: var(--gray-400);
+              color: var(--gray-900);
+              cursor: not-allowed;
+            }
         }
       }
     }
   
     .game-result {
-      margin-top: 20px;
+      
       h3 {
         color: #4CAF50;
+        margin: 0;
       }
 
       .play-again-button {
