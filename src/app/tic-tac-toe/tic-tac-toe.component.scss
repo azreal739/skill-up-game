@@ -44,6 +44,11 @@
         gap: 10px;
         max-width: 200px;
         margin: 0 auto;
+        padding: 10px;
+        border: 4px solid transparent;
+        background-image: var(--red-to-pink-to-purple-horizontal-gradient);
+        background-origin: border-box;
+        background-clip: padding-box, border-box;
     }
 
     .square {
