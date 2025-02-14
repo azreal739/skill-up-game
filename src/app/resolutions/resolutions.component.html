@@ -1,0 +1,22 @@
+<div class="container">
+    <h2>🎯 New Year's Resolutions</h2>
+    
+    <div class="input-group">
+      <input [(ngModel)]="newResolution" placeholder="Enter your resolution..." />
+      <button (click)="addResolution()">Add</button>
+      <button (click)="clearResolutions()" class="delete">Clear</button>
+      <!-- <select >
+        <option value="all">All</option>
+        <option value="completed">Completed</option>
+        <option value="incomplete">Incomplete</option>
+      </select> -->
+    </div>
+    
+    <ul>
+      <li *ngFor="let resolution of resolutions; let i = index">
+        {{ resolution }}
+        <button (click)="deleteResolution(i)" class="delete">❌</button>
+        <!-- <button (click)="editResolution(i)">✏️</button> -->
+        </li>
+    </ul>
+  </div>
