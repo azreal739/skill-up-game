@@ -1,4 +1,5 @@
 {
+  "defaultProject": "tic-tac-toe",
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "targetDefaults": {
     "build": {
@@ -34,7 +35,7 @@
   "nxCloudId": "67af3f77663b1d3d726132ba",
   "generators": {
     "@nx/angular:component": {
-      "style": "css"
+      "style": "scss"
     }
   }
 }

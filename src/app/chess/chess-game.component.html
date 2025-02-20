@@ -1,69 +1,76 @@
 <div class="chess-container">
-  <h2>♟️ Drag & Drop Chess</h2>
+    <h2>♟️ Drag & Drop Chess</h2>
+    
+    <!-- Toggle Board Button -->
+    <button class="switch-btn" (click)="toggleBoard()">
+      Switch to {{ useChessboardJs ? 'Angular Board' : 'Chessboard.js' }}
+    </button>
+  
+    <!-- Angular Board (existing implementation) -->
+    <div class="chessboard" *ngIf="!useChessboardJs">
+          <!-- Game info row -->
+    <div class="info-row">
+      <div>Turn: {{ currentTurn }}</div>
+      <div class="status">{{ gameStatus }}</div>
+      <div *ngIf="isCheck" class="check-notification">Check!</div>
+    </div>
+  
+    <div class="captures-row">
+      <div class="captures white-captures">
+        <h3>White Captures (Score: {{ whiteScore }})</h3>
+        <span *ngFor="let piece of whiteCaptures">{{ pieceSymbols[piece] }}</span>
+      </div>
+      <div class="captures black-captures">
+        <h3>Black Captures (Score: {{ blackScore }})</h3>
+        <span *ngFor="let piece of blackCaptures">{{ pieceSymbols[piece] }}</span>
+      </div>
+    </div>
 
-  <!-- Game info row -->
-  <div class="info-row">
-    <div>Turn: {{ currentTurn }}</div>
-    <div class="status">{{ gameStatus }}</div>
-    <!-- Display a check notification if the king is in check -->
-    <div *ngIf="isCheck" class="check-notification">Check!</div>
-  </div>
-
-  <div class="chessboard">
-    <div *ngFor="let row of board; let rowIndex = index" class="row">
-      <div
-        *ngFor="let square of row; let colIndex = index"
-        [id]="rowIndex + '-' + colIndex"
-        cdkDropList
-        [cdkDropListData]="{ row: rowIndex, col: colIndex }"
-        [cdkDropListConnectedTo]="connectedLists"
-        [ngClass]="{
-          'valid-move': validMoves.includes(getSquareId(rowIndex, colIndex)),
-          'white-square': (rowIndex + colIndex) % 2 === 0,
-          'black-square': (rowIndex + colIndex) % 2 !== 0,
-          'in-check': isKingInCheck(getSquareId(rowIndex, colIndex))
-        }"
-        class="square"
-        (cdkDropListDropped)="onDrop($event, rowIndex, colIndex)"
-      >
+      <div *ngFor="let row of board; let rowIndex = index" class="row">
         <div
-          *ngIf="square"
-          cdkDrag
-          [cdkDragData]="{ row: rowIndex, col: colIndex }"
-          (cdkDragStarted)="onDragStarted($event, rowIndex, colIndex)"
-          class="piece"
+          *ngFor="let square of row; let colIndex = index"
+          [id]="rowIndex + '-' + colIndex"             
+          cdkDropList
+          [cdkDropListData]="{ row: rowIndex, col: colIndex }"
+          [cdkDropListConnectedTo]="connectedLists"    
+          [ngClass]="{
+            'valid-move': validMoves.includes(getSquareId(rowIndex, colIndex)),
+            'white-square': (rowIndex + colIndex) % 2 === 0,
+            'black-square': (rowIndex + colIndex) % 2 !== 0
+          }"
+          class="square"
+          (cdkDropListDropped)="onDrop($event, rowIndex, colIndex)"
         >
-          {{ square }}
+          <div
+            *ngIf="square"
+            cdkDrag
+            [cdkDragData]="{ row: rowIndex, col: colIndex }"
+            (cdkDragStarted)="onDragStarted($event, rowIndex, colIndex)"
+            class="piece"
+          >
+            {{ square }}
+          </div>
+        </div>
+      </div>
+      <button class="restart-btn" (click)="restartGame()">Restart Game</button>
+    </div>
+  
+    <!-- chessboard.js Board -->
+    <div class="chessboard-js" *ngIf="useChessboardJs">
+      <app-chessboard-js></app-chessboard-js>
+    </div>
+  
+  
+    <!-- Promotion Modal (unchanged) -->
+    <div class="promotion-modal" *ngIf="promotionPending">
+      <div class="promotion-dialog">
+        <p>Select promotion piece:</p>
+        <div class="promotion-options">
+          <button *ngFor="let option of promotionOptionsDisplay" (click)="choosePromotion(option.value)">
+            {{ option.symbol }}
+          </button>
         </div>
       </div>
     </div>
   </div>
-
-  <div class="captures-row">
-    <div class="captures white-captures">
-      <h3>White Captures (Score: {{ whiteScore }})</h3>
-      <span *ngFor="let piece of whiteCaptures">{{ pieceSymbols[piece] }}</span>
-    </div>
-    <div class="captures black-captures">
-      <h3>Black Captures (Score: {{ blackScore }})</h3>
-      <span *ngFor="let piece of blackCaptures">{{ pieceSymbols[piece] }}</span>
-    </div>
-  </div>
-
-  <button class="restart-btn" (click)="restartGame()">Restart Game</button>
-
-  <!-- Promotion Modal -->
-  <div class="promotion-modal" *ngIf="promotionPending">
-    <div class="promotion-dialog">
-      <p>Select promotion piece:</p>
-      <div class="promotion-options">
-        <button
-          *ngFor="let option of promotionOptionsDisplay"
-          (click)="choosePromotion(option.value)"
-        >
-          {{ option.symbol }}
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
+  

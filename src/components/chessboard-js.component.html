@@ -1,0 +1,15 @@
+<div class="chess-container">
+  <div #boardContainer class="board"></div>
+  <div class="info-panel">
+    <p>{{ message }}</p>
+    <p>Move History: {{ moveHistory.join(', ') }}</p>
+  </div>
+  <!-- Promotion Modal: displayed when a pawn promotion is pending -->
+  <div class="promotion-modal" *ngIf="promotionPending">
+    <p>Select a promotion piece:</p>
+    <button (click)="completePromotion('q')">Queen</button>
+    <button (click)="completePromotion('r')">Rook</button>
+    <button (click)="completePromotion('b')">Bishop</button>
+    <button (click)="completePromotion('n')">Knight</button>
+  </div>
+</div>
