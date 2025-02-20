@@ -171,6 +171,7 @@ export class ChessGameComponent implements OnInit, AfterViewInit {
         this.boardInstance.position(this.chess.fen().split(' ')[0]); // update board position (FEN only board position)
       }
     }
+    // this.boardInstance.position(this.chess.fen());
   }
 
   choosePromotion(promotion: string) {
