@@ -1,0 +1,21 @@
+<h2>Sign Up</h2>
+<em>Hello! Welcome to the family.</em>
+<form>
+  <div>
+    <label>
+      <span>Name</span>
+      <input type="text" />
+    </label>
+    <label>
+      <span>Email Address</span>
+      <input type="email" />
+    </label>
+    <label>
+      <span>Password</span>
+      <input type="password" />
+    </label>
+  </div>
+  <button (click)="formSubmitted.emit()">
+    Continue
+  </button>
+</form>

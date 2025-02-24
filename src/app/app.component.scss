@@ -140,6 +140,25 @@ main {
     line-height: 1.4rem;
     letter-spacing: -0.00875rem;
     text-decoration: none;
+
+    &.menu {
+        // background: transparent;
+        border: none;
+        padding: 0;
+        // position: absolute;
+        // right: 1.5em;
+        // top: 1em;
+      
+        &:hover {
+          opacity: 0.5;
+          cursor: pointer;
+        }
+      
+        svg {
+          height: 22px;
+        }
+      
+      }
 }
 
 .pill:hover {

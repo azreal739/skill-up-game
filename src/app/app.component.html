@@ -2,6 +2,9 @@
   <div class="content">
     <div class="left-side">
       <h1 class="app-header">{{ title }}</h1>
+      <button (click)="signUpModalOpen = !signUpModalOpen" class="signUp">
+        Sign Up
+      </button>
       <div class="divider heading" role="separator" aria-label="Divider"></div>
       <p>Welcome! To our up skilling game APP. 🎉</p>
       <div class="pill-group top-nav">
@@ -20,9 +23,22 @@
         <a class="pill" [routerLink]="['/about']">
           <span>About</span>
         </a>
+        <button (click)="menuOpen = true" class="menu pill">
+          <span>Menu</span>
+
+          <svg viewBox="0 0 24 24">
+            <path d="M0 3.2A1.2 1.2 0 011.2 2h21.6a1.2 1.2 0 010 2.4H1.2A1.2 1.2 0 010 3.2zm0 8.4a1.2 1.2 0 011.2-1.2h21.6a1.2 1.2 0 010 2.4H1.2A1.2 1.2 0 010 11.6zM0 20a1.2 1.2 0 011.2-1.2h21.6a1.2 1.2 0 010 2.4H1.2A1.2 1.2 0 010 20z" clip-rule="evenodd" fill-rule="evenodd"/>
+          </svg>
+        </button>
       </div>
     </div>
     <div class="divider" role="separator" aria-label="Divider"></div>
   </div>
   <router-outlet />
+  @if (signUpModalOpen) {
+    <app-sign-up-modal (modalClose)="signUpModalOpen = false"></app-sign-up-modal>
+  }
+  @if (menuOpen) {
+    <app-page-menu @openClose (close)="menuOpen = false"></app-page-menu>
+  }
 </main>

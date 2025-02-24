@@ -1,0 +1,46 @@
+:host {
+    background: white;
+    border-left: solid 1px black;
+    bottom: 0;
+    filter: drop-shadow(0 0 0.75em rgba(black, 0.5));
+    isolation: isolate;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: 0.15s ease-in translate;
+    width: 15rem;
+  
+    button {
+      display: block;
+      right: 0;
+      top: 0;
+      height: 100vh;
+      opacity: 0;
+      position: absolute;
+      width: 100vw;
+      z-index: -1;
+    }
+  
+  }
+  
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  li {
+    border-bottom: solid 1px black;
+    padding: 1.25em 1.5em;
+  
+    &:hover {
+      cursor: pointer;
+      opacity: 0.5;
+    }
+  
+  }
+  
+  a {
+    font-size: 1.125rem;
+  }
+  

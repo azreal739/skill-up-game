@@ -2,7 +2,7 @@ import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angula
 import { Chess } from 'chess.js';
 import { DragDropModule, CdkDragStart, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
-import { ChessboardJsComponent } from "../../components/chessboard-js.component";
+import { ChessboardJsComponent } from "../../components/chess/chessboard-js.component";
 
 type Square =
   | 'a1'|'a2'|'a3'|'a4'|'a5'|'a6'|'a7'|'a8'
