@@ -9,11 +9,10 @@
     } @else {
       <!-- <ng-container *ngTemplateOutlet="modalTemplate"></ng-container> -->
       <!-- No template html -->
-       No Template provided
-
+       Template not found
     }
   }
-    <app-sign-up-form (formSubmitted)="modalClose.emit()"></app-sign-up-form>
+  <ng-container *ngTemplateOutlet="modalTemplate"></ng-container>
     <button class="close" (click)="modalClose.emit()">
       <svg viewBox="0 0 24 24">
         <g clip-rule="evenodd" fill-rule="evenodd">

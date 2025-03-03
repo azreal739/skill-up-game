@@ -48,7 +48,8 @@
             (cdkDragStarted)="onDragStarted($event, rowIndex, colIndex)"
             class="piece"
           >
-            {{ square }}
+            <img [src]="square" alt="piece" [ngClass]="{'pawn-piece': square.includes('P.png')}"/>
+            <!-- {{ square }} -->
           </div>
         </div>
       </div>

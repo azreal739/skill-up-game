@@ -2,17 +2,9 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SignUpFormComponent } from "./sign-up-form/sign-up-form.component";
 import { A11yModule } from '@angular/cdk/a11y';
+import { ModalTemplate } from 'src/services/ModalService';
 
-export enum ModalTemplate {
-  SignUpForm = 'sign-up-form',
-  SignInForm = 'sign-in-form',
-  ForgotPassword = 'forgot-password',
-  ResetPassword = 'reset-password',
-  ConfirmEmail = 'confirm-email',
-  ConfirmPassword = 'confirm-password',
-  ConfirmDelete = 'confirm-delete',
-  GameHistory = 'game-history',
-}
+
 
 @Component({
   selector: 'main-modal',
@@ -24,4 +16,6 @@ export enum ModalTemplate {
 export class ModalComponent {
   @Output() modalClose = new EventEmitter<void>();
   @Input() modalTemplate : ModalTemplate = ModalTemplate.SignUpForm;
+
+  
 }

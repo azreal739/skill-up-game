@@ -50,6 +50,16 @@
   
   .piece {
     cursor: grab;
+
+    img {
+      width: 50px;
+      height: 50px;
+
+      &.pawn-piece {
+        width: 40px;
+        height: 40px;
+      }
+    }
   }
   
   .valid-move {

@@ -19,8 +19,6 @@ export class ResolutionsComponent implements OnInit {
     if (storedResolutions) {
       this.resolutions = JSON.parse(storedResolutions);
     }
-
-    
   }
 
   addResolution() {

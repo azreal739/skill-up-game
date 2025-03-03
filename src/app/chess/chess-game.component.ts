@@ -55,6 +55,24 @@ export class ChessGameComponent implements OnInit, AfterViewInit {
     P: 1, N: 3, B: 3, R: 5, Q: 9, K: 0
   };
 
+  pieceImages: { [key: string]: string } = {
+    // Black pieces
+    p: 'assets/img/chesspieces/bP.png',
+    r: 'assets/img/chesspieces/bR.png',
+    n: 'assets/img/chesspieces/bN.png',
+    b: 'assets/img/chesspieces/bB.png',
+    q: 'assets/img/chesspieces/bQ.png',
+    k: 'assets/img/chesspieces/bK.png',
+    // White pieces
+    P: 'assets/img/chesspieces/wP.png',
+    R: 'assets/img/chesspieces/wR.png',
+    N: 'assets/img/chesspieces/wN.png',
+    B: 'assets/img/chesspieces/wB.png',
+    Q: 'assets/img/chesspieces/wQ.png',
+    K: 'assets/img/chesspieces/wK.png',
+  };
+  
+
   ngOnInit() {
     // Build the list for drag/drop connected lists.
     for (let row = 0; row < 8; row++) {
@@ -112,7 +130,7 @@ export class ChessGameComponent implements OnInit, AfterViewInit {
   updateBoard(): void {
     this.board = this.chess.board().map(row =>
       row.map(piece =>
-        piece ? this.pieceSymbols[this.adjustCase(piece.type, piece.color)] : ''
+        piece ? this.pieceImages[this.adjustCase(piece.type, piece.color)] : ''
       )
     );
     this.saveGame();
@@ -192,17 +210,17 @@ export class ChessGameComponent implements OnInit, AfterViewInit {
     if (!piece) return [];
     if (piece.color === 'w') {
       return [
-        { value: 'q', symbol: this.pieceSymbols['Q'] },
-        { value: 'r', symbol: this.pieceSymbols['R'] },
-        { value: 'b', symbol: this.pieceSymbols['B'] },
-        { value: 'n', symbol: this.pieceSymbols['N'] },
+        { value: 'q', symbol: this.pieceImages['Q'] },
+        { value: 'r', symbol: this.pieceImages['R'] },
+        { value: 'b', symbol: this.pieceImages['B'] },
+        { value: 'n', symbol: this.pieceImages['N'] },
       ];
     } else {
       return [
-        { value: 'q', symbol: this.pieceSymbols['q'] },
-        { value: 'r', symbol: this.pieceSymbols['r'] },
-        { value: 'b', symbol: this.pieceSymbols['b'] },
-        { value: 'n', symbol: this.pieceSymbols['n'] },
+        { value: 'q', symbol: this.pieceImages['q'] },
+        { value: 'r', symbol: this.pieceImages['r'] },
+        { value: 'b', symbol: this.pieceImages['b'] },
+        { value: 'n', symbol: this.pieceImages['n'] },
       ];
     }
   }
