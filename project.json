@@ -23,6 +23,7 @@
         "inlineStyleLanguage": "scss",
         "assets": [
           "src/assets",
+          "src/libs",
           {
             "glob": "**/*",
             "input": "public",

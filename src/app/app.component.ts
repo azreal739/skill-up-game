@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { RouterModule, RouterOutlet } from '@angular/router';
-import { SignUpModalComponent } from "../components/sign-up-modal/sign-up-modal.component";
+import { ModalComponent, ModalTemplate } from "../components/modal/modal.component";
 import { PageMenuComponent } from "../components/menu/menu.component";
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { CommonModule } from '@angular/common';
@@ -12,7 +12,7 @@ const timing = '1s ease-in';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterModule, SignUpModalComponent, PageMenuComponent, CommonModule],
+  imports: [RouterOutlet, RouterModule, ModalComponent, PageMenuComponent, CommonModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   animations: [
@@ -33,4 +33,5 @@ export class AppComponent {
   @Output() menuClick = new EventEmitter<void>();
   protected signUpModalOpen = false;
   protected menuOpen = false;
+  protected modalTemplate = ModalTemplate.SignUpForm;
 }

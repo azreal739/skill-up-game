@@ -1,0 +1,1 @@
+// Add Modal Service to handle modals and templates in the app

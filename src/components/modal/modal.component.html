@@ -1,4 +1,18 @@
 <div cdkTrapFocus [cdkTrapFocusAutoCapture]="true">
+  @if(modalTemplate === undefined) {
+    <!-- <ng-container *ngTemplateOutlet="modalTemplate"></ng-container> -->
+    <!-- No template html -->
+     No Template provided
+  } @else {
+    @if(modalTemplate === 'sign-up-form') {
+      <app-sign-up-form (formSubmitted)="modalClose.emit()"></app-sign-up-form>
+    } @else {
+      <!-- <ng-container *ngTemplateOutlet="modalTemplate"></ng-container> -->
+      <!-- No template html -->
+       No Template provided
+
+    }
+  }
     <app-sign-up-form (formSubmitted)="modalClose.emit()"></app-sign-up-form>
     <button class="close" (click)="modalClose.emit()">
       <svg viewBox="0 0 24 24">
