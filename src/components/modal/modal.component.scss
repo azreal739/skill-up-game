@@ -1,17 +1,14 @@
-:host {
-    display: grid;
-    inset: 0;
-    isolation: isolate;
-    place-items: center;
-    position: fixed;
-  }
-  
   div {
     background-color: white;
     filter: drop-shadow(0 0 max(0.1875rem, 3px) rgba(0, 0, 0, 22.5%));
     padding: 2.5em;
     position: relative;
-  }
+        display: grid;
+    inset: 0;
+    isolation: isolate;
+    place-items: center;
+    width: 100%;
+    }
   
   .close {
     background-color: transparent;

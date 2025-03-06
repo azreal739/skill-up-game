@@ -1,1 +1,21 @@
-<p>game-history-modal works!</p>
+<div class="game-history-modal">
+    <h2>Game History - {{ gameHistory.gameName }}</h2>
+    
+    <div *ngIf="gameHistory.gameHistory.length === 0">
+      <p>No game history available.</p>
+    </div>
+    
+    <ul *ngIf="gameHistory.gameHistory.length > 0">
+      <li *ngFor="let game of gameHistory.gameHistory; index as i">
+        <div>
+          <strong>Game {{ i + 1 }}</strong> - {{ game.result }} 
+          ({{ game.date | date:'medium' }})
+        </div>
+        <div>
+          Moves: {{ game.moves.join(', ') }}
+        </div>
+      </li>
+    </ul>
+    
+    <button (click)="closeModal()">Close</button>
+  </div>

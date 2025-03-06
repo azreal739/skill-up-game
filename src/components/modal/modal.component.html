@@ -1,29 +1,17 @@
-<div cdkTrapFocus [cdkTrapFocusAutoCapture]="true">
-  @if(modalTemplate === undefined) {
-    <!-- <ng-container *ngTemplateOutlet="modalTemplate"></ng-container> -->
-    <!-- No template html -->
-     No Template provided
-  } @else {
-    @if(modalTemplate === 'sign-up-form') {
-      <app-sign-up-form (formSubmitted)="modalClose.emit()"></app-sign-up-form>
-    } @else {
-      <!-- <ng-container *ngTemplateOutlet="modalTemplate"></ng-container> -->
-      <!-- No template html -->
-       Template not found
-    }
-  }
-  <ng-container *ngTemplateOutlet="modalTemplate"></ng-container>
-    <button class="close" (click)="modalClose.emit()">
-      <svg viewBox="0 0 24 24">
-        <g clip-rule="evenodd" fill-rule="evenodd">
-          <path d="M.39.39a1.335 1.335 0 011.886 0L23.61 21.725a1.333 1.333 0 11-1.886 1.886L.39 2.276a1.333 1.333 0 010-1.885z"></path>
-          <path d="M.39 23.61a1.333 1.333 0 010-1.886L21.725.39a1.333 1.333 0 111.886 1.885L2.276 23.61a1.332 1.332 0 01-1.885 0z"></path>
-        </g>
-      </svg>
-      <span class="visually-hidden">Close</span>
-    </button>
-  </div>
-  <button class="shield" (click)="modalClose.emit()">
-    <span class="visually-hidden">Close</span>
+<div *ngIf="currentState.isOpen" cdkTrapFocus [cdkTrapFocusAutoCapture]="true">
+  <ng-container [ngSwitch]="currentState.template">
+    <ng-container *ngSwitchCase="ModalTemplate.SignUpForm">
+      <app-sign-up-form (formSubmitted)="closeModal()"></app-sign-up-form>
+    </ng-container>
+    <ng-container *ngSwitchCase="ModalTemplate.GameHistory">
+      <app-game-history-modal></app-game-history-modal>
+    </ng-container>
+    <ng-container *ngSwitchDefault>
+      <p>No template provided.</p>
+    </ng-container>
+  </ng-container>
+  <button class="close" (click)="closeModal()">
+    <!-- SVG icon and visually hidden text for accessibility -->
+    Close
   </button>
-  
+</div>

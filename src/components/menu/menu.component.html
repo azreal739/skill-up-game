@@ -1,6 +1,7 @@
+<h3> Game History </h3>
 <ul (click)="close.emit()">
     @for (item of items; track item) {
-      <li>
+      <li (click)="openGameHistoryModal()">
         <a>{{ item }}</a>
       </li>
     }

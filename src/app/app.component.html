@@ -2,7 +2,7 @@
   <div class="content">
     <div class="left-side">
       <h1 class="app-header">{{ title }}</h1>
-      <button (click)="signUpModalOpen = !signUpModalOpen" class="signUp">
+      <button (click)="openModal()" class="signUp">
         Sign Up
       </button>
       <div class="divider heading" role="separator" aria-label="Divider"></div>
@@ -35,9 +35,7 @@
     <div class="divider" role="separator" aria-label="Divider"></div>
   </div>
   <router-outlet />
-  @if (signUpModalOpen) {
-    <main-modal (modalClose)="signUpModalOpen = false" [modalTemplate]="modalTemplate"></main-modal>
-  }
+  <main-modal (modalClose)="signUpModalOpen = false"></main-modal>
   @if (menuOpen) {
     <app-page-menu @openClose (close)="menuOpen = false"></app-page-menu>
   }

@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Output } from '@angular/core';
+import { ModalService, ModalTemplate } from 'src/services/ModalService';
 
 @Component({
   selector: 'app-page-menu',
@@ -9,13 +10,18 @@ import { Component, EventEmitter, Output } from '@angular/core';
 export class PageMenuComponent {
   @Output() close = new EventEmitter<void>();
   protected items = [
-    'Shoes',
-    'Clothing',
-    'Accessories',
-    'Sale',
-    'Gift guide',
-    'Customs',
-    'Skateboarding',
-    'More' 
+    'Tic Tac Toe',
+    'Blackjack',
+    'Chess',
+    'More...' 
   ];
+
+  constructor(private modalService: ModalService) {}
+
+  // When a menu item is clicked, open the game history modal
+  openGameHistoryModal(): void {
+    this.modalService.openModal(ModalTemplate.GameHistory);
+    // Optionally close the menu after opening the modal
+    this.close.emit();
+  }
 }

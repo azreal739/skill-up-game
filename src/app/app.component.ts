@@ -5,7 +5,7 @@ import { PageMenuComponent } from "../components/menu/menu.component";
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { CommonModule } from '@angular/common';
 import { transform } from 'typescript';
-import { ModalTemplate } from 'src/services/ModalService';
+import { ModalService, ModalTemplate } from 'src/services/ModalService';
 import { template } from '@angular-devkit/core';
 
 const hidden = { transform : 'translateX(120%)' };
@@ -34,19 +34,27 @@ export class AppComponent {
   title = 'Up Skill Game';
   @Output() menuClick = new EventEmitter<void>();
 
-  constructor(private _modalService: ModalService) {
-    const modalOprions = {
-      backdrop: true,
-      keyboard: true,
-      focus: true,
-      show: false,
-      template: ModalTemplate.GameHistory,
-    };
-    this._modalService.showModal.subscribe((isOpen, ) => {
-      this.signUpModalOpen = isOpen;
-    });
+  constructor(private _modalService: ModalService) { 
+
   }
+
+  // constructor(private _modalService: ModalService) {
+  //   const modalOprions = {
+  //     backdrop: true,
+  //     keyboard: true,
+  //     focus: true,
+  //     show: false,
+  //     template: ModalTemplate.GameHistory,
+  //   };
+  //   this._modalService.showModal.subscribe((isOpen, ) => {
+  //     this.signUpModalOpen = isOpen;
+  //   });
+  // }
   protected signUpModalOpen = false;
   protected menuOpen = false;
   protected modalTemplate = ModalTemplate.SignUpForm;
+
+  public openModal() {
+    this._modalService.openModal(ModalTemplate.SignUpForm, { gameData: undefined });
+  }
 }
