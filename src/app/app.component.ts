@@ -37,24 +37,12 @@ export class AppComponent {
   constructor(private _modalService: ModalService) { 
 
   }
-
-  // constructor(private _modalService: ModalService) {
-  //   const modalOprions = {
-  //     backdrop: true,
-  //     keyboard: true,
-  //     focus: true,
-  //     show: false,
-  //     template: ModalTemplate.GameHistory,
-  //   };
-  //   this._modalService.showModal.subscribe((isOpen, ) => {
-  //     this.signUpModalOpen = isOpen;
-  //   });
-  // }
+  
   protected signUpModalOpen = false;
   protected menuOpen = false;
   protected modalTemplate = ModalTemplate.SignUpForm;
 
-  public openModal() {
-    this._modalService.openModal(ModalTemplate.SignUpForm, { gameData: undefined });
+  public openSignUpModal() {
+  this._modalService.openModal(ModalTemplate.SignUpForm, { title: 'Sign Up', gameData: undefined });
   }
 }

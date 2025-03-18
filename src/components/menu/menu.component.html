@@ -5,6 +5,13 @@
         <a>{{ item }}</a>
       </li>
     }
+
+    <li>
+      <a (click)="openCitiesModal()">Cities...</a>
+    </li>
+    <li>
+      <a (click)="openWeatherModal()">Weather...</a>
+    </li>
   </ul>
   <button (click)="close.emit()">
     <span class="visually-hidden">Close Menu</span>

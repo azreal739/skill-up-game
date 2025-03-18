@@ -24,4 +24,16 @@ export class PageMenuComponent {
     // Optionally close the menu after opening the modal
     this.close.emit();
   }
+
+  openCitiesModal(): void {
+    this.modalService.openModal(ModalTemplate.Cities);
+    // Optionally close the menu after opening the modal
+    this.close.emit();
+  }
+
+  openWeatherModal(): void {
+    this.modalService.openModal(ModalTemplate.Weather);
+    // Optionally close the menu after opening the modal
+    this.close.emit();
+  }
 }

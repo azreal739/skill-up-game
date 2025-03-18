@@ -1,4 +1,9 @@
 <div *ngIf="currentState.isOpen" cdkTrapFocus [cdkTrapFocusAutoCapture]="true">
+  <button class="close" (click)="closeModal()">
+    <!-- SVG icon and visually hidden text for accessibility -->
+    Close
+  </button>
+  
   <ng-container [ngSwitch]="currentState.template">
     <ng-container *ngSwitchCase="ModalTemplate.SignUpForm">
       <app-sign-up-form (formSubmitted)="closeModal()"></app-sign-up-form>
@@ -6,12 +11,15 @@
     <ng-container *ngSwitchCase="ModalTemplate.GameHistory">
       <app-game-history-modal></app-game-history-modal>
     </ng-container>
+    <ng-container *ngSwitchCase="ModalTemplate.Cities">
+      <app-cities></app-cities>
+    </ng-container>
+    <ng-container *ngSwitchCase="ModalTemplate.Weather">
+      <app-weather></app-weather>
+    </ng-container>
     <ng-container *ngSwitchDefault>
       <p>No template provided.</p>
     </ng-container>
   </ng-container>
-  <button class="close" (click)="closeModal()">
-    <!-- SVG icon and visually hidden text for accessibility -->
-    Close
-  </button>
+
 </div>
