@@ -37,7 +37,7 @@ export class WeatherComponent implements OnInit {
   constructor(private apiService: ApiService) {}
 
   ngOnInit(): void {
-    this.apiService.getWeatherForecast().subscribe({
+    this.apiService.getWeatherForecastC().subscribe({
       next: (data) => (this.forecasts = data),
       error: (err) => console.error('Error fetching weather forecast', err),
     });

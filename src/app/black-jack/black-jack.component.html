@@ -1,62 +1,74 @@
+<h2>Black Jack</h2>
+<div class="game-result" *ngIf="gameOver">
+  <h3>{{ result }}</h3>
+  <button class="play-again-button" (click)="resetGame()">Play Again</button>
+</div>
 
-  <h2>Black Jack</h2>
-  <div class="game-result" *ngIf="gameOver">
-    <h3>{{ result }}</h3>
-    <button class="play-again-button" (click)="resetGame()">Play Again</button>
-  </div>
-
-  <div class="game-board">
-    <!-- Disable the action buttons when the game is over -->
-    <div class="player-area">
-      <h3>Player's Hand ({{ playerScore }})</h3>
-      <button
-        class="player-action-button"
-        (click)="playerHit()"
-        [disabled]="gameOver"
+@if (playerName && ready) {
+<div class="game-board">
+  <div class="player-area">
+    <h3>{{ playerName }}'s Hand ({{ playerScore }})</h3>
+    <button
+      class="player-action-button"
+      (click)="playerHit()"
+      [disabled]="gameOver"
+    >
+      Hit
+    </button>
+    <button
+      class="player-action-button"
+      (click)="stand()"
+      [disabled]="gameOver"
+    >
+      Stand
+    </button>
+    <!-- <button
+          class="player-action-button"
+          (click)="doubleDown()"
+          [disabled]="gameOver || playerCards.length > 2"
+        > -->
+    <div class="cards">
+      <div
+        *ngFor="let card of playerCards"
+        class="card"
+        [ngClass]="{
+          hearts: card.suit === '♥',
+          diamonds: card.suit === '♦'
+        }"
       >
-        Hit
-      </button>
-      <button
-        class="player-action-button"
-        (click)="stand()"
-        [disabled]="gameOver"
-      >
-        Stand
-      </button>
-      <!-- <button
-        class="player-action-button"
-        (click)="doubleDown()"
-        [disabled]="gameOver || playerCards.length > 2"
-      > -->
-      <div class="cards">
-        <div
-          *ngFor="let card of playerCards"
-          class="card"
-          [ngClass]="{
-            hearts: card.suit === '♥',
-            diamonds: card.suit === '♦'
-          }"
-        >
-          <span class="card-value">{{ card.value }}</span>
-          <span class="card-suit">{{ card.suit }}</span>
-        </div>
-      </div>
-    </div>
-    <div class="dealer-area">
-      <h3>Dealer's Hand ({{ dealerScore }})</h3>
-      <div class="cards">
-        <div
-          *ngFor="let card of dealerCards"
-          class="card"
-          [ngClass]="{
-            hearts: card.suit === '♥',
-            diamonds: card.suit === '♦'
-          }"
-        >
         <span class="card-value">{{ card.value }}</span>
         <span class="card-suit">{{ card.suit }}</span>
-        </div>
       </div>
     </div>
-
+  </div>
+  <div class="dealer-area">
+    <h3>Dealer's Hand ({{ dealerScore }})</h3>
+    <div class="cards">
+      <div
+        *ngFor="let card of dealerCards"
+        class="card"
+        [ngClass]="{
+          hearts: card.suit === '♥',
+          diamonds: card.suit === '♦'
+        }"
+      >
+        <span class="card-value">{{ card.value }}</span>
+        <span class="card-suit">{{ card.suit }}</span>
+      </div>
+    </div>
+  </div>
 </div>
+
+} @else {
+<!-- add a player section -->
+<input type="text" [(ngModel)]="playerName" placeholder="Enter your name" />
+<button (click)="startGame()" [disabled]="playerName.length == 0">Start Game</button>
+}
+
+<ul>
+  @for (winner of blackJackHistory; track winner) {
+  <li>{{ winner }}</li>
+  } @empty {
+  <li>No games have been played.</li>
+  }
+</ul>

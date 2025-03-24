@@ -26,4 +26,11 @@
       </div>
     </section>
     <button (click)="resetGame()" class="reset-button">Reset</button>
+    <ul>
+      @for (winner of winnerHistory; track winner) {
+        <li>{{ winner }} wins.</li>
+        } @empty {
+        <li>No games have been played.</li>
+        }
+    </ul>
   </div>

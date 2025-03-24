@@ -13,6 +13,7 @@ export class TicTacToeComponent {
   public board: (string | null)[] = Array(9).fill(null);
   public currentPlayer: string = 'X';
   public winner: string | null = null;
+  public winnerHistory: string[] = [];
 
   private readonly winConditions: number[][] = [
     [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
@@ -21,6 +22,11 @@ export class TicTacToeComponent {
   ];
 
   ngOnInit(): void {
+      const storedWinnerHistory = localStorage.getItem('TicTacToe:winnerHistory');
+      if (storedWinnerHistory) {
+        this.winnerHistory = JSON.parse(storedWinnerHistory);
+      }
+    
     this.resetGame();
   }
 
@@ -30,6 +36,8 @@ export class TicTacToeComponent {
 
       if (this.checkWinner()) {
         this.winner = this.currentPlayer;
+        this.winnerHistory.push(this.winner);
+        localStorage.setItem('TicTacToe:winnerHistory', JSON.stringify(this.winnerHistory));
       } else {
         this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';
       }
@@ -38,7 +46,7 @@ export class TicTacToeComponent {
 
   private checkWinner(): boolean {
     for (const [a, b, c] of this.winConditions) {
-      if (this.board[a] && this.board[a] === this.board[b] && this.board[a] === this.board[c]) {
+      if (this.board[a] && this.board[a] === this.board[b] && this.board[a] === this.board[c]) { 
         return true;
       }
     }

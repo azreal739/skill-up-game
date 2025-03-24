@@ -39,11 +39,11 @@ export class CitiesComponent implements OnInit {
   constructor(private apiService: ApiService) {}
 
   ngOnInit(): void {
-    this.loadCities();
+    this.loadCitiesC();
   }
 
-  loadCities(): void {
-    this.apiService.getCities().subscribe({
+  loadCitiesC(): void {
+    this.apiService.getCitiesC().subscribe({
       next: (data) => (this.cities = data),
       error: (err) => console.error('Error fetching cities', err),
     });
@@ -51,10 +51,10 @@ export class CitiesComponent implements OnInit {
 
   onAddCity(): void {
     if (this.newCity.trim()) {
-      this.apiService.addCity(this.newCity).subscribe({
+      this.apiService.addCityC(this.newCity).subscribe({
         next: () => {
           this.newCity = '';
-          this.loadCities(); // Refresh the list after adding a city
+          this.loadCitiesC(); // Refresh the list after adding a city
         },
         error: (err) => console.error('Error adding city', err),
       });

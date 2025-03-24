@@ -19,17 +19,17 @@ export class ApiService {
 
   // Get weather forecast data
   getWeatherForecastC(): Observable<WeatherForecast[]> {
-    return this.http.get<WeatherForecast[]>(`${this.apiUrl}/weatherforecast`);
+    return this.http.get<WeatherForecast[]>(`/weatherforecastC`);
   }
 
   // Get list of cities
   getCitiesC(): Observable<string[]> {
-    return this.http.get<string[]>(`${this.apiUrl}/api/cities`);
+    return this.http.get<string[]>(`/citiesC`);
   }
 
   // Add a new city (using a query parameter for simplicity)
   addCityC(newCity: string): Observable<any> {
-    const url = `${this.apiUrl}/api/cities?newCity=${encodeURIComponent(newCity)}`;
+    const url = `/citiesC?newCity=${encodeURIComponent(newCity)}`;
     return this.http.post(url, {}); // POST with an empty body
   }
 

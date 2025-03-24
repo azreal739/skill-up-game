@@ -1,0 +1,15 @@
+{
+    "/cities": {
+      "target": "http://localhost:5062",
+      "secure": false,
+      "changeOrigin": true,
+      "logLevel": "debug"
+    },
+    "/weatherforecast": {
+      "target": "http://localhost:5062",
+      "secure": false,
+      "changeOrigin": true,
+      "logLevel": "debug"
+    }
+  }
+  
