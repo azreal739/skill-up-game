@@ -1,175 +1,238 @@
-# UI Specification
+# UI Specification — Intelligent Triage of Customer Payment Disputes
 
-## Document Context
+## 1. Document Context
 
 This UI specification supports the **Intelligent Triage of Customer Payment Disputes** prototype.
 
-The prototype is a client-side React SPA for banking operations users. The main journey is:
+The frontend is a React + Vite + Tailwind CSS application used by an internal banking operations user. It calls the Express backend through REST endpoints under `/api`. All data displayed by the UI is mock data returned from the prototype API.
+
+The main journey is:
 
 1. Capture a payment dispute.
 2. Validate the entered details.
-3. Apply transparent rules-based triage.
+3. Submit the dispute to the backend rules engine.
 4. Display the recommended next action and rationale.
 5. Allow the user to accept or override the recommendation.
-6. Review captured disputes in a session-based case queue.
+6. Review captured disputes in a mock case queue.
 
-The UI must use mock data only and must not connect to live banking, customer, card-processing, fraud, compliance, or case-management systems.
+The UI must not connect directly to live banking, customer, card-processing, fraud, compliance, or case-management systems.
 
 ---
 
-## Design Principles
+## 2. Design Principles
 
 - Internal operations tool, not customer-facing.
 - Prioritise clarity over visual polish.
-- Make the recommendation and rationale easy to understand.
-- Display validation errors next to the relevant fields.
-- Use plain language suitable for operations users.
-- Do not rely on colour alone for priority or status.
 - Keep the flow narrow and demo-friendly.
+- Show the recommended action, priority, age, and rationale clearly.
+- Make fired rules visible and easy to explain during the demo.
+- Display validation errors next to the relevant fields.
 - Preserve user-entered form data when a processing error occurs.
+- Do not rely on colour alone for priority, status, or active navigation.
+- Use plain language suitable for operations users.
+- Make it obvious that all data is mocked.
 
 ---
 
-## Primary User Flow
+## 3. Canonical Display Labels
+
+| Enum | UI Label |
+|---|---|
+| `CARD_PAYMENT` | Card payment |
+| `EFT` | EFT |
+| `INTERNAL_TRANSFER` | Internal transfer |
+| `DUPLICATE_DEBIT` | Duplicate debit |
+| `FAILED_TRANSFER` | Failed transfer |
+| `MISSING_PAYMENT` | Missing payment |
+| `CARD_TRANSACTION_DISPUTE` | Card transaction dispute |
+| `POSTED` | Posted |
+| `PENDING` | Pending |
+| `FAILED` | Failed |
+| `REVERSED` | Reversed |
+| `UNKNOWN` | Unknown |
+| `RESOLVE_IMMEDIATELY` | Resolve immediately |
+| `INVESTIGATE` | Investigate |
+| `ESCALATE` | Escalate |
+| `REFER_TO_ANOTHER_TEAM` | Refer to another team |
+| `LOW` | Low |
+| `MEDIUM` | Medium |
+| `HIGH` | High |
+| `NEW` | New |
+| `AGING` | Aging |
+| `OVERDUE` | Overdue |
+
+---
+
+## 4. Primary User Flow
 
 ```text
 Open app
   ↓
-View Dispute Capture Form
+View prototype notice and navigation
+  ↓
+Open Capture Dispute screen
+  ↓
+Load reference data and mock customers
   ↓
 Select or enter customer and transaction context
   ↓
-Enter payment type, issue category, dispute amount, dispute date, transaction reference, and notes
+Enter dispute details
   ↓
 Submit dispute
   ↓
-System validates input
+Backend validates input and applies deterministic rules
   ↓
-Rules engine evaluates dispute
-  ↓
-Triage Result Panel displays recommended action, priority, age indicator, rule outcome, and rationale
+Triage Result screen displays recommendation, priority, age, fired rules, and rationale
   ↓
 User accepts recommendation or overrides with reason
   ↓
-Case is updated and shown in Case Queue
+Outcome is saved
   ↓
-User may start a new dispute
+Case appears in Case Queue
+  ↓
+User may view case detail or start a new dispute
 ```
 
 ---
 
-## Global Navigation
+## 5. Global Navigation and App Shell
+
+**Purpose:** Provide consistent navigation and make the prototype boundary clear.
 
 **Layout:**
-- App header — `Payment Dispute Triage`
+- Header: `Payment Dispute Triage`
+- Prototype notice banner: `Prototype only — all customer, transaction, and dispute data is mocked.`
 - Navigation links:
   - `Capture Dispute`
   - `Case Queue`
-- Prototype notice banner — states that all data is mocked and session-scoped
+  - `Rules Reference`
 
 **Interactions:**
-- Click `Capture Dispute` → opens Dispute Capture screen
-- Click `Case Queue` → opens Case Queue screen
+- Click `Capture Dispute` → navigate to `/capture`
+- Click `Case Queue` → navigate to `/queue`
+- Click `Rules Reference` → navigate to `/rules`
 
 **States:**
-- Active navigation item is visually indicated
-- Prototype notice is always visible or available as a compact banner
+- Active navigation item is shown using text, icon, or underline plus colour.
+- Prototype notice is always visible or available in a compact persistent banner.
+
+**API usage:**
+- Optional: `GET /api/health` on app load for development diagnostics only.
+
+**Requirements:** REQ-001 to REQ-004
 
 ---
 
-## Screen: Dispute Capture
-
-**Purpose:** Operations user captures the details required to triage a payment dispute.
+## 6. Screen: Dispute Capture
 
 **Route:** `/capture`
 
+**Purpose:** Operations user captures the information needed to triage a payment dispute.
+
 **Primary component:** `DisputeCaptureForm`
 
-**Layout:**
-- Page title — `Capture Payment Dispute`
-- Helper text — explains that this is a mock prototype and no live banking data is used
-- Customer section
-  - Customer selector or customer ID input
-  - Customer summary card when a mock customer is selected
-- Transaction section
-  - Transaction selector or transaction reference input
+### Layout
+
+- Page title: `Capture Payment Dispute`
+- Helper text: explains that no live banking data is used.
+- Customer section:
+  - Customer selector
+  - Customer ID input fallback
+  - Customer summary card when selected
+- Transaction section:
+  - Transaction selector for selected customer
+  - Transaction reference input
   - Transaction status dropdown
   - Payment type dropdown
-- Dispute section
+- Dispute section:
   - Issue category dropdown
-  - Dispute amount input
+  - Dispute amount input with ZAR formatting hint
   - Dispute date input
   - Notes textarea
-- Action bar
+- Action bar:
   - Primary button: `Submit for Triage`
   - Secondary button: `Clear Form`
 
-**Data displayed:**
-- customerId: string from mock customer data or user input
-- customerName: string from mock customer data where available
-- accountStatus: active, restricted, or closed where available
-- transactionId: string where available
-- transactionReference: user-captured text
-- paymentType: `CARD_PAYMENT`, `EFT`, or `INTERNAL_TRANSFER`
-- issueCategory: `DUPLICATE_DEBIT`, `FAILED_TRANSFER`, `MISSING_PAYMENT`, or `CARD_TRANSACTION_DISPUTE`
-- transactionStatus: `POSTED`, `PENDING`, `FAILED`, `REVERSED`, or `UNKNOWN`
-- amount: number displayed as ZAR
-- disputeDate: date
-- notes: optional text
+### Data Displayed
 
-**Interactions:**
-- Select customer → customer summary updates
-- Select customer → available mock transactions may be filtered for that customer
-- Select transaction → payment type, transaction status, amount, and reference may pre-populate if available
-- Edit pre-populated fields → user-entered values override mock transaction values for the dispute
-- Click `Submit for Triage` → validate fields and call `CREATE_DISPUTE_AND_TRIAGE`
-- Successful submit → navigate to Triage Result screen for the created dispute
-- Click `Clear Form` → reset all form fields and validation messages
+| Field | Source | Format |
+|---|---|---|
+| `customerId` | API or manual input | String |
+| `customerName` | `GET /api/customers` | String |
+| `accountStatus` | `GET /api/customers` | Text badge |
+| `transactionId` | `GET /api/customers/:customerId/transactions` | String |
+| `transactionReference` | Transaction or user input | String |
+| `paymentType` | Reference data / transaction | Dropdown |
+| `issueCategory` | Reference data | Dropdown |
+| `transactionStatus` | Reference data / transaction | Dropdown |
+| `amount` | Transaction or user input | ZAR |
+| `disputeDate` | User input | Date |
+| `notes` | User input | Text |
 
-**Validation behaviour:**
-- Missing payment type → show field error
-- Missing issue category → show field error
-- Missing dispute amount → show field error
+### Interactions
+
+- Select customer → update customer summary and call `GET /api/customers/:customerId/transactions`.
+- Select transaction → pre-populate payment type, transaction status, amount, and reference.
+- Edit pre-populated fields → user-entered values override transaction defaults.
+- Click `Submit for Triage` → client performs basic required-field checks and calls `POST /api/disputes`.
+- Successful submit → navigate to `/disputes/:disputeId/result`.
+- Click `Clear Form` → reset all fields and validation messages.
+
+### Validation Behaviour
+
+The backend is the source of truth for validation. The frontend may provide matching client-side hints for speed.
+
+- Missing payment type → show field error.
+- Missing issue category → show field error.
+- Missing dispute amount → show field error.
 - Amount less than or equal to zero → show `Amount must be greater than zero.`
-- Missing dispute date → show field error
+- Missing dispute date → show field error.
 - Future dispute date → show `Dispute date cannot be in the future.`
-- Missing transaction reference → show field error
-- Unsupported enum value → show supported-values message
+- Missing transaction reference → show field error.
+- Unsupported enum value → show supported-values message returned by API.
 
-**States:**
-- Empty: blank form with helper text
-- Loading reference data: skeleton or disabled form with `Loading form options...`
-- Submitting: disable submit button and show `Calculating recommendation...`
-- Validation error: field-level errors next to relevant fields
-- Processing error: show `Recommendation could not be generated. Please check the details and try again.` and preserve entered data
-- Success: created dispute is passed to Triage Result screen
+### States
 
-**Service usage:**
-- `GET_REFERENCE_DATA` — on screen load
-- `LIST_MOCK_CUSTOMERS` — on screen load
-- `LIST_CUSTOMER_TRANSACTIONS` — when a customer is selected
-- `CREATE_DISPUTE_AND_TRIAGE` — when form is submitted
+| State | UI Behaviour |
+|---|---|
+| Empty | Blank form with helper text. |
+| Loading reference data | Disable dropdowns and show `Loading form options...`. |
+| Loading transactions | Show loading indicator in transaction selector. |
+| Submitting | Disable submit button and show `Calculating recommendation...`. |
+| Validation error | Display field-level API errors next to relevant fields. |
+| Processing error | Show `Recommendation could not be generated. Please check the details and try again.` and preserve form data. |
+| Success | Navigate to Triage Result screen. |
+
+### API Usage
+
+- `GET /api/reference-data` — on screen load
+- `GET /api/customers` — on screen load
+- `GET /api/customers/:customerId/transactions` — when customer is selected
+- `POST /api/disputes` — when form is submitted
+
+**Requirements:** REQ-005 to REQ-022, REQ-067 to REQ-071
 
 ---
 
-## Screen: Triage Result
-
-**Purpose:** Operations user reviews the recommended next action, priority, rationale, and rule outcome for the captured dispute.
+## 7. Screen: Triage Result
 
 **Route:** `/disputes/:disputeId/result`
 
+**Purpose:** Operations user reviews the recommended next action, priority, age indicator, rationale, and fired rules.
+
 **Primary component:** `TriageResultPanel`
 
-**Layout:**
-- Page title — `Triage Recommendation`
-- Recommendation banner
+### Layout
+
+- Page title: `Triage Recommendation`
+- Recommendation banner:
   - Recommended action badge
   - Priority badge
   - Age indicator badge
-- Rationale panel
+- Rationale panel:
   - Plain-language rationale
   - Fired rules list
-- Dispute summary panel
+- Dispute summary panel:
   - Customer details
   - Payment type
   - Issue category
@@ -178,72 +241,83 @@ User may start a new dispute
   - Amount
   - Dispute date
   - Notes
-- Routing decision panel
-  - Accept recommendation button
-  - Override recommendation dropdown
-  - Destination team dropdown where relevant
-  - Override reason textarea where relevant
-- Action bar
+- Routing decision panel:
+  - `Accept Recommendation` quick action
+  - Selected action dropdown
+  - Destination team dropdown when selected action is `REFER_TO_ANOTHER_TEAM`
+  - Override reason textarea when selected action differs from recommendation
+  - Agent notes textarea
+- Action bar:
   - `Confirm Outcome`
   - `Back to Capture`
   - `View Case Queue`
 
-**Data displayed:**
-- disputeId
-- recommendedAction
-- priority
-- ageIndicator
-- destinationTeam where applicable
-- escalationReason where applicable
-- firedRules: rule ID, description, outcome
-- rationale
+### Data Displayed
+
+- `disputeId`
+- `recommendedAction`
+- `priority`
+- `ageIndicator`
+- `destinationTeam` where applicable
+- `escalationReason` where applicable
+- `firedRules`: rule ID, description, outcome
+- `triageRationale`
 - captured dispute details
-- case status
+- current case status
 
-**Interactions:**
-- Click `Accept Recommendation` → selected action is set to the recommended action
-- Select a different action → override reason becomes required
-- Select `REFER_TO_ANOTHER_TEAM` → destination team becomes required
-- Click `Confirm Outcome` → call `UPDATE_DISPUTE_OUTCOME`
-- Successful confirmation → display updated status and route option to Case Queue
-- Click `Back to Capture` → returns to capture screen
-- Click `View Case Queue` → navigates to Case Queue screen
+### Interactions
 
-**States:**
-- Loading: show skeleton recommendation card
-- Error: show `Unable to load triage result.`
-- Missing case: show `Dispute case not found.`
-- Awaiting confirmation: show recommendation with decision controls enabled
-- Confirming: disable controls and show `Saving outcome...`
-- Confirmed: show success message and updated case status
+- Click `Accept Recommendation` → selected action is set to the recommended action.
+- Select a different action → override reason becomes required.
+- Select `REFER_TO_ANOTHER_TEAM` → destination team becomes required.
+- Click `Confirm Outcome` → call `PATCH /api/disputes/:disputeId/outcome`.
+- Successful confirmation → display success message and updated case status.
+- Click `Back to Capture` → navigate to `/capture`.
+- Click `View Case Queue` → navigate to `/queue`.
 
-**Service usage:**
-- `GET_DISPUTE_DETAIL` — when screen loads directly from a route
-- `UPDATE_DISPUTE_OUTCOME` — when user confirms or overrides recommendation
+### States
+
+| State | UI Behaviour |
+|---|---|
+| Loading | Show skeleton recommendation card. |
+| Error | Show `Unable to load triage result.` |
+| Not found | Show `Dispute case not found.` |
+| Awaiting confirmation | Decision controls are enabled. |
+| Confirming | Disable controls and show `Saving outcome...`. |
+| Validation error | Show missing override reason or destination team field errors. |
+| Confirmed | Show success message and updated status. |
+
+### API Usage
+
+- `GET /api/disputes/:disputeId` — on screen load or refresh
+- `PATCH /api/disputes/:disputeId/outcome` — when user confirms or overrides recommendation
+
+**Requirements:** REQ-048 to REQ-058, REQ-064, REQ-065
 
 ---
 
-## Screen: Case Queue
-
-**Purpose:** Operations user reviews all dispute cases captured during the current session.
+## 8. Screen: Case Queue
 
 **Route:** `/queue`
 
+**Purpose:** Operations user reviews all dispute cases captured in the prototype database.
+
 **Primary component:** `CaseQueueView`
 
-**Layout:**
-- Page title — `Case Queue`
-- Summary cards
+### Layout
+
+- Page title: `Case Queue`
+- Summary cards:
   - Total cases
   - High-priority cases
   - Escalated cases
   - Referred cases
-- Filter bar
+- Filter bar:
   - Status filter
   - Priority filter
   - Recommended action filter
   - Payment type filter
-- Case table
+- Case table:
   - Case ID
   - Customer
   - Payment type
@@ -254,53 +328,55 @@ User may start a new dispute
   - Status
   - Recommended action
   - Created date
-- Action area
+- Action area:
   - `New Dispute` button
 
-**Data displayed:**
-- disputes from `LIST_DISPUTES`
-- total count
-- derived summary counts
-- priority and status displayed using text plus badge/icon
+### Interactions
 
-**Interactions:**
-- Click `New Dispute` → navigate to Dispute Capture screen
-- Change filter → update case list
-- Click table row → navigate to Case Detail screen
-- Sort by amount, age, priority, status, or created date → table order updates
+- Click `New Dispute` → navigate to `/capture`.
+- Change filter → call `GET /api/disputes` with query parameters.
+- Click table row → navigate to `/disputes/:disputeId`.
+- Sort by amount, age, priority, status, or created date → update table order client-side.
 
-**States:**
-- Empty: `No disputes captured in this session.`
-- Loading: table skeleton
-- Error: `Unable to load the case queue.`
-- Filtered empty: `No cases match the selected filters.`
-- Success: newest cases shown first by default
+### States
 
-**Service usage:**
-- `LIST_DISPUTES` — on screen load and whenever filters change
+| State | UI Behaviour |
+|---|---|
+| Empty | Show `No disputes captured yet.` |
+| Loading | Show table skeleton. |
+| Error | Show `Unable to load the case queue.` |
+| Filtered empty | Show `No cases match the selected filters.` |
+| Success | Show newest cases first by default. |
+
+### API Usage
+
+- `GET /api/disputes` — on screen load and whenever filters change
+
+**Requirements:** REQ-059 to REQ-063, REQ-066
 
 ---
 
-## Screen: Case Detail
-
-**Purpose:** Operations user reviews a captured case, including original dispute details, recommendation, rationale, and action taken.
+## 9. Screen: Case Detail
 
 **Route:** `/disputes/:disputeId`
 
+**Purpose:** Operations user reviews a captured case, including original dispute details, recommendation, fired rules, and action taken.
+
 **Primary component:** `CaseDetailView`
 
-**Layout:**
-- Page title — `Dispute Case Detail`
-- Case summary header
+### Layout
+
+- Page title: `Dispute Case Detail`
+- Case summary header:
   - Dispute ID
   - Current status
   - Priority
   - Recommended action
-- Customer panel
+- Customer panel:
   - Customer ID
   - Customer name
   - Account status where available
-- Dispute detail panel
+- Dispute detail panel:
   - Payment type
   - Issue category
   - Transaction reference
@@ -309,191 +385,175 @@ User may start a new dispute
   - Dispute date
   - Age indicator
   - Notes
-- Recommendation panel
+- Recommendation panel:
   - Rationale
   - Fired rules
   - Destination team or escalation reason where applicable
-- Outcome panel
+- Outcome panel:
   - Selected action
   - Agent override indicator
   - Override reason where applicable
   - Agent notes
-- Action bar
+- Action bar:
   - `Back to Queue`
   - `Capture New Dispute`
 
-**Data displayed:**
-- full dispute case from `GET_DISPUTE_DETAIL`
+### States
 
-**Interactions:**
-- Click `Back to Queue` → navigate to Case Queue screen
-- Click `Capture New Dispute` → navigate to Dispute Capture screen
+| State | UI Behaviour |
+|---|---|
+| Loading | Show detail skeleton. |
+| Error | Show `Unable to load dispute case.` |
+| Not found | Show `Dispute case not found.` |
+| Success | Show full detail. |
 
-**States:**
-- Loading: detail skeleton
-- Error: `Unable to load dispute case.`
-- Not found: `Dispute case not found.`
-- Success: full detail displayed
+### API Usage
 
-**Service usage:**
-- `GET_DISPUTE_DETAIL` — on screen load
+- `GET /api/disputes/:disputeId` — on screen load
+
+**Requirements:** REQ-064, REQ-065
 
 ---
 
-## Screen: Rules Reference
-
-**Purpose:** Operations user or demo audience can understand how the rules-based decisioning works.
-
-This screen is optional but useful for the conference demo because it reinforces that the prototype uses transparent rules rather than AI or ML.
+## 10. Screen: Rules Reference
 
 **Route:** `/rules`
 
-**Layout:**
-- Page title — `Rules Reference`
-- Intro text — explains that rules are deterministic and based on configured prototype thresholds
-- Rules table
+**Purpose:** Operations user or demo audience can understand how the deterministic rules engine works.
+
+This screen reinforces that the prototype uses transparent rules rather than AI or ML.
+
+### Layout
+
+- Page title: `Rules Reference`
+- Intro text explaining deterministic rules and configured thresholds
+- Threshold cards:
+  - Immediate-resolution age threshold
+  - Escalation amount threshold
+  - Overdue age threshold
+- Rules table:
   - Rule ID
   - Condition
   - Recommended action
   - Priority
   - Plain-language explanation
-- Notes panel
-  - Explains precedence when multiple rules apply
+- Precedence notes panel
 
-**Data displayed:**
-- BR-001 to BR-007 from the rules contract
-- Escalation threshold
-- Overdue threshold
-- Immediate-resolution threshold
+### States
 
-**Interactions:**
-- Click `Back to Capture` → navigate to Dispute Capture screen
-- Click `View Queue` → navigate to Case Queue screen
+| State | UI Behaviour |
+|---|---|
+| Loading | Show table skeleton. |
+| Error | Show `Unable to load rules reference.` |
+| Success | Show rules and thresholds. |
 
-**States:**
-- Empty: not expected if rules configuration exists
-- Loading: only needed if rules are loaded asynchronously
-- Error: `Unable to load rules reference.`
+### API Usage
 
-**Service usage:**
-- May read static `RuleConfiguration` directly
-- No network or external service calls
+- `GET /api/rules` — on screen load
+
+**Requirements:** REQ-036, REQ-074, REQ-075
 
 ---
 
-## Component Specifications
+## 11. Component Specifications
 
-## Component: PriorityBadge
+### Component: PriorityBadge
 
-**Purpose:** Show priority in a clear and accessible way.
+**Purpose:** Show priority clearly and accessibly.
 
 **Inputs:**
-- priority: `LOW`, `MEDIUM`, or `HIGH`
+- `priority`: `LOW`, `MEDIUM`, or `HIGH`
 
 **Behaviour:**
 - Displays priority text.
 - Uses visual styling plus text or icon.
 - Does not rely on colour alone.
+- For `HIGH`, includes clear text such as `High priority`.
 
----
+### Component: RecommendedActionBadge
 
-## Component: RecommendedActionBadge
-
-**Purpose:** Show the recommended action.
-
-**Inputs:**
-- recommendedAction: `RESOLVE_IMMEDIATELY`, `INVESTIGATE`, `ESCALATE`, or `REFER_TO_ANOTHER_TEAM`
-
-**Behaviour:**
-- Displays plain-language label:
-  - `RESOLVE_IMMEDIATELY` → `Resolve immediately`
-  - `INVESTIGATE` → `Investigate`
-  - `ESCALATE` → `Escalate`
-  - `REFER_TO_ANOTHER_TEAM` → `Refer to another team`
-
----
-
-## Component: FiredRulesList
-
-**Purpose:** Explain why the recommendation was produced.
+**Purpose:** Show the recommended or selected action.
 
 **Inputs:**
-- firedRules: array of rule outputs
+- `recommendedAction`: `RESOLVE_IMMEDIATELY`, `INVESTIGATE`, `ESCALATE`, or `REFER_TO_ANOTHER_TEAM`
 
 **Behaviour:**
-- Displays each rule ID.
-- Displays each rule description.
-- Displays each rule outcome.
-- Shows a fallback message if no rule data is available.
+- Displays plain-language labels.
+- Uses consistent styling across result, queue, and detail screens.
 
----
+### Component: AgeIndicatorBadge
 
-## Component: FieldError
-
-**Purpose:** Display validation feedback next to the relevant field.
+**Purpose:** Show whether a dispute is new, aging, or overdue.
 
 **Inputs:**
-- message: string
+- `ageIndicator`: `NEW`, `AGING`, or `OVERDUE`
+- `ageDays`: number
 
 **Behaviour:**
-- Renders only when a validation message exists.
-- Uses accessible error text associated with the relevant input.
+- Displays text such as `New · 3 days old`.
+- Does not rely on colour alone.
+
+### Component: FiredRulesList
+
+**Purpose:** Explain which deterministic rules fired.
+
+**Inputs:**
+- `firedRules`: array of rule ID, description, and outcome
+
+**Behaviour:**
+- Displays each rule ID and explanation.
+- Shows at least one rule for every recommendation.
+
+### Component: FieldErrorMessage
+
+**Purpose:** Display API validation errors next to fields.
+
+**Inputs:**
+- `field`
+- `message`
+
+**Behaviour:**
+- Links error text to the field where practical.
+- Uses accessible error text and not colour alone.
 
 ---
 
-## Accessibility Notes
+## 12. Accessibility and Usability Requirements
 
-- Use semantic HTML form controls.
-- Associate labels with inputs.
-- Ensure validation errors are readable by screen readers.
-- Ensure all buttons are keyboard reachable.
-- Do not rely on colour alone to show priority, status, or errors.
-- Use clear focus indicators.
-
----
-
-## Demo Scenarios
-
-Use these scenarios to verify the UI before demo:
-
-## Scenario 1: Successful immediate resolution
-- Payment type: `EFT`
-- Issue category: `DUPLICATE_DEBIT`
-- Transaction status: `POSTED`
-- Dispute date: today or recent date
-- Expected recommendation: `RESOLVE_IMMEDIATELY`
-
-## Scenario 2: Pending failed transfer investigation
-- Payment type: `EFT`
-- Issue category: `FAILED_TRANSFER`
-- Transaction status: `PENDING`
-- Expected recommendation: `INVESTIGATE`
-
-## Scenario 3: Missing payment with unknown status
-- Payment type: `INTERNAL_TRANSFER`
-- Issue category: `MISSING_PAYMENT`
-- Transaction status: `UNKNOWN`
-- Expected recommendation: `INVESTIGATE`
-
-## Scenario 4: Card dispute referral
-- Payment type: `CARD_PAYMENT`
-- Issue category: `CARD_TRANSACTION_DISPUTE`
-- Expected recommendation: `REFER_TO_ANOTHER_TEAM`
-- Expected destination team: `CARD_DISPUTES`
-
-## Scenario 5: High-value escalation
-- Amount above escalation threshold
-- Expected recommendation: `ESCALATE`
-- Expected priority: `HIGH`
+- Form controls must have visible labels.
+- Validation errors must be associated with relevant fields.
+- Buttons must have clear action text.
+- Loading states must not remove already-entered user data.
+- Priority and status badges must include text, not only colour.
+- Tables must have meaningful column headings.
+- Keyboard users must be able to complete the capture and outcome flow.
 
 ---
 
-## Open Alignment Notes
+## 13. UI Test Hooks
 
-These items should be confirmed by the team if time allows:
+Use stable selectors for Playwright tests:
 
-1. Should the optional Rules Reference screen be included, or should the prototype stay with four screens only?
-2. Should the user select a mock customer from seeded data or manually type a customer reference?
-3. Should transaction details pre-populate from mock transactions, or should the form be fully manual?
-4. Should sorting and filtering in Case Queue be required for the MVP or treated as polish?
-5. Should override be mandatory in the Day 1 scope, or only shown if time allows?
+| Element | Suggested selector |
+|---|---|
+| Capture form | `data-testid="dispute-capture-form"` |
+| Submit button | `data-testid="submit-for-triage"` |
+| Recommendation banner | `data-testid="recommendation-banner"` |
+| Fired rules list | `data-testid="fired-rules-list"` |
+| Confirm outcome button | `data-testid="confirm-outcome"` |
+| Case queue table | `data-testid="case-queue-table"` |
+| Case detail view | `data-testid="case-detail-view"` |
+| Rules reference table | `data-testid="rules-reference-table"` |
+
+---
+
+## 14. Screen-to-API Mapping
+
+| Screen | Endpoint(s) |
+|---|---|
+| App shell | Optional `GET /api/health` |
+| Dispute Capture | `GET /api/reference-data`, `GET /api/customers`, `GET /api/customers/:customerId/transactions`, `POST /api/disputes` |
+| Triage Result | `GET /api/disputes/:disputeId`, `PATCH /api/disputes/:disputeId/outcome` |
+| Case Queue | `GET /api/disputes` |
+| Case Detail | `GET /api/disputes/:disputeId` |
+| Rules Reference | `GET /api/rules` |

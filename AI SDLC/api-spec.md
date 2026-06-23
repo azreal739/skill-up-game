@@ -1,28 +1,47 @@
-# API Specification
+# API Specification — Intelligent Triage of Customer Payment Disputes
 
 ## Document Context
 
-This API specification supports the **Intelligent Triage of Customer Payment Disputes** prototype.
+This API specification defines the REST contract for the **Intelligent Triage of Customer Payment Disputes** prototype.
 
-The architecture defines the prototype as a **client-side only React SPA with no backend server**. Therefore, this document defines **frontend-to-service module contracts** rather than real HTTP endpoints. The contracts are written in an API-spec style so that Kiro, developers, testers, and UI designers can align on inputs, outputs, validation, and error behaviour.
+The prototype uses the conference target stack:
 
-If the team later introduces an Express or REST backend, these module contracts can be mapped directly to HTTP endpoints with minimal changes.
+- **Frontend:** React + Vite
+- **Backend:** Node.js + Express
+- **Database:** SQLite via Prisma
+- **Language:** TypeScript strict mode
+- **Testing:** Vitest and Playwright
+- **Package manager:** npm workspaces
+
+All data is mock data. The API must not connect to real banking, card-processing, fraud, compliance, CRM, or case-management systems.
 
 ---
 
-## Common Contract Conventions
+## 1. API Principles
 
-**Runtime style:** In-process JavaScript / TypeScript function calls
+- All endpoints are served under `/api`.
+- All successful responses use `{ "success": true, "data": ... }`.
+- All failed responses use `{ "success": false, "message": string, "details"?: FieldError[] }`.
+- All date values use ISO 8601 strings.
+- Currency is always ZAR.
+- The API owns validation, rules evaluation, mock persistence, and response shaping.
+- The frontend must not duplicate business rules except for simple required-field hints.
+- The rules engine is deterministic and must not use AI or machine learning.
 
-**Data source:** Mock in-memory data only
+---
 
-**Persistence:** Session-scoped in-memory store; data resets on page refresh
+## 2. Common Response Shapes
 
-**Date format:** ISO 8601 string, for example `2026-06-22T10:00:00.000Z`
+### Success Response
 
-**Currency:** ZAR only
+```json
+{
+  "success": true,
+  "data": {}
+}
+```
 
-**Error shape:**
+### Error Response
 
 ```json
 {
@@ -37,22 +56,32 @@ If the team later introduces an Express or REST backend, these module contracts 
 }
 ```
 
-**Success shape:**
+### FieldError
 
-```json
-{
-  "success": true,
-  "data": {}
-}
-```
+| Field | Type | Required | Description |
+|---|---|---:|---|
+| `field` | string | Yes | The invalid field path. |
+| `message` | string | Yes | Human-readable validation message. |
 
 ---
 
-## Canonical Enum Values
+## 3. HTTP Status Code Conventions
+
+| Status | Use |
+|---:|---|
+| `200` | Successful read or update. |
+| `201` | Dispute created successfully. |
+| `400` | Validation error. |
+| `404` | Mock customer, transaction, or dispute not found. |
+| `500` | Unexpected prototype processing error. |
+
+Authentication is out of scope; no `401` or `403` responses are expected for this prototype.
+
+---
+
+## 4. Canonical Enum Values
 
 ### PaymentType
-
-Use these values in UI, validation, rules, tests, and mock data:
 
 ```text
 CARD_PAYMENT
@@ -61,8 +90,6 @@ INTERNAL_TRANSFER
 ```
 
 ### IssueCategory
-
-Use these values in UI, validation, rules, tests, and mock data:
 
 ```text
 DUPLICATE_DEBIT
@@ -73,8 +100,6 @@ CARD_TRANSACTION_DISPUTE
 
 ### TransactionStatus
 
-Use these values in UI, validation, rules, tests, and mock data:
-
 ```text
 POSTED
 PENDING
@@ -82,8 +107,6 @@ FAILED
 REVERSED
 UNKNOWN
 ```
-
-> Note: The architecture uses `COMPLETED` in places. For the implementation contract, use `POSTED` as the canonical value. If seed data contains `COMPLETED`, normalise it to `POSTED` before triage.
 
 ### AgeIndicator
 
@@ -100,8 +123,6 @@ LOW
 MEDIUM
 HIGH
 ```
-
-> Note: The architecture mentions `CRITICAL`. For this prototype contract, map critical handling to `HIGH` priority plus an `ESCALATE` recommendation, because the EARS requirements define only LOW, MEDIUM, and HIGH.
 
 ### RecommendedAction
 
@@ -133,7 +154,7 @@ SUPERVISOR_REVIEW
 
 ---
 
-## Shared Data Shapes
+## 5. Shared Data Shapes
 
 ### Customer
 
@@ -147,12 +168,13 @@ SUPERVISOR_REVIEW
 }
 ```
 
-**Fields:**
-- customerId (string, required) — mock customer identifier
-- fullName (string, required) — mock customer full name
-- segment (string, required) — `retail`, `business`, or `premium`
-- accountNumber (string, required) — mock account number
-- accountStatus (string, required) — `active`, `restricted`, or `closed`
+| Field | Type | Required | Description |
+|---|---|---:|---|
+| `customerId` | string | Yes | Mock customer identifier. |
+| `fullName` | string | Yes | Mock customer full name. |
+| `segment` | `retail \| business \| premium` | Yes | Mock customer segment. |
+| `accountNumber` | string | Yes | Mock account number. |
+| `accountStatus` | `active \| restricted \| closed` | Yes | Mock account status. |
 
 ### Transaction
 
@@ -161,7 +183,7 @@ SUPERVISOR_REVIEW
   "transactionId": "TXN-001",
   "customerId": "CUST-001",
   "paymentType": "EFT",
-  "amount": 1250.00,
+  "amount": 1250.0,
   "currency": "ZAR",
   "transactionDate": "2026-06-20T08:30:00.000Z",
   "status": "POSTED",
@@ -170,16 +192,17 @@ SUPERVISOR_REVIEW
 }
 ```
 
-**Fields:**
-- transactionId (string, required) — mock transaction identifier
-- customerId (string, required) — linked mock customer identifier
-- paymentType (PaymentType, required) — transaction payment type
-- amount (number, required) — transaction amount in ZAR
-- currency (string, required) — always `ZAR`
-- transactionDate (string, required) — ISO timestamp
-- status (TransactionStatus, required) — transaction status used by triage rules
-- merchantOrBeneficiary (string, required) — mock merchant or beneficiary name
-- reference (string, required) — transaction reference
+| Field | Type | Required | Description |
+|---|---|---:|---|
+| `transactionId` | string | Yes | Mock transaction identifier. |
+| `customerId` | string | Yes | Linked mock customer. |
+| `paymentType` | PaymentType | Yes | Payment type. |
+| `amount` | number | Yes | Transaction amount in ZAR. |
+| `currency` | `ZAR` | Yes | Prototype currency. |
+| `transactionDate` | ISO string | Yes | Mock transaction date. |
+| `status` | TransactionStatus | Yes | Transaction status used by triage rules. |
+| `merchantOrBeneficiary` | string | Yes | Mock merchant or beneficiary. |
+| `reference` | string | Yes | Mock transaction reference. |
 
 ### DisputeInput
 
@@ -190,23 +213,34 @@ SUPERVISOR_REVIEW
   "paymentType": "EFT",
   "issueCategory": "DUPLICATE_DEBIT",
   "transactionStatus": "POSTED",
-  "amount": 1250.00,
+  "amount": 1250.0,
   "disputeDate": "2026-06-22T09:00:00.000Z",
   "transactionReference": "INV-8871",
   "notes": "Customer reports duplicate debit."
 }
 ```
 
-**Fields:**
-- customerId (string, optional) — mock customer identifier, required where selected from seed data
-- transactionId (string, optional) — mock transaction identifier, optional because transaction matching may be incomplete
-- paymentType (PaymentType, required) — payment type being disputed
-- issueCategory (IssueCategory, required) — type of issue reported
-- transactionStatus (TransactionStatus, optional) — status if known; use `UNKNOWN` when unavailable
-- amount (number, required) — disputed amount in ZAR; must be greater than zero
-- disputeDate (string, required) — ISO timestamp; must not be in the future
-- transactionReference (string, required) — payment or transaction reference captured by operations user
-- notes (string, optional) — free-text operational notes
+| Field | Type | Required | Validation |
+|---|---|---:|---|
+| `customerId` | string | No | Must match mock customer when supplied. |
+| `transactionId` | string | No | Must match selected customer's transaction when supplied. |
+| `paymentType` | PaymentType | Yes | Must be canonical value. |
+| `issueCategory` | IssueCategory | Yes | Must be canonical value. |
+| `transactionStatus` | TransactionStatus | No | Defaults to `UNKNOWN` if omitted. |
+| `amount` | number | Yes | Must be greater than 0. |
+| `disputeDate` | ISO string | Yes | Must not be in the future. |
+| `transactionReference` | string | Yes | Must not be blank. |
+| `notes` | string | No | Optional operational notes. |
+
+### FiredRule
+
+```json
+{
+  "ruleId": "BR-001",
+  "description": "Duplicate debit with posted transaction and recent dispute age",
+  "outcome": "RESOLVE_IMMEDIATELY"
+}
+```
 
 ### TriageResult
 
@@ -228,25 +262,18 @@ SUPERVISOR_REVIEW
 }
 ```
 
-**Fields:**
-- recommendedAction (RecommendedAction, required) — final recommended next action
-- priority (CasePriority, required) — LOW, MEDIUM, or HIGH
-- ageIndicator (AgeIndicator, required) — NEW, AGING, or OVERDUE
-- destinationTeam (DestinationTeam/null, optional) — required when recommendedAction is `REFER_TO_ANOTHER_TEAM`
-- escalationReason (string/null, optional) — required when recommendedAction is `ESCALATE`
-- firedRules (array, required) — rule identifiers and descriptions that produced the outcome
-- rationale (string, required) — plain-language explanation suitable for operations users
-
 ### DisputeCase
 
 ```json
 {
   "disputeId": "DISP-001",
   "customerId": "CUST-001",
+  "customerName": "Amina Dlamini",
   "transactionId": "TXN-001",
   "paymentType": "EFT",
   "issueCategory": "DUPLICATE_DEBIT",
-  "amount": 1250.00,
+  "transactionStatus": "POSTED",
+  "amount": 1250.0,
   "disputeDate": "2026-06-22T09:00:00.000Z",
   "transactionReference": "INV-8871",
   "ageDays": 0,
@@ -255,6 +282,8 @@ SUPERVISOR_REVIEW
   "notes": "Customer reports duplicate debit.",
   "recommendedAction": "RESOLVE_IMMEDIATELY",
   "priority": "LOW",
+  "destinationTeam": null,
+  "escalationReason": null,
   "triageRationale": "The dispute is a recent duplicate debit with a posted transaction, so it can be resolved immediately.",
   "firedRules": [
     {
@@ -263,7 +292,9 @@ SUPERVISOR_REVIEW
       "outcome": "RESOLVE_IMMEDIATELY"
     }
   ],
+  "selectedAction": null,
   "agentOverride": false,
+  "overrideReason": null,
   "agentNotes": null,
   "createdAt": "2026-06-22T09:00:01.000Z",
   "updatedAt": "2026-06-22T09:00:01.000Z"
@@ -272,39 +303,40 @@ SUPERVISOR_REVIEW
 
 ---
 
-## GET_REFERENCE_DATA
+## 6. Endpoints
 
-Returns supported dropdown and display values for the dispute capture form.
+## GET /api/health
 
-**Function signature:**
+Confirms that the backend is running.
 
-```ts
-getReferenceData(): ReferenceDataResponse
-```
+**Request body:** None
 
-**Request body:**
-- None
+**Success response `200`:**
 
-**Success response:**
-- success — `true`
-- data.paymentTypes — supported payment types
-- data.issueCategories — supported issue categories
-- data.transactionStatuses — supported transaction statuses
-- data.casePriorities — supported priority values
-- data.recommendedActions — supported recommendation values
-- data.destinationTeams — supported referral destination teams
-
-**Error responses:**
-- None expected for static mock data
-
-**Example:**
-
-Request:
 ```json
-{}
+{
+  "success": true,
+  "data": {
+    "status": "ok",
+    "service": "payment-dispute-triage-api"
+  }
+}
 ```
 
-Response:
+**Error responses:** None expected.
+
+**Requirements:** REQ-067
+
+---
+
+## GET /api/reference-data
+
+Returns supported dropdown and display values for the dispute capture and outcome forms.
+
+**Request body:** None
+
+**Success response `200`:**
+
 ```json
 {
   "success": true,
@@ -319,36 +351,20 @@ Response:
 }
 ```
 
+**Error responses:** None expected.
+
+**Requirements:** REQ-016, REQ-017, REQ-018, REQ-019, REQ-031
+
 ---
 
-## LIST_MOCK_CUSTOMERS
+## GET /api/customers
 
 Returns mock customers available for the prototype.
 
-**Function signature:**
+**Request body:** None
 
-```ts
-listMockCustomers(): CustomersResponse
-```
+**Success response `200`:**
 
-**Request body:**
-- None
-
-**Success response:**
-- success — `true`
-- data.customers — array of mock customers
-
-**Error responses:**
-- None expected for static mock data
-
-**Example:**
-
-Request:
-```json
-{}
-```
-
-Response:
 ```json
 {
   "success": true,
@@ -366,39 +382,21 @@ Response:
 }
 ```
 
+**Error responses:** None expected for seeded mock data.
+
+**Requirements:** REQ-020, REQ-073, REQ-080
+
 ---
 
-## LIST_CUSTOMER_TRANSACTIONS
+## GET /api/customers/:customerId/transactions
 
-Returns mock transactions for a selected customer.
+Returns mock transactions for a selected mock customer.
 
-**Function signature:**
+**Path parameters:**
+- `customerId` (string, required) — mock customer identifier.
 
-```ts
-listCustomerTransactions(customerId: string): TransactionsResponse
-```
+**Success response `200`:**
 
-**Request body:**
-- customerId (string, required) — mock customer identifier
-
-**Success response:**
-- success — `true`
-- data.transactions — array of mock transactions for the selected customer
-
-**Error responses:**
-- VALIDATION_ERROR — customerId is missing
-- NOT_FOUND — customerId does not match a mock customer
-
-**Example:**
-
-Request:
-```json
-{
-  "customerId": "CUST-001"
-}
-```
-
-Response:
 ```json
 {
   "success": true,
@@ -408,7 +406,7 @@ Response:
         "transactionId": "TXN-001",
         "customerId": "CUST-001",
         "paymentType": "EFT",
-        "amount": 1250.00,
+        "amount": 1250.0,
         "currency": "ZAR",
         "transactionDate": "2026-06-20T08:30:00.000Z",
         "status": "POSTED",
@@ -420,41 +418,20 @@ Response:
 }
 ```
 
+**Error responses:**
+- `400` — `customerId` is blank or invalid.
+- `404` — customer does not exist in mock data.
+
+**Requirements:** REQ-020, REQ-021, REQ-070
+
 ---
 
-## CREATE_DISPUTE_AND_TRIAGE
+## POST /api/disputes
 
-Creates a dispute record using mock persistence, evaluates it through the rules engine, and returns the triage result.
+Creates a dispute record, evaluates it through the rules engine, persists the triage result, and returns the created case and recommendation.
 
-**Function signature:**
+**Request body:** `DisputeInput`
 
-```ts
-createDisputeAndTriage(input: DisputeInput): CreateDisputeResponse
-```
-
-**Request body:**
-- customerId (string, optional) — mock customer identifier
-- transactionId (string, optional) — mock transaction identifier
-- paymentType (PaymentType, required) — `CARD_PAYMENT`, `EFT`, or `INTERNAL_TRANSFER`
-- issueCategory (IssueCategory, required) — supported issue category
-- transactionStatus (TransactionStatus, optional) — known transaction status; use `UNKNOWN` if unavailable
-- amount (number, required) — disputed amount in ZAR; must be greater than zero
-- disputeDate (string, required) — ISO timestamp; must not be in the future
-- transactionReference (string, required) — transaction reference
-- notes (string, optional) — operational notes
-
-**Success response:**
-- success — `true`
-- data.dispute — created dispute case
-- data.triageResult — recommendation result
-
-**Error responses:**
-- VALIDATION_ERROR — required fields missing or invalid
-- PROCESSING_ERROR — recommendation could not be generated
-
-**Example:**
-
-Request:
 ```json
 {
   "customerId": "CUST-001",
@@ -462,14 +439,15 @@ Request:
   "paymentType": "EFT",
   "issueCategory": "DUPLICATE_DEBIT",
   "transactionStatus": "POSTED",
-  "amount": 1250.00,
+  "amount": 1250.0,
   "disputeDate": "2026-06-22T09:00:00.000Z",
   "transactionReference": "INV-8871",
   "notes": "Customer reports duplicate debit."
 }
 ```
 
-Response:
+**Success response `201`:**
+
 ```json
 {
   "success": true,
@@ -477,10 +455,12 @@ Response:
     "dispute": {
       "disputeId": "DISP-001",
       "customerId": "CUST-001",
+      "customerName": "Amina Dlamini",
       "transactionId": "TXN-001",
       "paymentType": "EFT",
       "issueCategory": "DUPLICATE_DEBIT",
-      "amount": 1250.00,
+      "transactionStatus": "POSTED",
+      "amount": 1250.0,
       "disputeDate": "2026-06-22T09:00:00.000Z",
       "transactionReference": "INV-8871",
       "ageDays": 0,
@@ -489,8 +469,14 @@ Response:
       "recommendedAction": "RESOLVE_IMMEDIATELY",
       "priority": "LOW",
       "triageRationale": "The dispute is a recent duplicate debit with a posted transaction, so it can be resolved immediately.",
+      "firedRules": [
+        {
+          "ruleId": "BR-001",
+          "description": "Duplicate debit with posted transaction and recent dispute age",
+          "outcome": "RESOLVE_IMMEDIATELY"
+        }
+      ],
       "agentOverride": false,
-      "agentNotes": null,
       "createdAt": "2026-06-22T09:00:01.000Z",
       "updatedAt": "2026-06-22T09:00:01.000Z"
     },
@@ -513,44 +499,27 @@ Response:
 }
 ```
 
+**Error responses:**
+- `400` — missing required field, unsupported enum value, amount <= 0, future date, invalid ISO date.
+- `404` — supplied customerId or transactionId does not exist in mock data.
+- `500` — unexpected processing error.
+
+**Requirements:** REQ-006 to REQ-015, REQ-023 to REQ-047, REQ-068 to REQ-075
+
 ---
 
-## LIST_DISPUTES
+## GET /api/disputes
 
-Returns disputes captured during the current session.
+Returns disputes captured in SQLite mock persistence.
 
-**Function signature:**
+**Query parameters:**
+- `status` (CaseStatus, optional)
+- `priority` (CasePriority, optional)
+- `recommendedAction` (RecommendedAction, optional)
+- `paymentType` (PaymentType, optional)
 
-```ts
-listDisputes(filters?: DisputeFilters): DisputeListResponse
-```
+**Success response `200`:**
 
-**Request body:**
-- filters.status (CaseStatus, optional) — filter by case status
-- filters.priority (CasePriority, optional) — filter by priority
-- filters.recommendedAction (RecommendedAction, optional) — filter by recommended action
-- filters.paymentType (PaymentType, optional) — filter by payment type
-
-**Success response:**
-- success — `true`
-- data.disputes — array of dispute summaries
-- data.total — count of returned disputes
-
-**Error responses:**
-- VALIDATION_ERROR — unsupported filter value
-
-**Example:**
-
-Request:
-```json
-{
-  "filters": {
-    "priority": "HIGH"
-  }
-}
-```
-
-Response:
 ```json
 {
   "success": true,
@@ -562,7 +531,7 @@ Response:
         "customerName": "Michael Naidoo",
         "paymentType": "CARD_PAYMENT",
         "issueCategory": "CARD_TRANSACTION_DISPUTE",
-        "amount": 62000.00,
+        "amount": 62000.0,
         "ageDays": 2,
         "ageIndicator": "NEW",
         "priority": "HIGH",
@@ -576,39 +545,22 @@ Response:
 }
 ```
 
+**Error responses:**
+- `400` — unsupported filter value.
+
+**Requirements:** REQ-059 to REQ-063, REQ-071
+
 ---
 
-## GET_DISPUTE_DETAIL
+## GET /api/disputes/:disputeId
 
 Returns a single dispute case with original input, recommendation, rationale, routing decision, and override details.
 
-**Function signature:**
+**Path parameters:**
+- `disputeId` (string, required)
 
-```ts
-getDisputeDetail(disputeId: string): DisputeDetailResponse
-```
+**Success response `200`:**
 
-**Request body:**
-- disputeId (string, required) — unique dispute ID
-
-**Success response:**
-- success — `true`
-- data.dispute — full dispute case detail
-
-**Error responses:**
-- VALIDATION_ERROR — disputeId is missing
-- NOT_FOUND — disputeId does not match a captured dispute
-
-**Example:**
-
-Request:
-```json
-{
-  "disputeId": "DISP-001"
-}
-```
-
-Response:
 ```json
 {
   "success": true,
@@ -620,13 +572,13 @@ Response:
       "transactionId": "TXN-001",
       "paymentType": "EFT",
       "issueCategory": "DUPLICATE_DEBIT",
-      "amount": 1250.00,
+      "transactionStatus": "POSTED",
+      "amount": 1250.0,
       "disputeDate": "2026-06-22T09:00:00.000Z",
       "transactionReference": "INV-8871",
       "ageDays": 0,
       "ageIndicator": "NEW",
       "status": "CAPTURED",
-      "notes": "Customer reports duplicate debit.",
       "recommendedAction": "RESOLVE_IMMEDIATELY",
       "priority": "LOW",
       "triageRationale": "The dispute is a recent duplicate debit with a posted transaction, so it can be resolved immediately.",
@@ -637,7 +589,9 @@ Response:
           "outcome": "RESOLVE_IMMEDIATELY"
         }
       ],
+      "selectedAction": null,
       "agentOverride": false,
+      "overrideReason": null,
       "agentNotes": null,
       "createdAt": "2026-06-22T09:00:01.000Z",
       "updatedAt": "2026-06-22T09:00:01.000Z"
@@ -646,48 +600,41 @@ Response:
 }
 ```
 
+**Error responses:**
+- `400` — `disputeId` is blank or malformed.
+- `404` — dispute does not exist.
+
+**Requirements:** REQ-064, REQ-065, REQ-070
+
 ---
 
-## UPDATE_DISPUTE_OUTCOME
+## PATCH /api/disputes/:disputeId/outcome
 
-Records the operations user action after the recommendation is displayed.
+Updates the selected outcome after the operations user accepts or overrides the recommendation.
 
-This contract supports accepting or overriding the recommendation.
-
-**Function signature:**
-
-```ts
-updateDisputeOutcome(disputeId: string, input: UpdateDisputeOutcomeInput): UpdateDisputeOutcomeResponse
-```
+**Path parameters:**
+- `disputeId` (string, required)
 
 **Request body:**
-- disputeId (string, required) — unique dispute ID
-- selectedAction (RecommendedAction, required) — user-selected action
-- destinationTeam (DestinationTeam, optional) — required when selectedAction is `REFER_TO_ANOTHER_TEAM`
-- overrideReason (string, optional) — required when selectedAction differs from the original recommendation
-- agentNotes (string, optional) — additional notes captured by the operations user
 
-**Success response:**
-- success — `true`
-- data.dispute — updated dispute case
-
-**Error responses:**
-- VALIDATION_ERROR — disputeId missing, selectedAction invalid, destinationTeam missing for referral, or overrideReason missing when overriding
-- NOT_FOUND — disputeId does not match a captured dispute
-
-**Example:**
-
-Request:
 ```json
 {
-  "disputeId": "DISP-001",
   "selectedAction": "INVESTIGATE",
-  "overrideReason": "Customer provided additional information that requires manual review.",
-  "agentNotes": "Route to investigations queue."
+  "destinationTeam": null,
+  "overrideReason": "Customer provided new supporting information.",
+  "agentNotes": "Asked payments operations to check settlement status."
 }
 ```
 
-Response:
+| Field | Type | Required | Validation |
+|---|---|---:|---|
+| `selectedAction` | RecommendedAction | Yes | Must be canonical value. |
+| `destinationTeam` | DestinationTeam | Conditional | Required when selectedAction is `REFER_TO_ANOTHER_TEAM`. |
+| `overrideReason` | string | Conditional | Required when selectedAction differs from the stored recommendedAction. |
+| `agentNotes` | string | No | Optional notes. |
+
+**Success response `200`:**
+
 ```json
 {
   "success": true,
@@ -698,59 +645,116 @@ Response:
       "recommendedAction": "RESOLVE_IMMEDIATELY",
       "selectedAction": "INVESTIGATE",
       "agentOverride": true,
-      "agentNotes": "Route to investigations queue.",
-      "overrideReason": "Customer provided additional information that requires manual review.",
-      "updatedAt": "2026-06-22T09:15:00.000Z"
+      "overrideReason": "Customer provided new supporting information.",
+      "updatedAt": "2026-06-22T09:20:00.000Z"
     }
   }
 }
 ```
 
----
+**Status mapping:**
 
-## Validation Rules
+| selectedAction | Resulting status |
+|---|---|
+| `RESOLVE_IMMEDIATELY` | `RESOLVED` |
+| `INVESTIGATE` | `IN_PROGRESS` |
+| `ESCALATE` | `ESCALATED` |
+| `REFER_TO_ANOTHER_TEAM` | `REFERRED` |
 
-- paymentType is required.
-- paymentType must be `CARD_PAYMENT`, `EFT`, or `INTERNAL_TRANSFER`.
-- issueCategory is required.
-- issueCategory must be `DUPLICATE_DEBIT`, `FAILED_TRANSFER`, `MISSING_PAYMENT`, or `CARD_TRANSACTION_DISPUTE`.
-- dispute amount is required.
-- dispute amount must be greater than zero.
-- dispute date is required.
-- dispute date must not be in the future.
-- transaction reference is required.
-- transactionStatus must be one of the supported values when supplied.
-- If transaction status is not available, use `UNKNOWN`.
-- If selectedAction differs from recommendedAction, overrideReason is required.
-- If selectedAction is `REFER_TO_ANOTHER_TEAM`, destinationTeam is required.
+**Error responses:**
+- `400` — missing selected action, unsupported selected action, missing override reason, missing destination team.
+- `404` — dispute does not exist.
+
+**Requirements:** REQ-051 to REQ-058, REQ-068 to REQ-071
 
 ---
 
-## Rules Contract
+## GET /api/rules
 
-The rules engine shall return one final recommended action for each dispute.
+Returns the deterministic business rules and configured thresholds for the optional rules reference screen.
 
-The following business rules must be represented:
+**Request body:** None
 
-| Rule ID | Condition | Recommended Action | Priority |
-|---|---|---|---|
-| BR-001 | issueCategory = DUPLICATE_DEBIT and transactionStatus = POSTED and dispute age is within immediate-resolution threshold | RESOLVE_IMMEDIATELY | LOW |
-| BR-002 | issueCategory = FAILED_TRANSFER and transactionStatus = PENDING | INVESTIGATE | MEDIUM |
-| BR-003 | issueCategory = MISSING_PAYMENT and transactionStatus = UNKNOWN | INVESTIGATE | MEDIUM |
-| BR-004 | paymentType = CARD_PAYMENT and issueCategory = CARD_TRANSACTION_DISPUTE | REFER_TO_ANOTHER_TEAM | MEDIUM |
-| BR-005 | dispute amount exceeds escalation threshold | ESCALATE | HIGH |
-| BR-006 | dispute age exceeds overdue threshold | ESCALATE | HIGH |
-| BR-007 | no specific rule is matched | INVESTIGATE | LOW |
+**Success response `200`:**
 
-If more than one rule applies, the configured highest-precedence rule determines the final recommendation. Escalation rules take precedence over investigation and referral rules.
+```json
+{
+  "success": true,
+  "data": {
+    "thresholds": {
+      "immediateResolutionAgeDays": 7,
+      "escalationAmountZar": 50000,
+      "overdueAgeDays": 30
+    },
+    "precedence": ["BR-005", "BR-006", "BR-004", "BR-002", "BR-003", "BR-001", "BR-007"],
+    "rules": [
+      {
+        "ruleId": "BR-001",
+        "condition": "DUPLICATE_DEBIT + POSTED + ageDays <= 7",
+        "recommendedAction": "RESOLVE_IMMEDIATELY",
+        "priority": "LOW",
+        "description": "Recent posted duplicate debit can be resolved immediately."
+      }
+    ]
+  }
+}
+```
+
+**Error responses:** None expected for static rule configuration.
+
+**Requirements:** REQ-032, REQ-036, REQ-074, REQ-075
 
 ---
 
-## Open Alignment Notes
+## 7. Business Rules Contract
 
-These items should be confirmed by the team if time allows:
+| Rule ID | Condition | Action | Priority | Additional Output |
+|---|---|---|---|---|
+| BR-001 | `issueCategory = DUPLICATE_DEBIT` and `transactionStatus = POSTED` and `ageDays <= 7` | `RESOLVE_IMMEDIATELY` | `LOW` | `destinationTeam = null` |
+| BR-002 | `issueCategory = FAILED_TRANSFER` and `transactionStatus = PENDING` | `INVESTIGATE` | `MEDIUM` | `destinationTeam = null` |
+| BR-003 | `issueCategory = MISSING_PAYMENT` and `transactionStatus = UNKNOWN` | `INVESTIGATE` | `MEDIUM` | `destinationTeam = null` |
+| BR-004 | `paymentType = CARD_PAYMENT` and `issueCategory = CARD_TRANSACTION_DISPUTE` | `REFER_TO_ANOTHER_TEAM` | `MEDIUM` | `destinationTeam = CARD_DISPUTES` |
+| BR-005 | `amount > 50000` | `ESCALATE` | `HIGH` | `escalationReason = High-value dispute exceeds threshold.` |
+| BR-006 | `ageDays > 30` | `ESCALATE` | `HIGH` | `escalationReason = Dispute is overdue.` |
+| BR-007 | No BR-001 to BR-006 match | `INVESTIGATE` | `LOW` | Default fallback. |
 
-1. The architecture says no HTTP API. This document therefore specifies module contracts. If the team decides to add a backend, convert these contracts into REST endpoints.
-2. The architecture uses `COMPLETED`; the requirements use `POSTED`. This spec uses `POSTED` as canonical.
-3. The architecture mentions `CRITICAL`; the requirements use only LOW, MEDIUM, and HIGH. This spec maps critical cases to HIGH.
-4. The architecture includes extra issue categories. This spec limits the MVP to the issue categories in the requirements.
+### Rule Precedence
+
+Final recommendation must be selected in this order:
+
+1. `ESCALATE` rules: BR-005, BR-006
+2. `REFER_TO_ANOTHER_TEAM`: BR-004
+3. `INVESTIGATE`: BR-002, BR-003
+4. `RESOLVE_IMMEDIATELY`: BR-001
+5. Fallback: BR-007
+
+All matching rules must still be returned in `firedRules`.
+
+---
+
+## 8. Endpoint-to-UI Mapping
+
+| UI Screen | Endpoint(s) |
+|---|---|
+| Global app load | `GET /api/health` optional health check |
+| Dispute Capture | `GET /api/reference-data`, `GET /api/customers`, `GET /api/customers/:customerId/transactions`, `POST /api/disputes` |
+| Triage Result | `GET /api/disputes/:disputeId`, `PATCH /api/disputes/:disputeId/outcome` |
+| Case Queue | `GET /api/disputes` |
+| Case Detail | `GET /api/disputes/:disputeId` |
+| Rules Reference | `GET /api/rules` |
+
+---
+
+## 9. Endpoint-to-Requirement Mapping
+
+| Endpoint | Requirement IDs |
+|---|---|
+| `GET /api/health` | REQ-067 |
+| `GET /api/reference-data` | REQ-016, REQ-017, REQ-018, REQ-019, REQ-031 |
+| `GET /api/customers` | REQ-020, REQ-073, REQ-080 |
+| `GET /api/customers/:customerId/transactions` | REQ-020, REQ-021, REQ-070 |
+| `POST /api/disputes` | REQ-006 to REQ-015, REQ-023 to REQ-047, REQ-068 to REQ-075 |
+| `GET /api/disputes` | REQ-059 to REQ-063, REQ-071 |
+| `GET /api/disputes/:disputeId` | REQ-064, REQ-065, REQ-070 |
+| `PATCH /api/disputes/:disputeId/outcome` | REQ-051 to REQ-058, REQ-068 to REQ-071 |
+| `GET /api/rules` | REQ-032, REQ-036, REQ-074, REQ-075 |
