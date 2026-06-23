@@ -14,19 +14,19 @@
     Cities = 'cities',
     Weather = 'weather',
   }
-  export interface ModalState {
+  export interface ModalState<T = any> {
     isOpen: boolean;
     template?: ModalTemplate;
-    data?: any;
+    data?: ModalData<T> | undefined;
   }
 
-  export interface ModalData {
+  export interface ModalData<T = any> {
     title: string;
     message?: string;
     action?: string;
-    gameData?: any;
+    gameData?: T;
   }
-  
+
   @Injectable({
     providedIn: 'root',
   })
@@ -34,7 +34,7 @@
     private modalStateSubject = new BehaviorSubject<ModalState>({ isOpen: false });
     modalState$ = this.modalStateSubject.asObservable();
   
-    openModal(template: ModalTemplate, data?: ModalData): void {
+    openModal<T>(template: ModalTemplate, data?: ModalData<T>): void {
       this.modalStateSubject.next({ isOpen: true, template, data });
     }
   

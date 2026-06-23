@@ -8,7 +8,6 @@ import { ApiService } from 'src/services/ApiService';
   standalone: true,
   imports: [FormsModule, CommonModule],
   template: `
-    <h1>Cities</h1>
     <ul>
       <li *ngFor="let city of cities">{{ city }}</li>
     </ul>

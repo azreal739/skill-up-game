@@ -1,11 +1,11 @@
 <h3> Game History </h3>
 <ul (click)="close.emit()">
     @for (item of items; track item) {
-      <li (click)="openGameHistoryModal()">
+      <li (click)="openGameHistoryModal(item)">
         <a>{{ item }}</a>
       </li>
     }
-
+    <h4 class="sub-heading">Other Actions</h4>
     <li>
       <a (click)="openCitiesModal()">Cities...</a>
     </li>

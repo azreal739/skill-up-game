@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { LocalStorageKey, LocalStorageService } from 'src/services/LocalStorageService';
+import { GameHistoryItem } from 'src/components/modal/game-history-modal/game-history-modal.component';
 
 
 @Component({
@@ -13,7 +15,7 @@ export class TicTacToeComponent {
   public board: (string | null)[] = Array(9).fill(null);
   public currentPlayer: string = 'X';
   public winner: string | null = null;
-  public winnerHistory: string[] = [];
+  public winnerHistory: GameHistoryItem[] = [];
 
   private readonly winConditions: number[][] = [
     [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
@@ -21,12 +23,19 @@ export class TicTacToeComponent {
     [0, 4, 8], [2, 4, 6]  // Diagonals
   ];
 
+  constructor(private _localStorageService: LocalStorageService) {}
+
   ngOnInit(): void {
-      const storedWinnerHistory = localStorage.getItem('TicTacToe:winnerHistory');
-      if (storedWinnerHistory) {
-        this.winnerHistory = JSON.parse(storedWinnerHistory);
-      }
-    
+    this.resetGame();
+
+    const storedWinnerHistory = this._localStorageService.get<GameHistoryItem[]>(
+      LocalStorageKey.ticTacToeGameHistory
+    );
+
+    if (storedWinnerHistory) {
+      this.winnerHistory = storedWinnerHistory;
+    }
+
     this.resetGame();
   }
 
@@ -36,8 +45,8 @@ export class TicTacToeComponent {
 
       if (this.checkWinner()) {
         this.winner = this.currentPlayer;
-        this.winnerHistory.push(this.winner);
-        localStorage.setItem('TicTacToe:winnerHistory', JSON.stringify(this.winnerHistory));
+        this.winnerHistory.push({ date: new Date(), result: this.winner });
+        this._localStorageService.set(LocalStorageKey.ticTacToeGameHistory, this.winnerHistory);
       } else {
         this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';
       }

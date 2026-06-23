@@ -1,6 +1,4 @@
-<div class="game-history-modal">
-    <h2>Game History - {{ gameHistory.gameName }}</h2>
-    
+<div class="game-history-modal">    
     <div *ngIf="gameHistory.gameHistory.length === 0">
       <p>No game history available.</p>
     </div>
@@ -8,12 +6,18 @@
     <ul *ngIf="gameHistory.gameHistory.length > 0">
       <li *ngFor="let game of gameHistory.gameHistory; index as i">
         <div>
-          <strong>Game {{ i + 1 }}</strong> - {{ game.result }} 
+          <strong>Game {{ i + 1 }}</strong>
           ({{ game.date | date:'medium' }})
         </div>
         <div>
-          Moves: {{ game.moves.join(', ') }}
+          Result/Winner: {{ game.result }}
         </div>
+        @if (game.moves?.length) {
+          <div>
+            Moves: {{ game.moves?.join(', ') }}
+          </div>
+        }
+
       </li>
     </ul>
     

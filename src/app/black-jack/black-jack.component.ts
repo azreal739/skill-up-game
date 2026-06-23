@@ -2,6 +2,11 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { b } from 'node_modules/msw/lib/core/HttpResponse-Cy7ytzUn';
 import { FormsModule } from '@angular/forms';
+import {
+  LocalStorageService,
+  LocalStorageKey,
+} from 'src/services/LocalStorageService';
+import { GameHistoryItem } from 'src/components/modal/game-history-modal/game-history-modal.component';
 
 interface Card {
   value: string;
@@ -13,9 +18,9 @@ interface Card {
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './black-jack.component.html',
-  styleUrl: './black-jack.component.scss'
+  styleUrl: './black-jack.component.scss',
 })
-export class BlackJackComponent  {
+export class BlackJackComponent {
   playerCards: Card[] = [];
   dealerCards: Card[] = [];
   playerScore: number = 0;
@@ -24,30 +29,36 @@ export class BlackJackComponent  {
   result: string = '';
   ready: boolean = false;
   playerName: string = '';
-  blackJackHistory: string[] = [];
+  blackJackHistory: GameHistoryItem[] = [];
 
   deck = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
   private suits = ['♠', '♥', '♦', '♣'];
 
+  constructor(private _localStorageService: LocalStorageService) {}
+
   ngOnInit(): void {
-    const storedBlackJackHistory = localStorage.getItem('BlackJack:blackJackHistory');
+    const storedBlackJackHistory = this._localStorageService.get<GameHistoryItem[]>(
+      LocalStorageKey.blackJackHistory
+    );
+
+    this._localStorageService.get
+
     if (storedBlackJackHistory) {
-      this.blackJackHistory = JSON.parse(storedBlackJackHistory);
+      this.blackJackHistory = storedBlackJackHistory;
+    }
+
+    this.resetGame();
   }
-  
-  this.resetGame();
-}
 
   // Start the game
   startGame(): void {
-      this.ready = true;
+    this.ready = true;
   }
 
-  
   // Function to calculate the score based on card values
   calculateScore(cards: Card[]): number {
     let score = 0;
-    cards.forEach(card => {
+    cards.forEach((card) => {
       if (['J', 'Q', 'K'].includes(card.value)) {
         score += 10;
       } else if (card.value === 'A') {
@@ -63,7 +74,7 @@ export class BlackJackComponent  {
   drawCard(): Card {
     let card: Card = {
       value: this.getRandomCard(),
-      suit: this.getRandomSuit()
+      suit: this.getRandomSuit(),
     };
     return card;
   }
@@ -93,10 +104,10 @@ export class BlackJackComponent  {
   // Check if the game is over
   checkGameOver(dealerTurn: boolean = false): void {
     if (this.playerScore > 21) {
-      this.result = this.playerName  + ' busted! Dealer wins.';
+      this.result = this.playerName + ' busted! Dealer wins.';
       this.gameOver = true;
     } else if (dealerTurn && this.dealerScore > 21) {
-      this.result = 'Dealer busted! ' + this.playerName +' win.';
+      this.result = 'Dealer busted! ' + this.playerName + ' win.';
       this.gameOver = true;
     } else if (dealerTurn && this.dealerScore >= 17) {
       if (this.playerScore > this.dealerScore) {
@@ -108,8 +119,17 @@ export class BlackJackComponent  {
     }
 
     if (this.gameOver) {
-      this.blackJackHistory.push(this.result);
-      localStorage.setItem('BlackJack:blackJackHistory', JSON.stringify(this.blackJackHistory));    }
+      const gameHistoryItem: GameHistoryItem = {
+        date: new Date(),
+        result: this.result,
+        moves: [],
+      };
+      this.blackJackHistory.push(gameHistoryItem);
+      this._localStorageService.set(
+        LocalStorageKey.blackJackHistory,
+        this.blackJackHistory
+      );
+    }
   }
 
   // Player stands

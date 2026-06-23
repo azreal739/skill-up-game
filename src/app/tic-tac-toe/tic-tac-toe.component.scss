@@ -1,3 +1,6 @@
+:host {
+    height: 80vh;
+
 .tic-tac-toe {
     display: flex;
     flex-direction: column;
@@ -76,4 +79,5 @@
     .row {
         display: contents;
     }
+}
 }

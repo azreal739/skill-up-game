@@ -1,15 +1,23 @@
-<div *ngIf="currentState.isOpen" cdkTrapFocus [cdkTrapFocusAutoCapture]="true">
-  <button class="close" (click)="closeModal()">
-    <!-- SVG icon and visually hidden text for accessibility -->
-    Close
-  </button>
+<div class="main" *ngIf="currentState.isOpen" cdkTrapFocus [cdkTrapFocusAutoCapture]="true">
+  <div class="modal-header">
+    <h2>{{currentState.data?.title}}</h2>
+
+    <button class="close" (click)="closeModal()">
+      <!-- SVG icon and visually hidden text for accessibility -->
+      Close
+    </button>
+  </div>
+  <div class="modal-messadge">
+    {{currentState.data?.message}}
+  </div>
+
   
   <ng-container [ngSwitch]="currentState.template">
     <ng-container *ngSwitchCase="ModalTemplate.SignUpForm">
       <app-sign-up-form (formSubmitted)="closeModal()"></app-sign-up-form>
     </ng-container>
     <ng-container *ngSwitchCase="ModalTemplate.GameHistory">
-      <app-game-history-modal></app-game-history-modal>
+      <app-game-history-modal gameHistory="gameHistory"></app-game-history-modal>
     </ng-container>
     <ng-container *ngSwitchCase="ModalTemplate.Cities">
       <app-cities></app-cities>

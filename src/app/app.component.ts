@@ -43,6 +43,6 @@ export class AppComponent {
   protected modalTemplate = ModalTemplate.SignUpForm;
 
   public openSignUpModal() {
-  this._modalService.openModal(ModalTemplate.SignUpForm, { title: 'Sign Up', gameData: undefined });
+  this._modalService.openModal(ModalTemplate.SignUpForm, { title: 'Sign Up', message: 'Hello! Welcome to the family.', gameData: undefined });
   }
 }

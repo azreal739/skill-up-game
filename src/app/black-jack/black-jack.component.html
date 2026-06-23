@@ -64,11 +64,3 @@
 <input type="text" [(ngModel)]="playerName" placeholder="Enter your name" />
 <button (click)="startGame()" [disabled]="playerName.length == 0">Start Game</button>
 }
-
-<ul>
-  @for (winner of blackJackHistory; track winner) {
-  <li>{{ winner }}</li>
-  } @empty {
-  <li>No games have been played.</li>
-  }
-</ul>

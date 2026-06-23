@@ -7,7 +7,6 @@ import { ApiService, WeatherForecast } from 'src/services/ApiService';
   selector: 'app-weather',
   standalone: true,
   template: `
-    <h1>Weather Forecast</h1>
     <ul>
       <li *ngFor="let forecast of forecasts">
         {{ forecast.date }}: {{ forecast.temperatureC }}°C - {{ forecast.summary }}

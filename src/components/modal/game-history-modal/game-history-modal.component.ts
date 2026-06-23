@@ -2,14 +2,20 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ModalService } from 'src/services/ModalService';
 
-interface GameHistoryItem {
+export enum GameName {
+  TicTacToe = 'Tic Tac Toe',
+  BlackJack = 'Black Jack',
+  Chess = 'Chess',
+}
+
+export interface GameHistoryItem {
   date: Date;
-  result: string; // e.g., 'Win', 'Loss', 'Draw'
-  moves: string[];
+  result: string;
+  moves?: string[];
 }
 
 interface GameHistoryModalOptions {
-  gameName: string;
+  gameName: GameName | undefined;
   gameHistory: GameHistoryItem[];
 }
 
@@ -18,29 +24,28 @@ interface GameHistoryModalOptions {
   standalone: true,
   imports: [CommonModule],
   templateUrl: './game-history-modal.component.html',
-  styleUrl: './game-history-modal.component.scss'
+  styleUrl: './game-history-modal.component.scss',
 })
 export class GameHistoryModalComponent implements OnInit {
-  gameHistory: GameHistoryModalOptions = { gameName: '', gameHistory: [] };
-
+  gameHistory: GameHistoryModalOptions = {
+    gameName: undefined,
+    gameHistory: [],
+  };
+  
   constructor(private _modalService: ModalService) {}
 
   ngOnInit(): void {
-    // For now, we load some dummy data.
-    // In a real app, you might retrieve this from a dedicated service or local storage.
-    this.gameHistory = {
-      gameName: 'Chess',
-      gameHistory:
-      [
-      { date: new Date(), result: 'Win', moves: ['e4', 'e5', 'Nf3', 'Nc6'] },
-      { date: new Date(), result: 'Loss', moves: ['d4', 'Nf6', 'c4', 'g6'] },
-      { date: new Date(), result: 'Draw', moves: ['c4', 'e5', 'Nc3', 'Nf6'] },
-    ]
-  };
+    this._modalService.modalState$.subscribe((state) => {
+      if (state.isOpen) {
+        this.gameHistory = {
+          gameName: state.data?.title as GameName,
+          gameHistory: (state.data?.gameData as GameHistoryItem[]) || [],
+        };
+      }
+    });
   }
 
   closeModal(): void {
     this._modalService.closeModal();
   }
 }
-

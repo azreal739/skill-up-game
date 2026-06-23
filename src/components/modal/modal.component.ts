@@ -18,12 +18,14 @@ import { WeatherComponent } from "./api-test/api-test-weather-modal.component";
 export class ModalComponent implements OnInit {
   public ModalTemplate = ModalTemplate;
   currentState: ModalState = { isOpen: false };
+  gameHistory: string[] = [];
 
   constructor(private modalService: ModalService) {}
 
   ngOnInit(): void {
     this.modalService.modalState$.subscribe((state) => {
       this.currentState = state;
+      this.gameHistory = state.data?.gameData || [];
     });
   }
 
