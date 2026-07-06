@@ -3,25 +3,24 @@ import { Injectable } from '@angular/core';
 export enum LocalStorageKey {
     blackJackHistory = 'BlackJack:blackJackHistory',
     chessGameState = 'Chess:gameState',
+    chessGameHistory = 'Chess:gameHistory',
     whiteCaptures = 'Chess:whiteCaptures',
     blackCaptures = 'Chess:blackCaptures',
     resolutions = 'NewYears:resolutions',
     ticTacToeGameHistory = 'TicTacToe:winnerHistory',
+    signedUpUser = 'Auth:signedUpUser',
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class LocalStorageService {
-
-  constructor() { }
-
   /**
    * Stores a value in local storage.
    * @param key The key under which the value is stored.
    * @param value The value to store.
    */
-  set(key: LocalStorageKey, value: any): void {
+  set(key: LocalStorageKey, value: unknown): void {
     try {
       const serializedValue = JSON.stringify(value);
       localStorage.setItem(key, serializedValue);

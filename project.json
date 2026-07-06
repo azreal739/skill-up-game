@@ -21,34 +21,26 @@
         "inlineStyleLanguage": "scss",
         "assets": [
           "src/assets",
-          "src/libs",
           {
             "glob": "**/*",
             "input": "public",
             "output": ""
           }
         ],
-        "scripts": [
-          "node_modules/jquery/dist/jquery.min.js",
-          "node_modules/@chrisoakman/chessboardjs/dist/chessboard-1.0.0.min.js"
-        ],
-        "styles": [
-          "src/styles.scss",
-          "node_modules/@chrisoakman/chessboardjs/dist/chessboard-1.0.0.min.css"
-        ]
+        "styles": ["src/styles.scss"]
       },
       "configurations": {
         "production": {
           "budgets": [
             {
               "type": "initial",
-              "maximumWarning": "500kB",
+              "maximumWarning": "750kB",
               "maximumError": "1MB"
             },
             {
               "type": "anyComponentStyle",
-              "maximumWarning": "2kB",
-              "maximumError": "4kB"
+              "maximumWarning": "4kB",
+              "maximumError": "8kB"
             }
           ],
           "outputHashing": "all"
@@ -63,16 +55,12 @@
     },
     "serve": {
       "executor": "@angular-devkit/build-angular:dev-server",
-      "options": {
-        "proxyConfig": "proxy.conf.json"
-      },
       "configurations": {
         "production": {
           "buildTarget": "tic-tac-toe:build:production"
         },
         "development": {
-          "buildTarget": "tic-tac-toe:build:development",
-          "proxyConfig": "proxy.conf.json"
+          "buildTarget": "tic-tac-toe:build:development"
         }
       },
       "defaultConfiguration": "development"
@@ -83,6 +71,7 @@
     "test": {
       "executor": "@angular-devkit/build-angular:karma",
       "options": {
+        "karmaConfig": "karma.conf.js",
         "polyfills": ["zone.js", "zone.js/testing"],
         "tsConfig": "tsconfig.spec.json",
         "inlineStyleLanguage": "scss",

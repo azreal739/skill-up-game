@@ -1,8 +1,9 @@
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Chess } from 'chess.js';
 import { DragDropModule, CdkDragStart, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
-import { ChessboardJsComponent } from "../../components/chess/chessboard-js.component";
+import { LocalStorageKey, LocalStorageService } from 'src/services/LocalStorageService';
+import { GameHistoryItem } from '../shared/modal/game-history-modal/game-history-modal.component';
 
 type Square =
   | 'a1'|'a2'|'a3'|'a4'|'a5'|'a6'|'a7'|'a8'
@@ -27,9 +28,9 @@ interface VerboseMove {
   selector: 'app-chess-game',
   templateUrl: './chess-game.component.html',
   styleUrls: ['./chess-game.component.scss'],
-  imports: [DragDropModule, CommonModule, ChessboardJsComponent],
+  imports: [DragDropModule, CommonModule],
 })
-export class ChessGameComponent implements OnInit, AfterViewInit {
+export class ChessGameComponent implements OnInit {
   chess = new Chess();
   board: string[][] = [];
   validMoves: Square[] = [];
@@ -37,13 +38,6 @@ export class ChessGameComponent implements OnInit, AfterViewInit {
   blackCaptures: string[] = [];
   connectedLists: string[] = [];
   promotionPending: { from: Square; to: Square } | null = null;
-
-  // Flag to switch between our Angular board and chessboard.js board.
-  useChessboardJs = false;
-
-  // Reference to the chessboard.js container.
-  @ViewChild('chessboardJsContainer', { static: false }) chessboardJsContainer!: ElementRef;
-  boardInstance: any;
 
   pieceSymbols: { [key: string]: string } = {
     p: '♟', r: '♜', n: '♞', b: '♝', q: '♛', k: '♚',
@@ -71,7 +65,8 @@ export class ChessGameComponent implements OnInit, AfterViewInit {
     Q: 'assets/img/chesspieces/wQ.png',
     K: 'assets/img/chesspieces/wK.png',
   };
-  
+
+  constructor(private _localStorageService: LocalStorageService) {}
 
   ngOnInit() {
     // Build the list for drag/drop connected lists.
@@ -82,13 +77,6 @@ export class ChessGameComponent implements OnInit, AfterViewInit {
     }
     this.loadGame();
     this.updateBoard();
-  }
-
-  // After the view initializes, if chessboard.js is active, initialize it.
-  ngAfterViewInit() {
-    if (this.useChessboardJs) {
-      this.initializeChessboardJs();
-    }
   }
 
   get currentTurn(): string {
@@ -147,7 +135,7 @@ export class ChessGameComponent implements OnInit, AfterViewInit {
     this.validMoves = moves.map(m => m.to);
   }
 
-  onDrop(event: CdkDragDrop<any>, rowIndex: number, colIndex: number) {
+  onDrop(event: CdkDragDrop<{ row: number; col: number }>, rowIndex: number, colIndex: number) {
     if (this.chess.isGameOver()) return;
     const toSquare = this.getSquareId(rowIndex, colIndex);
     const fromRow = event.previousContainer.data.row;
@@ -172,7 +160,14 @@ export class ChessGameComponent implements OnInit, AfterViewInit {
   }
 
   makeMove(moveObj: VerboseMove) {
-    const result = this.chess.move(moveObj);
+    let result;
+    try {
+      result = this.chess.move(moveObj);
+    } catch {
+      // chess.js throws on illegal moves; treat them as a no-op.
+      this.validMoves = [];
+      return;
+    }
     if (result) {
       this.validMoves = [];
       if (result.captured) {
@@ -184,12 +179,10 @@ export class ChessGameComponent implements OnInit, AfterViewInit {
         }
       }
       this.updateBoard();
-      // Also update chessboard.js if it's active.
-      if (this.useChessboardJs && this.boardInstance) {
-        this.boardInstance.position(this.chess.fen().split(' ')[0]); // update board position (FEN only board position)
+      if (this.chess.isGameOver()) {
+        this.recordGameHistory();
       }
     }
-    // this.boardInstance.position(this.chess.fen());
   }
 
   choosePromotion(promotion: string) {
@@ -208,84 +201,41 @@ export class ChessGameComponent implements OnInit, AfterViewInit {
     if (!this.promotionPending) return [];
     const piece = this.chess.get(this.promotionPending.from);
     if (!piece) return [];
-    if (piece.color === 'w') {
-      return [
-        { value: 'q', symbol: this.pieceImages['Q'] },
-        { value: 'r', symbol: this.pieceImages['R'] },
-        { value: 'b', symbol: this.pieceImages['B'] },
-        { value: 'n', symbol: this.pieceImages['N'] },
-      ];
-    } else {
-      return [
-        { value: 'q', symbol: this.pieceImages['q'] },
-        { value: 'r', symbol: this.pieceImages['r'] },
-        { value: 'b', symbol: this.pieceImages['b'] },
-        { value: 'n', symbol: this.pieceImages['n'] },
-      ];
-    }
-  }
-
-  // Toggle the board view between the current Angular board and chessboard.js.
-  toggleBoard() {
-    this.useChessboardJs = !this.useChessboardJs;
-    // Delay initialization to let Angular render the new container.
-    if (this.useChessboardJs) {
-      setTimeout(() => this.initializeChessboardJs(), 0);
-    } else {
-      if (this.boardInstance && typeof this.boardInstance.destroy === 'function') {
-        this.boardInstance.destroy();
-      }
-      this.boardInstance = null;
-    }
-  }
-
-  // Initialize chessboard.js inside the designated container.
-  initializeChessboardJs() {
-    if (!this.chessboardJsContainer) return;
-    this.boardInstance = Chessboard(this.chessboardJsContainer.nativeElement, {
-      position: this.chess.fen().split(' ')[0], // use only the board position from FEN
-      draggable: true,
-      // Optionally, you can add callbacks for drag/drop events if needed.
-      onDrop: (
-        source: string, 
-        target: string, 
-        piece: string, 
-        newPos: any, 
-        oldPos: any, 
-        orientation: string
-      ): string | undefined => {
-        const move = this.chess.move({ from: source, to: target, promotion: 'q' });
-        if (move === null) {
-          // Illegal move – snap back.
-          return 'snapback';
-        } else {
-          // Legal move – update board and explicitly return undefined.
-          this.updateBoard();
-          return undefined;
-        }
-      }      
-    });
+    const caseFor = (p: string) => (piece.color === 'w' ? p.toUpperCase() : p);
+    return ['q', 'r', 'b', 'n'].map(value => ({
+      value,
+      symbol: this.pieceImages[caseFor(value)],
+    }));
   }
 
   saveGame(): void {
-    localStorage.setItem('chessGameState', this.chess.fen());
-    localStorage.setItem('whiteCaptures', JSON.stringify(this.whiteCaptures));
-    localStorage.setItem('blackCaptures', JSON.stringify(this.blackCaptures));
+    this._localStorageService.set(LocalStorageKey.chessGameState, this.chess.fen());
+    this._localStorageService.set(LocalStorageKey.whiteCaptures, this.whiteCaptures);
+    this._localStorageService.set(LocalStorageKey.blackCaptures, this.blackCaptures);
   }
 
   loadGame(): void {
-    const savedState = localStorage.getItem('chessGameState');
+    const savedState = this._localStorageService.get<string>(LocalStorageKey.chessGameState);
     if (savedState) {
-      this.chess.load(savedState);
+      try {
+        this.chess.load(savedState);
+      } catch {
+        this.chess.reset();
+      }
     }
-    const savedWhite = localStorage.getItem('whiteCaptures');
-    if (savedWhite) {
-      this.whiteCaptures = JSON.parse(savedWhite);
-    }
-    const savedBlack = localStorage.getItem('blackCaptures');
-    if (savedBlack) {
-      this.blackCaptures = JSON.parse(savedBlack);
-    }
+    this.whiteCaptures = this._localStorageService.get<string[]>(LocalStorageKey.whiteCaptures) ?? [];
+    this.blackCaptures = this._localStorageService.get<string[]>(LocalStorageKey.blackCaptures) ?? [];
+  }
+
+  private recordGameHistory(): void {
+    const history =
+      this._localStorageService.get<GameHistoryItem[]>(LocalStorageKey.chessGameHistory) ?? [];
+    history.push({
+      date: new Date(),
+      result: this.gameStatus,
+      moves: this.chess.history(),
+    });
+    this._localStorageService.set(LocalStorageKey.chessGameHistory, history);
   }
 
   restartGame() {
@@ -295,10 +245,5 @@ export class ChessGameComponent implements OnInit, AfterViewInit {
     this.validMoves = [];
     this.promotionPending = null;
     this.updateBoard();
-    this.saveGame();
-    // If chessboard.js is active, update its position as well.
-    if (this.useChessboardJs && this.boardInstance) {
-      this.boardInstance.position(this.chess.fen().split(' ')[0]);
-    }
   }
 }

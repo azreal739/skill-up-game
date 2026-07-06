@@ -22,12 +22,7 @@
       "ES2022",
       "dom"
     ],
-    "baseUrl": "./",
-    "paths": {
-      "@chrisoakman/chessboardjs": [
-        "./node_modules/@chrisoakman/chessboardjs/dist/chessboard-1.0.0.min.js"
-      ]
-    }
+    "baseUrl": "./"
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
