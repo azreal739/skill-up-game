@@ -1,0 +1,87 @@
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0.7rem 1.25rem;
+  border-bottom: 1px solid var(--ea-border);
+  background: rgba(7, 10, 20, 0.75);
+  backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.topbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  text-decoration: none;
+  color: var(--ea-text);
+}
+
+.topbar__logo {
+  color: var(--ea-accent);
+  font-size: 1.3rem;
+  text-shadow: 0 0 12px rgba(34, 211, 238, 0.8);
+}
+
+.topbar__name {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.topbar__nav {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+
+  a {
+    padding: 0.35rem 0.8rem;
+    border-radius: 8px;
+    color: var(--ea-muted);
+    text-decoration: none;
+    font-size: 0.88rem;
+
+    &:hover {
+      color: var(--ea-text);
+      background: var(--ea-panel);
+    }
+
+    &.is-active {
+      color: var(--ea-accent);
+      background: rgba(34, 211, 238, 0.08);
+    }
+  }
+}
+
+.topbar__status {
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.25;
+}
+
+.topbar__rank {
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ea-accent-2);
+}
+
+.topbar__xp {
+  font-family: var(--ea-mono);
+  font-size: 0.82rem;
+}
+
+@media (max-width: 700px) {
+  .topbar {
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  .topbar__status {
+    margin-left: 0;
+  }
+}

@@ -1,0 +1,64 @@
+.artefact {
+  margin: 0 0 1rem;
+  border: 1px solid var(--ea-border);
+  border-radius: 10px;
+  background: var(--ea-panel-solid);
+  overflow: hidden;
+}
+
+.artefact__header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.8rem;
+  border-bottom: 1px solid var(--ea-border);
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 0.75rem;
+}
+
+.artefact__kind {
+  color: var(--ea-accent);
+  font-family: var(--ea-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  padding: 0.05rem 0.4rem;
+  white-space: nowrap;
+}
+
+.artefact__title {
+  color: var(--ea-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.artefact__lang {
+  margin-left: auto;
+  color: var(--ea-muted);
+  font-family: var(--ea-mono);
+}
+
+.artefact__body {
+  margin: 0;
+  padding: 0.8rem 1rem;
+  overflow-x: auto;
+  font-family: var(--ea-mono);
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--ea-text);
+
+  code {
+    font-family: inherit;
+  }
+}
+
+.artefact[data-type='log'] .artefact__body,
+.artefact[data-type='api-response'] .artefact__body {
+  color: #9ae6b4;
+}
+
+.artefact[data-type='log'] .artefact__kind {
+  color: var(--ea-warn);
+}

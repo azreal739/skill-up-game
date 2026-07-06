@@ -2,11 +2,11 @@
   "name": "skill-up-game",
   "version": "0.0.0",
   "scripts": {
-    "ng": "ng",
-    "start": "nx serve",
-    "build": "nx build",
-    "watch": "nx build --watch --configuration development",
-    "test": "nx test"
+    "start": "nx serve skill-up-game",
+    "start:academy": "nx serve engineering-academy",
+    "build": "nx run-many -t build",
+    "watch": "nx build skill-up-game --watch --configuration development",
+    "test": "nx run-many -t test -- --watch=false"
   },
   "private": true,
   "dependencies": {
@@ -22,6 +22,7 @@
     "chess.js": "^1.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
+    "zod": "^4.4.3",
     "zone.js": "~0.14.10"
   },
   "devDependencies": {
@@ -47,7 +48,7 @@
   },
   "msw": {
     "workerDirectory": [
-      "public"
+      "apps/skill-up-game/public"
     ]
   }
 }

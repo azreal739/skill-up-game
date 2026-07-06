@@ -1,0 +1,57 @@
+.meter {
+  min-width: 7.5rem;
+
+  --meter-color: var(--ea-success);
+
+  &[data-health='degraded'] {
+    --meter-color: var(--ea-warn);
+  }
+
+  &[data-health='unstable'] {
+    --meter-color: var(--ea-orange);
+  }
+
+  &[data-health='critical'] {
+    --meter-color: var(--ea-danger);
+  }
+}
+
+.meter__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.meter__label {
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ea-muted);
+}
+
+.meter__value {
+  font-family: var(--ea-mono);
+  font-size: 0.75rem;
+  color: var(--meter-color);
+}
+
+.meter__max {
+  color: var(--ea-muted);
+}
+
+.meter__track {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.meter__fill {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--meter-color);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--meter-color) 60%, transparent);
+  transition: width 0.4s ease;
+}

@@ -1,0 +1,146 @@
+.profile {
+  display: grid;
+  gap: 1.2rem;
+}
+
+.identity {
+  display: flex;
+  gap: 1.4rem;
+  align-items: center;
+}
+
+.identity__avatar {
+  flex-shrink: 0;
+  width: 4.6rem;
+  height: 4.6rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #06121a;
+  background: linear-gradient(135deg, var(--ea-accent), var(--ea-accent-2));
+  box-shadow: 0 0 24px rgba(34, 211, 238, 0.35);
+}
+
+.identity__name {
+  font-size: 1.6rem;
+}
+
+.identity__callsign {
+  font-size: 1rem;
+  color: var(--ea-muted);
+  font-weight: 400;
+}
+
+.identity__rank {
+  color: var(--ea-accent-2);
+  font-family: var(--ea-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin: 0.25rem 0 0.6rem;
+}
+
+.identity__xpbar {
+  height: 8px;
+  max-width: 22rem;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.identity__xpfill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--ea-accent), var(--ea-accent-2));
+  transition: width 0.5s ease;
+}
+
+.identity__xptext {
+  display: block;
+  margin-top: 0.35rem;
+  font-family: var(--ea-mono);
+  font-size: 0.78rem;
+  color: var(--ea-muted);
+}
+
+.identity__since {
+  margin-top: 0.5rem;
+  font-size: 0.78rem;
+  color: var(--ea-muted);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 1rem;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat__value {
+  display: block;
+  font-family: var(--ea-mono);
+  font-size: 1.7rem;
+  color: var(--ea-accent);
+}
+
+.stat__label {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ea-muted);
+}
+
+.campaigns-progress h2,
+.badges h2,
+.danger h2 {
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ea-muted);
+  margin-bottom: 0.7rem;
+}
+
+.campaigns-progress__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid var(--ea-border);
+  font-size: 0.9rem;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  span {
+    font-family: var(--ea-mono);
+    color: var(--ea-muted);
+  }
+}
+
+.badges__grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.danger p {
+  color: var(--ea-muted);
+  font-size: 0.85rem;
+  margin-bottom: 0.8rem;
+}
+
+@media (max-width: 640px) {
+  .identity {
+    flex-direction: column;
+    text-align: center;
+  }
+}

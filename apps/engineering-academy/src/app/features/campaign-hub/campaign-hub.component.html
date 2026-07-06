@@ -1,0 +1,83 @@
+<div class="hub ea-page">
+  <header class="hub__header">
+    <p class="ea-eyebrow">Campaign Hub</p>
+    <h1>Choose your assignment</h1>
+    <p class="hub__sub">
+      Campaigns are themed tours of duty. Complete missions in order to unlock the next node.
+    </p>
+  </header>
+
+  @if (recommendedMission(); as recommended) {
+    <section class="recommended ea-panel">
+      <div>
+        <p class="ea-eyebrow">Recommended next mission</p>
+        <h2 class="recommended__title">{{ recommended.title }}</h2>
+        <p class="recommended__summary">{{ recommended.summary }}</p>
+      </div>
+      <a class="ea-btn ea-btn--primary" [routerLink]="['/missions', recommended.id]">
+        Start mission
+      </a>
+    </section>
+  } @else {
+    <section class="recommended ea-panel recommended--done">
+      <div>
+        <p class="ea-eyebrow">All clear</p>
+        <h2 class="recommended__title">Every available mission is complete 🎉</h2>
+        <p class="recommended__summary">
+          Replay missions for a perfect score, or await the next campaign deployment.
+        </p>
+      </div>
+    </section>
+  }
+
+  <section class="campaigns">
+    @for (campaign of campaigns; track campaign.id) {
+      <article class="campaign ea-panel" [class.campaign--complete]="isCompleted(campaign.id)">
+        <div class="campaign__header">
+          <h2 class="campaign__title">{{ campaign.title }}</h2>
+          @if (isCompleted(campaign.id)) {
+            <span class="ea-chip campaign__done">✓ complete</span>
+          }
+        </div>
+        <p class="campaign__subtitle">{{ campaign.subtitle }}</p>
+        <p class="campaign__description">{{ campaign.description }}</p>
+
+        <div class="campaign__tags">
+          @for (tag of campaign.tags; track tag) {
+            <span class="ea-chip">{{ tag }}</span>
+          }
+        </div>
+
+        <div class="campaign__footer">
+          <div class="campaign__progress">
+            <div
+              class="campaign__bar"
+              role="progressbar"
+              [attr.aria-label]="campaign.title + ' progress'"
+              [attr.aria-valuenow]="(progressFor(campaign.id) * 100).toFixed(0)"
+              aria-valuemin="0"
+              aria-valuemax="100"
+            >
+              <div class="campaign__fill" [style.width.%]="progressFor(campaign.id) * 100"></div>
+            </div>
+            <span class="campaign__percent">
+              {{ progressFor(campaign.id) | percent }} · {{ missionCount(campaign.id) }} missions
+            </span>
+          </div>
+          <a class="ea-btn" [routerLink]="['/campaigns', campaign.id]">Open</a>
+        </div>
+      </article>
+    }
+    <article class="campaign campaign--locked ea-panel" aria-disabled="true">
+      <div class="campaign__header">
+        <h2 class="campaign__title">Zod Gate</h2>
+        <span class="ea-chip">🔒 next deployment</span>
+      </div>
+      <p class="campaign__subtitle">Defend the runtime boundary</p>
+      <p class="campaign__description">
+        The Java API returned unexpected data. Future campaign — ships as a pure content pack,
+        no engine changes required.
+      </p>
+    </article>
+  </section>
+</div>

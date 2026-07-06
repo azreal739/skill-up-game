@@ -1,0 +1,83 @@
+<div class="profile ea-page">
+  @if (gameState.state(); as state) {
+    <section class="identity ea-panel">
+      <div class="identity__avatar" aria-hidden="true">{{ initial() }}</div>
+      <div class="identity__body">
+        <h1 class="identity__name">
+          {{ state.profile.name }}
+          @if (state.profile.callsign) {
+            <span class="identity__callsign">“{{ state.profile.callsign }}”</span>
+          }
+        </h1>
+        <p class="identity__rank">{{ gameState.rank().title }}</p>
+        <div class="identity__xp">
+          <div
+            class="identity__xpbar"
+            role="progressbar"
+            aria-label="Progress to next rank"
+            [attr.aria-valuenow]="(gameState.rankProgress() * 100).toFixed(0)"
+            aria-valuemin="0"
+            aria-valuemax="100"
+          >
+            <div class="identity__xpfill" [style.width.%]="gameState.rankProgress() * 100"></div>
+          </div>
+          <span class="identity__xptext">
+            {{ gameState.xp() }} XP
+            @if (gameState.nextRank(); as next) {
+              · {{ xpToNext() }} XP to {{ next.title }}
+            } @else {
+              · top of the ladder
+            }
+          </span>
+        </div>
+        <p class="identity__since">Enrolled {{ state.profile.createdAt | date: 'mediumDate' }}</p>
+      </div>
+    </section>
+
+    <section class="stats">
+      <div class="stat ea-panel">
+        <span class="stat__value">{{ missionsCompleted() }}</span>
+        <span class="stat__label">Missions completed</span>
+      </div>
+      <div class="stat ea-panel">
+        <span class="stat__value">{{ perfectMissions() }}</span>
+        <span class="stat__label">Perfect missions</span>
+      </div>
+      <div class="stat ea-panel">
+        <span class="stat__value">{{ gameState.badges().length }}</span>
+        <span class="stat__label">Badges earned</span>
+      </div>
+      <div class="stat ea-panel">
+        <span class="stat__value">{{ gameState.meters().stability }}</span>
+        <span class="stat__label">Platform stability</span>
+      </div>
+    </section>
+
+    <section class="campaigns-progress ea-panel">
+      <h2>Campaigns</h2>
+      @for (entry of campaignStats(); track entry.campaign.id) {
+        <div class="campaigns-progress__row">
+          <a [routerLink]="['/campaigns', entry.campaign.id]">{{ entry.campaign.title }}</a>
+          <span>{{ entry.progress | percent }}</span>
+        </div>
+      }
+    </section>
+
+    <section class="badges ea-panel">
+      <h2>Badge collection</h2>
+      <div class="badges__grid">
+        @for (badge of allBadges; track badge.id) {
+          <ea-badge-chip [badge]="badge" [locked]="!hasBadge(badge.id)" />
+        }
+      </div>
+    </section>
+
+    <section class="danger ea-panel">
+      <h2>Danger zone</h2>
+      <p>Wipes profile, progress, badges and settings stored on this device.</p>
+      <button type="button" class="ea-btn ea-btn--danger" (click)="resetProgress()">
+        Reset all progress
+      </button>
+    </section>
+  }
+</div>

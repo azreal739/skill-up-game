@@ -1,0 +1,25 @@
+.dialogue {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.dialogue__block {
+  border-left: 3px solid var(--ea-accent);
+  padding: 0.35rem 0 0.35rem 1rem;
+}
+
+.dialogue__speaker {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-family: var(--ea-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ea-accent);
+}
+
+.dialogue__text {
+  margin: 0;
+  color: var(--ea-text);
+  line-height: 1.65;
+}

@@ -1,5 +1,5 @@
 {
-  "defaultProject": "tic-tac-toe",
+  "defaultProject": "skill-up-game",
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "targetDefaults": {
     "build": {

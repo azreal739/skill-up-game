@@ -1,0 +1,132 @@
+.landing {
+  display: grid;
+  gap: 3rem;
+}
+
+.hero {
+  text-align: center;
+  padding-top: 3.5rem;
+}
+
+.hero__eyebrow {
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.hero__title {
+  font-size: clamp(2.4rem, 6vw, 4rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.05;
+}
+
+.hero__glow {
+  background: linear-gradient(90deg, var(--ea-accent), var(--ea-accent-2));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: ea-hero-glow 3s ease-in-out infinite alternate;
+}
+
+@keyframes ea-hero-glow {
+  from {
+    filter: drop-shadow(0 0 6px rgba(34, 211, 238, 0.25));
+  }
+  to {
+    filter: drop-shadow(0 0 18px rgba(167, 139, 250, 0.45));
+  }
+}
+
+.hero__tagline {
+  margin-top: 0.9rem;
+  font-family: var(--ea-mono);
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  color: var(--ea-accent);
+}
+
+.hero__pitch {
+  max-width: 40rem;
+  margin: 1.2rem auto 0;
+  color: var(--ea-muted);
+  line-height: 1.7;
+}
+
+.hero__actions {
+  margin-top: 2rem;
+  display: flex;
+  gap: 0.8rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.enrol {
+  max-width: 24rem;
+  margin: 2rem auto 0;
+  text-align: left;
+  display: grid;
+  gap: 1rem;
+}
+
+.enrol__title {
+  font-size: 1.1rem;
+}
+
+.enrol__field {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  color: var(--ea-muted);
+
+  em {
+    font-style: normal;
+    opacity: 0.7;
+  }
+
+  input {
+    padding: 0.65rem 0.8rem;
+    border-radius: 8px;
+    border: 1px solid var(--ea-border);
+    background: rgba(7, 10, 20, 0.6);
+    color: var(--ea-text);
+    font: inherit;
+
+    &::placeholder {
+      color: rgba(148, 163, 184, 0.5);
+    }
+  }
+}
+
+.enrol__note {
+  font-size: 0.75rem;
+  color: var(--ea-muted);
+  text-align: center;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1rem;
+}
+
+.feature {
+  text-align: center;
+
+  h3 {
+    margin: 0.6rem 0 0.35rem;
+    font-size: 1rem;
+  }
+
+  p {
+    color: var(--ea-muted);
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+}
+
+.feature__icon {
+  font-size: 1.6rem;
+}

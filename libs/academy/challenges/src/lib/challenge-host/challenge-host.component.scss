@@ -1,0 +1,60 @@
+.challenge {
+  display: block;
+}
+
+.challenge__header {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.challenge__type {
+  font-family: var(--ea-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ea-accent);
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  padding: 0.1rem 0.45rem;
+}
+
+.challenge__difficulty {
+  font-family: var(--ea-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ea-muted);
+}
+
+.challenge__title {
+  margin: 0 0 0.4rem;
+  font-size: 1.35rem;
+  color: var(--ea-text);
+}
+
+.challenge__story {
+  margin: 0 0 1rem;
+  color: var(--ea-muted);
+  line-height: 1.6;
+}
+
+.challenge__prompt {
+  margin: 0.4rem 0 1rem;
+  font-weight: 600;
+  color: var(--ea-text);
+  line-height: 1.6;
+}
+
+.challenge__instruction {
+  margin: -0.5rem 0 0.8rem;
+  font-size: 0.82rem;
+  color: var(--ea-muted);
+}
+
+.challenge__actions {
+  margin-top: 1.2rem;
+  display: flex;
+  gap: 0.7rem;
+}

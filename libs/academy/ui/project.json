@@ -1,0 +1,9 @@
+{
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "name": "academy-ui",
+  "projectType": "library",
+  "sourceRoot": "libs/academy/ui/src",
+  "prefix": "ea",
+  "tags": ["type:ui", "scope:academy"],
+  "targets": {}
+}

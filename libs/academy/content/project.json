@@ -1,0 +1,9 @@
+{
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "name": "academy-content",
+  "projectType": "library",
+  "sourceRoot": "libs/academy/content/src",
+  "prefix": "ea",
+  "tags": ["type:content", "scope:academy"],
+  "targets": {}
+}

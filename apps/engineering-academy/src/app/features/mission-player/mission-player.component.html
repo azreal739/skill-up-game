@@ -1,0 +1,241 @@
+<div class="player ea-page">
+  @if (mission(); as mission) {
+    <ea-hud
+      [rank]="gameState.rank()"
+      [xp]="gameState.xp()"
+      [rankProgress]="gameState.rankProgress()"
+      [meters]="gameState.meters()"
+      [missionTitle]="mission.title"
+      [hintsUsed]="totalHintsUsed()"
+    />
+
+    @switch (session.phase()) {
+      <!-- ============ BRIEFING ============ -->
+      @case ('briefing') {
+        <section class="briefing ea-panel">
+          <p class="ea-eyebrow">Mission Briefing</p>
+          <h1 class="briefing__title">{{ mission.title }}</h1>
+          <div class="briefing__meta">
+            <span class="ea-chip">{{ mission.difficulty }}</span>
+            <span class="ea-chip">{{ mission.challenges.length }} challenge{{ mission.challenges.length === 1 ? '' : 's' }}</span>
+          </div>
+
+          <ea-mentor-dialogue [blocks]="mission.briefing" />
+
+          <div class="briefing__objectives">
+            <h2>Learning objectives</h2>
+            <ul>
+              @for (objective of mission.learningObjectives; track objective) {
+                <li>{{ objective }}</li>
+              }
+            </ul>
+          </div>
+
+          <div class="briefing__actions">
+            <button type="button" class="ea-btn ea-btn--primary" (click)="startMission()">
+              Start Mission
+            </button>
+            <a class="ea-btn" [routerLink]="['/campaigns', mission.campaignId]">Back to campaign</a>
+          </div>
+        </section>
+      }
+
+      <!-- ============ WORKSPACE ============ -->
+      @case ('challenge') {
+        @if (session.currentRun(); as run) {
+          <div class="workspace">
+            <aside class="workspace__context">
+              <p class="ea-eyebrow">Mission Context</p>
+              <p class="workspace__progress">
+                Challenge {{ session.challengeIndex() + 1 }} / {{ session.totalChallenges() }}
+              </p>
+              @for (artefact of mission.contextArtefacts; track artefact.id) {
+                <ea-code-viewer [artefact]="artefact" />
+              }
+            </aside>
+
+            <section class="workspace__main ea-panel">
+              <ea-challenge-host
+                [challenge]="run.challenge"
+                [evaluation]="attemptEvaluation()"
+                [locked]="attemptEvaluation() !== null || run.completed"
+                (submitted)="onSubmit($event)"
+              />
+
+              @if (attemptEvaluation(); as evaluation) {
+                <div
+                  class="feedback"
+                  [class.feedback--success]="evaluation.correct"
+                  [class.feedback--failure]="!evaluation.correct"
+                  role="status"
+                >
+                  <p class="feedback__result">
+                    {{ evaluation.correct ? '✓ Decision confirmed' : '✗ Not the right call yet' }}
+                  </p>
+                  <p class="feedback__summary">{{ evaluation.summary }}</p>
+                  @if (!evaluation.correct && run.challenge.consequences.length > 0) {
+                    <ul class="feedback__consequences">
+                      @for (consequence of run.challenge.consequences; track consequence.reason) {
+                        <li>⚠ {{ consequence.reason }}</li>
+                      }
+                    </ul>
+                  }
+                  <div class="feedback__actions">
+                    @if (evaluation.correct) {
+                      <button type="button" class="ea-btn ea-btn--primary" (click)="continueAfterCorrect()">
+                        {{ session.challengeIndex() + 1 === session.totalChallenges() ? 'Finish mission' : 'Next challenge' }}
+                      </button>
+                    } @else {
+                      <button type="button" class="ea-btn ea-btn--primary" (click)="tryAgain()">
+                        Try again
+                      </button>
+                      @if (session.canAcceptPartial()) {
+                        <button type="button" class="ea-btn" (click)="acceptPartial()">
+                          Accept partial result &amp; continue
+                        </button>
+                      }
+                    }
+                  </div>
+                </div>
+              }
+            </section>
+
+            <aside class="workspace__support">
+              <div class="support ea-panel">
+                <h2 class="support__heading">Hints</h2>
+                @for (hint of session.revealedHints(); track hint.level) {
+                  <div class="hint">
+                    <span class="hint__level">Level {{ hint.level }} — {{ hint.title }}</span>
+                    <p class="hint__content">{{ hint.content }}</p>
+                  </div>
+                }
+                @if (session.nextHint(); as hint) {
+                  <button type="button" class="ea-btn support__hint-btn" (click)="revealHint()">
+                    Reveal hint {{ hint.level }}
+                    @if (nextHintCost(); as cost) {
+                      <span class="support__cost">−{{ cost }} XP</span>
+                    } @else {
+                      <span class="support__cost">free</span>
+                    }
+                  </button>
+                } @else if (session.revealedHints().length === 0) {
+                  <p class="support__empty">No hints revealed yet.</p>
+                }
+              </div>
+
+              <div class="support ea-panel">
+                <h2 class="support__heading">Contextual help</h2>
+                <ul class="support__links">
+                  @for (link of run.challenge.helpLinks; track link.topicId) {
+                    <li>
+                      <button type="button" class="support__link" (click)="openHelp(link.topicId)">
+                        📖 {{ link.label }}
+                      </button>
+                    </li>
+                  }
+                </ul>
+              </div>
+            </aside>
+          </div>
+        }
+      }
+
+      <!-- ============ RESULTS ============ -->
+      @case ('results') {
+        @if (session.result(); as result) {
+          <section class="results ea-panel" [attr.data-outcome]="result.outcome">
+            @if (campaignCompleted() && !gameState.settings().reducedMotion) {
+              <div class="confetti" aria-hidden="true">
+                @for (piece of confettiPieces; track piece) {
+                  <span class="confetti__piece" [style.--i]="piece"></span>
+                }
+              </div>
+            }
+
+            <p class="ea-eyebrow">Mission Debrief</p>
+            <h1 class="results__title">
+              @switch (result.outcome) {
+                @case ('perfect') { Perfect resolution ★ }
+                @case ('stable') { Stable resolution ✓ }
+                @case ('partial') { Partial resolution — recovery recommended }
+              }
+            </h1>
+            @if (campaignCompleted()) {
+              <p class="results__campaign">🎉 Campaign complete — production is safe in your hands.</p>
+            }
+
+            <dl class="results__score">
+              <div><dt>Challenge XP</dt><dd>{{ result.score.challengeXp }}</dd></div>
+              <div><dt>Perfect bonus</dt><dd>{{ result.score.perfectBonus }}</dd></div>
+              <div><dt>No-hint bonus</dt><dd>{{ result.score.noHintBonus }}</dd></div>
+              <div><dt>Mission bonus</dt><dd>{{ result.missionXpBonus }}</dd></div>
+              <div class="results__total"><dt>Run total</dt><dd>{{ result.totalXp }} XP</dd></div>
+              <div class="results__awarded"><dt>Credited</dt><dd>+{{ result.completion.xpAwarded }} XP</dd></div>
+            </dl>
+            @if (result.completion.xpAwarded < result.totalXp) {
+              <p class="results__note">
+                Replays credit only the improvement over your best run.
+              </p>
+            }
+
+            @if (result.completion.rankAfter.id !== result.completion.rankBefore.id) {
+              <p class="results__rankup">
+                ⬆ Promoted: {{ result.completion.rankBefore.title }} →
+                <strong>{{ result.completion.rankAfter.title }}</strong>
+              </p>
+            }
+
+            @if (result.completion.newBadges.length > 0) {
+              <div class="results__badges">
+                <h2>Badges unlocked</h2>
+                <div class="results__badge-row">
+                  @for (badgeId of result.completion.newBadges; track badgeId) {
+                    @if (badgeFor(badgeId); as badge) {
+                      <ea-badge-chip [badge]="badge" />
+                    }
+                  }
+                </div>
+              </div>
+            }
+
+            <div class="results__lessons">
+              <h2>What this mission taught</h2>
+              <ul>
+                @for (lesson of lessons(); track lesson) {
+                  <li>{{ lesson }}</li>
+                }
+              </ul>
+            </div>
+
+            @if (mission.reflectionPrompt) {
+              <div class="results__reflection">
+                <h2>Reflect</h2>
+                <p>{{ mission.reflectionPrompt }}</p>
+              </div>
+            }
+
+            <div class="results__actions">
+              @if (nextMission(); as next) {
+                <button type="button" class="ea-btn ea-btn--primary" (click)="goToNextMission()">
+                  Next mission: {{ next.title }}
+                </button>
+              }
+              <button type="button" class="ea-btn" (click)="replay()">Replay mission</button>
+              <a class="ea-btn" [routerLink]="['/campaigns', mission.campaignId]">Back to campaign</a>
+            </div>
+          </section>
+        }
+      }
+    }
+  } @else {
+    <section class="ea-panel">
+      <h1>Mission not found</h1>
+      <p>This mission does not exist or failed to load.</p>
+      <a class="ea-btn" routerLink="/campaigns">Back to the hub</a>
+    </section>
+  }
+
+  @if (helpTopic(); as topic) {
+    <ea-help-drawer [topic]="topic" (closed)="helpTopic.set(null)" />
+  }
+</div>

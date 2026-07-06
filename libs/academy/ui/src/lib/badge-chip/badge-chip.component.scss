@@ -1,0 +1,25 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--ea-border);
+  border-radius: 999px;
+  background: var(--ea-panel);
+  font-size: 0.8rem;
+  color: var(--ea-text);
+
+  &--locked {
+    opacity: 0.45;
+    filter: grayscale(0.8);
+  }
+}
+
+.badge__icon {
+  font-size: 0.95rem;
+}
+
+.badge__state {
+  font-size: 0.68rem;
+  color: var(--ea-muted);
+}

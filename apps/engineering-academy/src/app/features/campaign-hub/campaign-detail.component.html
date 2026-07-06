@@ -1,0 +1,56 @@
+<div class="detail ea-page">
+  @if (campaign(); as campaign) {
+    <a class="detail__back" routerLink="/campaigns">← Campaign Hub</a>
+    <header class="detail__header">
+      <p class="ea-eyebrow">{{ campaign.subtitle }}</p>
+      <h1>{{ campaign.title }}</h1>
+      <p class="detail__description">{{ campaign.description }}</p>
+      @if (campaignComplete()) {
+        <p class="detail__complete">✓ Campaign complete — replay any mission for a better score.</p>
+      }
+    </header>
+
+    <ol class="missions">
+      @for (node of nodes(); track node.mission.id) {
+        <li
+          class="mission ea-panel"
+          [class.mission--locked]="!node.unlocked"
+          [class.mission--complete]="node.completed"
+        >
+          <div class="mission__index" aria-hidden="true">
+            {{ node.completed ? '✓' : node.unlocked ? node.index + 1 : '🔒' }}
+          </div>
+          <div class="mission__body">
+            <div class="mission__meta">
+              <span class="ea-chip">{{ node.mission.difficulty }}</span>
+              @if (node.perfect) {
+                <span class="ea-chip mission__perfect">★ perfect</span>
+              }
+              @if (node.bestXp !== null) {
+                <span class="ea-chip">best {{ node.bestXp }} XP</span>
+              }
+            </div>
+            <h2 class="mission__title">{{ node.mission.title }}</h2>
+            <p class="mission__summary">{{ node.mission.summary }}</p>
+          </div>
+          <div class="mission__action">
+            @if (node.unlocked) {
+              <a class="ea-btn" [class.ea-btn--primary]="!node.completed"
+                 [routerLink]="['/missions', node.mission.id]">
+                {{ node.completed ? 'Replay' : 'Start' }}
+              </a>
+            } @else {
+              <span class="mission__locked-note">Complete the previous mission</span>
+            }
+          </div>
+        </li>
+      }
+    </ol>
+  } @else {
+    <div class="ea-panel">
+      <h1>Campaign not found</h1>
+      <p>This campaign does not exist or failed to load.</p>
+      <a class="ea-btn" routerLink="/campaigns">Back to the hub</a>
+    </div>
+  }
+</div>

@@ -1,6 +1,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "baseUrl": ".",
     "outDir": "./dist/out-tsc",
     "strict": true,
     "noImplicitOverride": true,
@@ -18,20 +19,19 @@
     "allowSyntheticDefaultImports": true,
     "target": "ES2022",
     "module": "ES2022",
-    "lib": [
-      "ES2022",
-      "dom"
-    ],
-    "baseUrl": "./"
+    "lib": ["ES2022", "dom"],
+    "paths": {
+      "@academy/challenges": ["libs/academy/challenges/src/index.ts"],
+      "@academy/content": ["libs/academy/content/src/index.ts"],
+      "@academy/content-model": ["libs/academy/content-model/src/index.ts"],
+      "@academy/data-access": ["libs/academy/data-access/src/index.ts"],
+      "@academy/ui": ["libs/academy/ui/src/index.ts"]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": true
-  },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.d.ts"
-  ]
+  }
 }

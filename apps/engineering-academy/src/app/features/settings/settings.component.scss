@@ -1,0 +1,68 @@
+.settings {
+  display: grid;
+  gap: 1.2rem;
+  max-width: 38rem;
+}
+
+.settings h1 {
+  margin: 0.3rem 0;
+  font-size: 1.9rem;
+}
+
+.group h2 {
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ea-muted);
+  margin-bottom: 0.8rem;
+}
+
+.group__note {
+  color: var(--ea-muted);
+  font-size: 0.85rem;
+  margin-bottom: 0.8rem;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--ea-border);
+  cursor: pointer;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.row__label {
+  font-size: 0.92rem;
+
+  em {
+    font-style: normal;
+    font-size: 0.75rem;
+    color: var(--ea-muted);
+  }
+}
+
+input[type='range'] {
+  width: 11rem;
+  accent-color: var(--ea-accent);
+}
+
+input[type='checkbox'] {
+  width: 1.15rem;
+  height: 1.15rem;
+  accent-color: var(--ea-accent);
+}
+
+select {
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid var(--ea-border);
+  background: rgba(7, 10, 20, 0.6);
+  color: var(--ea-text);
+  font: inherit;
+}
