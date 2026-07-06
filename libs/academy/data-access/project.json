@@ -1,0 +1,9 @@
+{
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "name": "academy-data-access",
+  "projectType": "library",
+  "sourceRoot": "libs/academy/data-access/src",
+  "prefix": "ea",
+  "tags": ["type:data-access", "scope:academy"],
+  "targets": {}
+}

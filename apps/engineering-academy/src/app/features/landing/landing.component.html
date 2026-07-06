@@ -1,0 +1,77 @@
+<div class="landing ea-page">
+  <section class="hero">
+    <p class="ea-eyebrow hero__eyebrow">Academy Mission Control</p>
+    <h1 class="hero__title">Engineering<span class="hero__glow">Academy</span></h1>
+    <p class="hero__tagline">Learn. Build. Defend. Lead.</p>
+    <p class="hero__pitch">
+      You are joining the platform team behind a customer-facing Angular application.
+      Complete missions built on the real stack — Angular, TypeScript, Nx, Zod, Java APIs
+      and cloud delivery — and grow from Graduate Engineer to platform defender.
+    </p>
+
+    @if (gameState.hasProfile()) {
+      <div class="hero__actions">
+        <button type="button" class="ea-btn ea-btn--primary" (click)="continueGame()">
+          Continue as {{ gameState.state()?.profile?.name }}
+        </button>
+        <a class="ea-btn" routerLink="/profile">View profile</a>
+      </div>
+    } @else if (!showForm()) {
+      <div class="hero__actions">
+        <button type="button" class="ea-btn ea-btn--primary" (click)="beginEnrolment()">
+          Enrol at the Academy
+        </button>
+        <a class="ea-btn" routerLink="/help">Browse the Help Centre</a>
+      </div>
+    } @else {
+      <form class="enrol ea-panel" (ngSubmit)="createProfile()">
+        <h2 class="enrol__title">Create your engineer profile</h2>
+        <label class="enrol__field">
+          <span>Name</span>
+          <input
+            type="text"
+            name="name"
+            required
+            autocomplete="off"
+            placeholder="e.g. Avery Chen"
+            [ngModel]="name()"
+            (ngModelChange)="name.set($event)"
+          />
+        </label>
+        <label class="enrol__field">
+          <span>Callsign <em>(optional)</em></span>
+          <input
+            type="text"
+            name="callsign"
+            autocomplete="off"
+            placeholder="e.g. NullPointer"
+            [ngModel]="callsign()"
+            (ngModelChange)="callsign.set($event)"
+          />
+        </label>
+        <button type="submit" class="ea-btn ea-btn--primary" [disabled]="!name().trim()">
+          Report for duty
+        </button>
+        <p class="enrol__note">Progress is saved on this device only.</p>
+      </form>
+    }
+  </section>
+
+  <section class="features">
+    <div class="feature ea-panel">
+      <span class="feature__icon" aria-hidden="true">🛰️</span>
+      <h3>Story-driven missions</h3>
+      <p>Briefings, artefacts and consequences — engineering work, not trivia.</p>
+    </div>
+    <div class="feature ea-panel">
+      <span class="feature__icon" aria-hidden="true">📈</span>
+      <h3>RPG progression</h3>
+      <p>Earn XP, climb 12 engineering ranks and unlock skill badges.</p>
+    </div>
+    <div class="feature ea-panel">
+      <span class="feature__icon" aria-hidden="true">🧭</span>
+      <h3>Never stuck</h3>
+      <p>A four-level hint ladder and a searchable Help Centre back every challenge.</p>
+    </div>
+  </section>
+</div>

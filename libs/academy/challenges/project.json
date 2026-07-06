@@ -1,0 +1,9 @@
+{
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "name": "academy-challenges",
+  "projectType": "library",
+  "sourceRoot": "libs/academy/challenges/src",
+  "prefix": "ea",
+  "tags": ["type:feature", "scope:academy", "scope:challenge"],
+  "targets": {}
+}

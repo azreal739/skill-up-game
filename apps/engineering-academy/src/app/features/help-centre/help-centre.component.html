@@ -1,0 +1,52 @@
+<div class="help ea-page">
+  <header class="help__header">
+    <p class="ea-eyebrow">Help Centre</p>
+    <h1>Reference library</h1>
+    <p class="help__sub">Searchable notes on the platform stack. You are never stuck.</p>
+  </header>
+
+  <label class="help__search">
+    <span class="ea-visually-hidden">Search help topics</span>
+    <input
+      type="search"
+      placeholder="Search topics — e.g. zod, narrowing, cache…"
+      [ngModel]="query()"
+      (ngModelChange)="query.set($event)"
+    />
+  </label>
+
+  <div class="help__layout">
+    <ul class="help__list" role="listbox" aria-label="Help topics">
+      @for (topic of results(); track topic.id) {
+        <li>
+          <button
+            type="button"
+            class="help__item"
+            [class.help__item--active]="selected()?.id === topic.id"
+            role="option"
+            [attr.aria-selected]="selected()?.id === topic.id"
+            (click)="select(topic)"
+          >
+            <span class="help__item-title">{{ topic.title }}</span>
+            <span class="help__item-summary">{{ topic.summary }}</span>
+          </button>
+        </li>
+      } @empty {
+        <li class="help__none">No topics match “{{ query() }}”.</li>
+      }
+    </ul>
+
+    @if (selected(); as topic) {
+      <article class="help__detail ea-panel">
+        <h2>{{ topic.title }}</h2>
+        <p class="help__detail-summary">{{ topic.summary }}</p>
+        <p class="help__detail-content">{{ topic.content }}</p>
+        <div class="help__tags">
+          @for (tag of topic.tags; track tag) {
+            <span class="ea-chip">{{ tag }}</span>
+          }
+        </div>
+      </article>
+    }
+  </div>
+</div>

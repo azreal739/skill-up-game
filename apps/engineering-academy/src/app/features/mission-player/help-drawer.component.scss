@@ -1,0 +1,86 @@
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+}
+
+.drawer-shield {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  background: rgba(4, 6, 12, 0.65);
+  cursor: pointer;
+}
+
+.drawer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(26rem, 92vw);
+  padding: 1.4rem;
+  overflow-y: auto;
+  background: var(--ea-panel-solid);
+  border-left: 1px solid var(--ea-border);
+  box-shadow: -12px 0 40px rgba(0, 0, 0, 0.5);
+  animation: drawer-in 0.25s ease;
+}
+
+@keyframes drawer-in {
+  from {
+    transform: translateX(2rem);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.drawer__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+}
+
+.drawer__close {
+  border: none;
+  background: transparent;
+  color: var(--ea-muted);
+  font-size: 1rem;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--ea-text);
+  }
+}
+
+.drawer__title {
+  font-size: 1.25rem;
+  margin-bottom: 0.4rem;
+}
+
+.drawer__summary {
+  color: var(--ea-accent);
+  font-size: 0.9rem;
+  margin-bottom: 0.8rem;
+}
+
+.drawer__content {
+  color: var(--ea-text);
+  line-height: 1.7;
+  margin-bottom: 1rem;
+}
+
+.drawer__tags {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.2rem;
+}
+
+.drawer__more {
+  font-size: 0.85rem;
+}
