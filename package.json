@@ -2,11 +2,11 @@
   "name": "skill-up-game",
   "version": "0.0.0",
   "scripts": {
-    "ng": "ng",
-    "start": "nx serve",
-    "build": "nx build",
-    "watch": "nx build --watch --configuration development",
-    "test": "nx test"
+    "start": "nx serve skill-up-game",
+    "start:academy": "nx serve engineering-academy",
+    "build": "nx run-many -t build",
+    "watch": "nx build skill-up-game --watch --configuration development",
+    "test": "nx run-many -t test -- --watch=false"
   },
   "private": true,
   "dependencies": {
@@ -47,7 +47,7 @@
   },
   "msw": {
     "workerDirectory": [
-      "public"
+      "apps/skill-up-game/public"
     ]
   }
 }

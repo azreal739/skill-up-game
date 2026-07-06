@@ -20,7 +20,7 @@ module.exports = function (config) {
       suppressAll: true, // removes the duplicated traces
     },
     coverageReporter: {
-      dir: require('path').join(__dirname, './coverage/skill-up-game'),
+      dir: require('path').join(__dirname, '../../coverage/apps/skill-up-game'),
       subdir: '.',
       reporters: [{ type: 'html' }, { type: 'text-summary' }],
     },
