@@ -1,16 +1,15 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterModule, RouterOutlet } from '@angular/router';
-import { ModalComponent } from "../components/modal/modal.component";
-import { PageMenuComponent } from "../components/menu/menu.component";
-import { animate, state, style, transition, trigger } from '@angular/animations';
+import { animate, style, transition, trigger } from '@angular/animations';
 import { CommonModule } from '@angular/common';
-import { transform } from 'typescript';
+import { ModalComponent } from './shared/modal/modal.component';
+import { PageMenuComponent } from './shared/menu/menu.component';
 import { ModalService, ModalTemplate } from 'src/services/ModalService';
-import { template } from '@angular-devkit/core';
 
-const hidden = { transform : 'translateX(120%)' };
-const visible = {transform : 'translateX(0)'};
-const timing = '1s ease-in';
+const hidden = { transform: 'translateX(120%)' };
+const visible = { transform: 'translateX(0)' };
+const timing = '0.3s ease-in-out';
+
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -19,30 +18,21 @@ const timing = '1s ease-in';
   styleUrl: './app.component.scss',
   animations: [
     trigger('openClose', [
-      transition(':enter', [
-        style(hidden),
-        animate(timing, style(visible))
-      ]),
-      transition(':leave', [
-        style(visible),
-        animate(timing, style(hidden))
-      ]) 
-    ])
-  ]
+      transition(':enter', [style(hidden), animate(timing, style(visible))]),
+      transition(':leave', [style(visible), animate(timing, style(hidden))]),
+    ]),
+  ],
 })
 export class AppComponent {
   title = 'Up Skill Game';
-  @Output() menuClick = new EventEmitter<void>();
-
-  constructor(private _modalService: ModalService) { 
-
-  }
-  
-  protected signUpModalOpen = false;
   protected menuOpen = false;
-  protected modalTemplate = ModalTemplate.SignUpForm;
 
-  public openSignUpModal() {
-  this._modalService.openModal(ModalTemplate.SignUpForm, { title: 'Sign Up', message: 'Hello! Welcome to the family.', gameData: undefined });
+  constructor(private _modalService: ModalService) {}
+
+  public openSignUpModal(): void {
+    this._modalService.openModal(ModalTemplate.SignUpForm, {
+      title: 'Sign Up',
+      message: 'Hello! Welcome to the family.',
+    });
   }
 }

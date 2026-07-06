@@ -1,22 +1,27 @@
 <div class="container">
-    <h2>🎯 New Year's Resolutions</h2>
-    
-    <div class="input-group">
-      <input [(ngModel)]="newResolution" placeholder="Enter your resolution..." />
-      <button (click)="addResolution()">Add</button>
+  <h2>🎯 New Year's Resolutions</h2>
+
+  <div class="input-group">
+    <input
+      [(ngModel)]="newResolution"
+      placeholder="Enter your resolution..."
+      (keyup.enter)="saveResolution()"
+    />
+    <button (click)="saveResolution()">{{ isEditing ? 'Save' : 'Add' }}</button>
+    @if (isEditing) {
+      <button (click)="cancelEdit()" class="muted">Cancel</button>
+    } @else {
       <button (click)="clearResolutions()" class="delete">Clear</button>
-      <!-- <select >
-        <option value="all">All</option>
-        <option value="completed">Completed</option>
-        <option value="incomplete">Incomplete</option>
-      </select> -->
-    </div>
-    
-    <ul>
-      <li *ngFor="let resolution of resolutions; let i = index">
-        {{ resolution }}
-        <button (click)="deleteResolution(i)" class="delete">❌</button>
-        <!-- <button (click)="editResolution(i)">✏️</button> -->
-        </li>
-    </ul>
+    }
   </div>
+
+  <ul>
+    <li *ngFor="let resolution of resolutions; let i = index" [class.editing]="editingIndex === i">
+      <span class="text">{{ resolution }}</span>
+      <span class="actions">
+        <button (click)="editResolution(i)" aria-label="Edit resolution">✏️</button>
+        <button (click)="deleteResolution(i)" class="delete" aria-label="Delete resolution">❌</button>
+      </span>
+    </li>
+  </ul>
+</div>

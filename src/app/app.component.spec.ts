@@ -1,10 +1,13 @@
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [AppComponent],
+      providers: [provideRouter([]), provideNoopAnimations()],
     }).compileComponents();
   });
 
@@ -14,16 +17,16 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have the 'tic-tac-toe' title`, () => {
+  it(`should have the 'Up Skill Game' title`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('tic-tac-toe');
+    expect(app.title).toEqual('Up Skill Game');
   });
 
-  it('should render title', () => {
+  it('should render the title in the header', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, tic-tac-toe');
+    expect(compiled.querySelector('h1')?.textContent).toContain('Up Skill Game');
   });
 });

@@ -38,7 +38,7 @@
     <div class="divider" role="separator" aria-label="Divider"></div>
   </div>
   <router-outlet />
-  <main-modal (modalClose)="signUpModalOpen = false"></main-modal>
+  <main-modal></main-modal>
   @if (menuOpen) {
     <app-page-menu @openClose (close)="menuOpen = false"></app-page-menu>
   }

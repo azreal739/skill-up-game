@@ -6,27 +6,29 @@
 
 @if (playerName && ready) {
 <div class="game-board">
-  <div class="player-area">
+  <div class="hand-area">
     <h3>{{ playerName }}'s Hand ({{ playerScore }})</h3>
     <button
       class="player-action-button"
       (click)="playerHit()"
-      [disabled]="gameOver"
+      [disabled]="!canAct"
     >
       Hit
     </button>
     <button
       class="player-action-button"
       (click)="stand()"
-      [disabled]="gameOver"
+      [disabled]="!canAct"
     >
       Stand
     </button>
-    <!-- <button
-          class="player-action-button"
-          (click)="doubleDown()"
-          [disabled]="gameOver || playerCards.length > 2"
-        > -->
+    <button
+      class="player-action-button"
+      (click)="doubleDown()"
+      [disabled]="!canDoubleDown"
+    >
+      Double Down
+    </button>
     <div class="cards">
       <div
         *ngFor="let card of playerCards"
@@ -41,26 +43,32 @@
       </div>
     </div>
   </div>
-  <div class="dealer-area">
-    <h3>Dealer's Hand ({{ dealerScore }})</h3>
+  <div class="hand-area">
+    <h3>Dealer's Hand ({{ visibleDealerScore }})</h3>
     <div class="cards">
       <div
-        *ngFor="let card of dealerCards"
+        *ngFor="let card of dealerCards; let i = index"
         class="card"
+        [class.face-down]="holeCardHidden && i === 1"
         [ngClass]="{
           hearts: card.suit === '♥',
           diamonds: card.suit === '♦'
         }"
       >
-        <span class="card-value">{{ card.value }}</span>
-        <span class="card-suit">{{ card.suit }}</span>
+        @if (holeCardHidden && i === 1) {
+          <span class="card-back">🂠</span>
+        } @else {
+          <span class="card-value">{{ card.value }}</span>
+          <span class="card-suit">{{ card.suit }}</span>
+        }
       </div>
     </div>
   </div>
 </div>
 
 } @else {
-<!-- add a player section -->
-<input type="text" [(ngModel)]="playerName" placeholder="Enter your name" />
-<button (click)="startGame()" [disabled]="playerName.length == 0">Start Game</button>
+<div class="player-setup">
+  <input type="text" [(ngModel)]="playerName" placeholder="Enter your name" />
+  <button (click)="startGame()" [disabled]="playerName.length === 0">Start Game</button>
+</div>
 }

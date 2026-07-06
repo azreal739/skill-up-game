@@ -1,0 +1,61 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.shield {
+  position: absolute;
+  inset: 0;
+  background: rgba(black, 0.6);
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.main {
+  position: relative;
+  background: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 540px;
+  max-height: min(80vh, 640px);
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  text-align: center;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.modal-message {
+  margin: 0.5rem 0 1rem;
+  color: #555;
+}
+
+.close {
+  background-color: transparent;
+  border: none;
+  font-size: 1.125rem;
+  line-height: 1;
+  padding: 0.25em;
+  position: absolute;
+  top: 1em;
+  right: 1em;
+
+  &:hover {
+    cursor: pointer;
+    opacity: 0.6;
+  }
+}

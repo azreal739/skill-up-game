@@ -1,0 +1,20 @@
+<h3>Game History</h3>
+<ul>
+  @for (item of items; track item) {
+    <li (click)="openGameHistoryModal(item)">
+      <a>{{ item }}</a>
+    </li>
+  }
+</ul>
+<h4 class="sub-heading">Other Actions</h4>
+<ul>
+  <li (click)="openCitiesModal()">
+    <a>Cities...</a>
+  </li>
+  <li (click)="openWeatherModal()">
+    <a>Weather...</a>
+  </li>
+</ul>
+<button (click)="close.emit()">
+  <span class="visually-hidden">Close Menu</span>
+</button>

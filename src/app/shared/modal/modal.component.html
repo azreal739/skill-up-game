@@ -1,0 +1,31 @@
+<div class="overlay" *ngIf="currentState.isOpen">
+  <button class="shield" (click)="closeModal()" aria-label="Close dialog" tabindex="-1"></button>
+
+  <div class="main" role="dialog" aria-modal="true" cdkTrapFocus [cdkTrapFocusAutoCapture]="true">
+    <div class="modal-header">
+      <h2>{{ currentState.data?.title }}</h2>
+      <button class="close" (click)="closeModal()" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-message">
+      {{ currentState.data?.message }}
+    </div>
+
+    <ng-container [ngSwitch]="currentState.template">
+      <ng-container *ngSwitchCase="ModalTemplate.SignUpForm">
+        <app-sign-up-form (formSubmitted)="closeModal()"></app-sign-up-form>
+      </ng-container>
+      <ng-container *ngSwitchCase="ModalTemplate.GameHistory">
+        <app-game-history-modal></app-game-history-modal>
+      </ng-container>
+      <ng-container *ngSwitchCase="ModalTemplate.Cities">
+        <app-cities></app-cities>
+      </ng-container>
+      <ng-container *ngSwitchCase="ModalTemplate.Weather">
+        <app-weather></app-weather>
+      </ng-container>
+      <ng-container *ngSwitchDefault>
+        <p>No template provided.</p>
+      </ng-container>
+    </ng-container>
+  </div>
+</div>
