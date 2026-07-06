@@ -1,47 +1,58 @@
-# Up Skill Game
+# Skill-Up Workspace
 
-A mini-game hub built with Angular 18 standalone components (Nx workspace).
-It bundles several small games and demos behind a single shell with a shared
-menu, modal system, and per-game history persisted to `localStorage`:
+An Nx monorepo with two Angular 18 apps:
 
-- **Tic Tac Toe** — win and draw detection, game history
-- **Black Jack** — shuffled 52-card deck, hidden dealer hole card, hit / stand /
-  double down, push handling, game history
-- **Chess** — drag & drop board powered by [chess.js](https://github.com/jhlywa/chess.js)
-  with legal-move highlighting, captures & material score, pawn promotion, and
-  saved game state
-- **New Year's Resolutions** — add / edit / delete list persisted locally
-- **Calculator** — small functional-core calculator with explicit `Result` error handling
-- **Cities & Weather demos** — HTTP demos served by an [MSW](https://mswjs.io/) mock API
-  (see `backend/`), opened from the menu
+| App | What it is | Serve |
+| --- | --- | --- |
+| **Engineering Academy** (`apps/engineering-academy`) | A story-driven training game for Angular platform engineers — missions, challenges, XP, ranks, badges, hints and a Help Centre. Spec pack in [`docs/engineering-academy/`](docs/engineering-academy/README.md). | `npm run start:academy` |
+| **Up Skill Game** (`apps/skill-up-game`) | A mini-game hub: tic-tac-toe, blackjack, chess, resolutions, calculator, with per-game history and an MSW mock API. | `npm start` |
 
-## Development server
+## Engineering Academy
+
+*Learn. Build. Defend. Lead.*
+
+The vertical slice ships Campaign 1 — **Foundations of the Platform** — with
+four playable missions (multiple choice, code review and contract-comparison
+challenges), a four-level hint ladder, contextual help, platform meters,
+XP/rank/badge progression and local save state. Content is data-driven and
+validated with Zod; adding missions or campaigns means adding data, not
+engine code.
+
+Key entry points:
+
+- `libs/academy/content-model` — types, Zod schemas, evaluation & scoring engine
+- `libs/academy/content` — campaign packs and help topics (pure data)
+- `libs/academy/data-access` — content loader, save state, mission session, audio
+- `libs/academy/ui`, `libs/academy/challenges` — presentational and challenge components
+- `docs/engineering-academy/IMPLEMENTATION_NOTES.md` — decisions and how to extend
+
+## Development
 
 ```bash
 npm install
-npm start          # nx serve — http://localhost:4200
+npm run start:academy   # Engineering Academy — http://localhost:4200
+npm start               # Up Skill Game — http://localhost:4200
 ```
 
-The MSW service worker (`public/mockServiceWorker.js`) starts before the app
-bootstraps and mocks `/cities` and `/weather`.
-
-## Build
+## Build & test
 
 ```bash
-npm run build      # nx build — output in dist/tic-tac-toe
+npm run build           # nx run-many -t build (both apps)
+npm test                # nx run-many -t test (Karma + Jasmine, both apps)
 ```
 
-## Unit tests
+In containers/CI, point Karma at a Chrome binary and use the no-sandbox
+launcher:
 
 ```bash
-npm test           # nx test (Karma + Jasmine)
+CHROME_BIN=/path/to/chromium npx nx run-many -t test -- --watch=false --browsers=ChromeHeadlessNoSandbox
 ```
 
-## Project layout
+## Workspace layout
 
 ```
-src/app/            application shell, routes, and one folder per feature
-src/app/shared/     menu and modal components shared across features
-src/services/       injectable services (ApiService, LocalStorageService, ModalService)
-backend/            MSW mock API handlers and data
+apps/engineering-academy/   Academy app shell, routes, theme, feature screens
+apps/skill-up-game/         mini-game hub app (+ MSW mock backend in backend/)
+libs/academy/               academy libraries (content-model, content, data-access, ui, challenges)
+docs/engineering-academy/   full specification pack (docs 00–20) + implementation notes
 ```
