@@ -69,7 +69,7 @@ export const cdnMission004Invalidation: MissionDefinition = {
         { level: 4, title: 'Guided solution', content: 'Invalidate /index.html (and other reused-URL files).' },
       ],
       rewards: [{ type: 'xp', amount: 25, label: 'Cache cleared' }],
-      consequences: [{ type: 'severity', delta: -10, reason: 'A targeted invalidation pushed the hotfix out immediately.' }],
+      consequences: [{ type: 'severity', delta: 1, reason: 'While the cache held, every user kept receiving the vulnerable bundle.' }],
       helpLinks: [{ topicId: 'cdn.invalidation', label: 'Cache invalidation' }],
       successFeedback: 'You invalidated exactly the stale entry files — the hotfix is live everywhere, cheaply.',
       failureFeedback: 'Only reused-URL files go stale. Invalidate /index.html, not the fresh hashes and not /*.',

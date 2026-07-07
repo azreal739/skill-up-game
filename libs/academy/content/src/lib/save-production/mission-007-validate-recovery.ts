@@ -69,7 +69,7 @@ export const prodMission007ValidateRecovery: MissionDefinition = {
         { level: 4, title: 'Guided solution', content: 'Confirm real user signals held over a window before declaring recovery.' },
       ],
       rewards: [{ type: 'xp', amount: 25, label: 'Recovery proven' }],
-      consequences: [{ type: 'stability', delta: 10, reason: 'Confirming sustained recovery avoided a premature all-clear and a re-alert.' }],
+      consequences: [{ type: 'stability', delta: -10, reason: 'A premature all-clear let the incident re-open on real users.' }],
       helpLinks: [
         { topicId: 'incident.observability', label: 'Logs, metrics and traces' },
         { topicId: 'deploy.verification', label: 'Deployment verification' },

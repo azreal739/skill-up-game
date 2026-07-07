@@ -69,7 +69,7 @@ export const prodMission002ImpactAssessment: MissionDefinition = {
         { level: 4, title: 'Guided solution', content: 'Classify High and note no data corruption so recovery targets availability.' },
       ],
       rewards: [{ type: 'xp', amount: 15, label: 'Impact sized' }],
-      consequences: [{ type: 'severity', delta: 5, reason: 'A right-sized severity focused the response on the real blast radius.' }],
+      consequences: [{ type: 'severity', delta: 1, reason: 'Misjudging the blast radius under-resourced the response.' }],
       helpLinks: [{ topicId: 'incident.impact-assessment', label: 'Impact assessment and severity' }],
       successFeedback: 'Blast radius sized correctly — high severity, availability-focused. The response is now proportional.',
       failureFeedback: 'Size it on who/how-badly/how-widely: critical feature, 30%, all regions = high. Assess before you act.',

@@ -39,6 +39,7 @@ export const apiMission008BossSaveTheIntegration: MissionDefinition = {
     {
       id: 'api-contract-crisis-008-c1',
       type: 'contract-comparison',
+      multiSelect: true,
       title: 'Stage 1 — Read the Drift',
       difficulty: 'medium',
       tags: ['api', 'java'],
@@ -201,7 +202,7 @@ export const apiMission008BossSaveTheIntegration: MissionDefinition = {
         { level: 4, title: 'Guided solution', content: 'Contract test in CI, ship behind a flag, ramp while monitoring.' },
       ],
       rewards: [{ type: 'xp', amount: 100, label: 'Integration saved' }],
-      consequences: [{ type: 'severity', delta: -15, reason: 'A flagged, monitored rollout kept the release contained and reversible.' }],
+      consequences: [{ type: 'severity', delta: 1, reason: 'An uncontrolled release put the whole user base in the blast radius again.' }],
       helpLinks: [
         { topicId: 'delivery.feature-flags', label: 'Feature flags and gradual rollout' },
         { topicId: 'testing.contract-tests', label: 'Contract test thinking' },

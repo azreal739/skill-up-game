@@ -69,7 +69,7 @@ export const prodMission005RollbackOrHotfix: MissionDefinition = {
         { level: 4, title: 'Guided solution', content: 'Roll back to v2.2 now; test the real fix afterwards.' },
       ],
       rewards: [{ type: 'xp', amount: 50, label: 'Service restored' }],
-      consequences: [{ type: 'severity', delta: -15, reason: 'A one-click rollback restored correct pricing without the risk of a rushed hotfix.' }],
+      consequences: [{ type: 'severity', delta: 1, reason: 'An untested change under pressure invited a second incident.' }],
       helpLinks: [{ topicId: 'incident.rollback-vs-hotfix', label: 'Rollback vs hotfix' }],
       successFeedback: 'Rolled back to known-good v2.2 — pricing is correct again, and the real fix ships calmly as v2.4.',
       failureFeedback: 'A known-good version is one click away. Roll back to restore service; don’t gamble on an untested hotfix.',

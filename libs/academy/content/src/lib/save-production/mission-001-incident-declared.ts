@@ -69,7 +69,7 @@ export const prodMission001IncidentDeclared: MissionDefinition = {
         { level: 4, title: 'Guided solution', content: 'Declare the incident and put one commander in charge.' },
       ],
       rewards: [{ type: 'xp', amount: 10, label: 'Incident declared' }],
-      consequences: [{ type: 'severity', delta: -5, reason: 'Establishing command early stopped the response fragmenting.' }],
+      consequences: [{ type: 'severity', delta: 1, reason: 'An uncoordinated response let three parallel guesses collide mid-incident.' }],
       helpLinks: [{ topicId: 'incident.rollback-vs-hotfix', label: 'Restoring service first' }],
       successFeedback: 'Incident declared, commander in place, one focused channel — the response is coordinated and aimed at recovery.',
       failureFeedback: 'Restore-first needs coordination. Declare the incident and name a commander before chasing theories or blame.',

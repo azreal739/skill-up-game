@@ -69,7 +69,7 @@ export const prodMission006CommunicationUpdate: MissionDefinition = {
         { level: 4, title: 'Guided solution', content: 'Post the user-facing update with a committed next-update time.' },
       ],
       rewards: [{ type: 'xp', amount: 25, label: 'Stakeholders informed' }],
-      consequences: [{ type: 'team-confidence', delta: 10, reason: 'A clear, timely update stopped speculation and duplicate escalations.' }],
+      consequences: [{ type: 'team-confidence', delta: -10, reason: 'Silence left support and leadership assuming the worst.' }],
       helpLinks: [{ topicId: 'incident.communication', label: 'Incident communication' }],
       successFeedback: 'A clear, user-focused update with a next-update time — support can respond and leadership is informed.',
       failureFeedback: 'Speak to the audience: impact, action, next-update time, in user terms — no internals, no blame, and never silence.',

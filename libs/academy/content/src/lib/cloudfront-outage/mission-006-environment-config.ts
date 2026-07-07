@@ -70,7 +70,7 @@ export const cdnMission006EnvironmentConfig: MissionDefinition = {
         { level: 4, title: 'Guided solution', content: 'Externalise API_URL into a runtime config.json resolved per environment.' },
       ],
       rewards: [{ type: 'xp', amount: 25, label: 'Config externalised' }],
-      consequences: [{ type: 'severity', delta: -10, reason: 'A baked-in staging URL sent production traffic to the wrong backend.' }],
+      consequences: [{ type: 'severity', delta: 1, reason: 'A baked-in staging URL sent production traffic to the wrong backend.' }],
       helpLinks: [{ topicId: 'deploy.environment-config', label: 'Environment configuration' }],
       successFeedback: 'One artifact, environment resolved at runtime — production talks to production, staging to staging.',
       failureFeedback: 'If you promote one artifact, decide environment values at runtime, not baked in for staging.',
