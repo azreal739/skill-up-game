@@ -13,6 +13,8 @@ import {
   componentForgePack,
   typescriptTrialsPack,
   zodGatePack,
+  nxMonorepoMazePack,
+  apiContractCrisisPack,
   helpTopics,
 } from '@academy/content';
 import { z } from 'zod';
@@ -34,6 +36,8 @@ export class ContentService {
       componentForgePack,
       typescriptTrialsPack,
       zodGatePack,
+      nxMonorepoMazePack,
+      apiContractCrisisPack,
     ].map((pack) => this.validatePack(pack));
     this.topics = helpTopics.map((topic) => this.validateTopic(topic));
 
