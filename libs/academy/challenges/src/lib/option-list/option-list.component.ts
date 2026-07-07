@@ -92,7 +92,20 @@ export class OptionListComponent {
     return outcome.wasSelected || outcome.isCorrect ? outcome.feedback : false;
   }
 
+  /**
+   * Labels that read as code render in the mono style: multi-line snippets,
+   * object literals, backticked spans, call expressions, arrows, long flags,
+   * or labels that open with a CLI command.
+   */
   isCode(label: string): boolean {
-    return label.includes('\n') || label.includes('{');
+    return (
+      label.includes('\n') ||
+      label.includes('{') ||
+      label.includes('=>') ||
+      /`[^`]+`/.test(label) ||
+      /\w+\([^)]*\)/.test(label) ||
+      /\s--\w+/.test(label) ||
+      /^(nx|git|npm|npx|aws|curl)\s/.test(label)
+    );
   }
 }

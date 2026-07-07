@@ -40,7 +40,72 @@
   font-family: var(--ea-mono);
 }
 
+// When there is no language chip, the Expand button owns the right edge.
+.artefact__expand {
+  margin-left: auto;
+  flex-shrink: 0;
+  border: 1px solid var(--ea-border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ea-accent);
+  font-family: var(--ea-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  padding: 0.15rem 0.5rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--ea-accent);
+    background: rgba(34, 211, 238, 0.08);
+  }
+}
+
+.artefact__lang + .artefact__expand {
+  margin-left: 0;
+}
+
+.artefact__scroll {
+  position: relative;
+
+  &--collapsed .artefact__code {
+    max-height: 16rem;
+    overflow-y: hidden;
+    // Fade the cut-off so it reads as "there is more", not a broken layout.
+    mask-image: linear-gradient(to bottom, black 62%, rgba(0, 0, 0, 0.25) 88%, transparent 100%);
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      black 62%,
+      rgba(0, 0, 0, 0.25) 88%,
+      transparent 100%
+    );
+  }
+}
+
+.artefact__code {
+  display: flex;
+  align-items: stretch;
+}
+
+.artefact__gutter {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 0.8rem 0.6rem 0.8rem 0.8rem;
+  border-right: 1px solid var(--ea-border);
+  color: var(--ea-muted);
+  opacity: 0.55;
+  font-family: var(--ea-mono);
+  font-size: 0.82rem;
+  line-height: 1.55;
+  text-align: right;
+  user-select: none;
+}
+
 .artefact__body {
+  flex: 1;
+  min-width: 0;
   margin: 0;
   padding: 0.8rem 1rem;
   overflow-x: auto;
@@ -54,6 +119,25 @@
   }
 }
 
+.artefact__more {
+  display: block;
+  width: 100%;
+  border: 0;
+  border-top: 1px dashed var(--ea-border);
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--ea-accent);
+  font-family: var(--ea-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  padding: 0.45rem;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background: rgba(34, 211, 238, 0.08);
+  }
+}
+
 .artefact[data-type='log'] .artefact__body,
 .artefact[data-type='api-response'] .artefact__body {
   color: #9ae6b4;
@@ -61,4 +145,122 @@
 
 .artefact[data-type='log'] .artefact__kind {
   color: var(--ea-warn);
+}
+
+// Syntax tokens (see syntax-highlight.ts). Muted, terminal-ish palette that
+// keeps body text readable as the base colour. Spans arrive via innerHTML, so
+// they are outside Angular's emulated encapsulation — hence :host ::ng-deep.
+:host ::ng-deep .artefact__body {
+  .tok-comment {
+    color: #64748b;
+    font-style: italic;
+  }
+
+  .tok-string {
+    color: #86efac;
+  }
+
+  .tok-keyword {
+    color: #93c5fd;
+  }
+
+  .tok-number {
+    color: #fbbf24;
+  }
+
+  .tok-add {
+    color: #34d399;
+  }
+
+  .tok-del {
+    color: #f87171;
+  }
+}
+
+// ---- Expanded reader modal ----
+
+.artefact-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: rgba(4, 6, 14, 0.78);
+  backdrop-filter: blur(4px);
+  animation: artefact-modal-in 0.16s ease-out;
+}
+
+.artefact-modal__panel {
+  display: flex;
+  flex-direction: column;
+  width: min(64rem, 100%);
+  max-height: calc(100vh - 4rem);
+  border: 1px solid var(--ea-border);
+  border-radius: 12px;
+  background: var(--ea-panel-solid);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
+  outline: none;
+}
+
+.artefact-modal__header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.9rem;
+  border-bottom: 1px solid var(--ea-border);
+  font-size: 0.8rem;
+
+  // The close button owns the right edge in the modal.
+  .artefact__lang {
+    margin-left: 0;
+  }
+}
+
+.artefact-modal__title {
+  color: var(--ea-text);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.artefact-modal__close {
+  margin-left: auto;
+  flex-shrink: 0;
+  border: 1px solid var(--ea-border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ea-muted);
+  font-size: 0.85rem;
+  line-height: 1;
+  padding: 0.3rem 0.55rem;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--ea-text);
+    border-color: var(--ea-accent);
+  }
+}
+
+.artefact-modal__code {
+  overflow-y: auto;
+
+  .artefact__body {
+    font-size: 0.9rem;
+  }
+}
+
+@keyframes artefact-modal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }

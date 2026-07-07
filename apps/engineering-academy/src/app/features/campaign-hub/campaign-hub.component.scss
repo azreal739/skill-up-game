@@ -53,13 +53,24 @@
 
 .campaign__header {
   display: flex;
-  align-items: center;
+  // Top-align so a wrapped title keeps the status chip pinned to the first
+  // line instead of floating mid-block.
+  align-items: flex-start;
   justify-content: space-between;
   gap: 0.6rem;
 }
 
 .campaign__title {
+  min-width: 0;
+  overflow-wrap: break-word;
   font-size: 1.15rem;
+  line-height: 1.3;
+}
+
+.campaign__header .ea-chip {
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+  white-space: nowrap;
 }
 
 .campaign__done {
