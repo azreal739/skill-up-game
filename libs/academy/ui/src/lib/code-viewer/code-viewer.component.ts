@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ArtefactDefinition } from '@academy/content-model';
 
 /**
@@ -10,18 +10,20 @@ import { ArtefactDefinition } from '@academy/content-model';
 @Component({
   selector: 'ea-code-viewer',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <figure class="artefact" [attr.data-type]="artefact.type">
       <figcaption class="artefact__header">
         <span class="artefact__kind">{{ kindLabel }}</span>
         <span class="artefact__title">{{ artefact.title }}</span>
-        <span class="artefact__lang" *ngIf="artefact.language">{{ artefact.language }}</span>
+        @if (artefact.language) {
+          <span class="artefact__lang">{{ artefact.language }}</span>
+        }
       </figcaption>
       <pre class="artefact__body"><code>{{ artefact.content }}</code></pre>
     </figure>
-  `,
+    `,
   styleUrls: ['./code-viewer.component.scss'],
 })
 export class CodeViewerComponent {

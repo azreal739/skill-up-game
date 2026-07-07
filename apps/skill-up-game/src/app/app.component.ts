@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { animate, style, transition, trigger } from '@angular/animations';
-import { CommonModule } from '@angular/common';
+
 import { ModalComponent } from './shared/modal/modal.component';
 import { PageMenuComponent } from './shared/menu/menu.component';
 import { ModalService, ModalTemplate } from 'src/services/ModalService';
@@ -13,7 +13,7 @@ const timing = '0.3s ease-in-out';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterModule, ModalComponent, PageMenuComponent, CommonModule],
+  imports: [RouterOutlet, RouterModule, ModalComponent, PageMenuComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   animations: [

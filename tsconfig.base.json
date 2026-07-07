@@ -19,13 +19,26 @@
     "allowSyntheticDefaultImports": true,
     "target": "ES2022",
     "module": "ES2022",
-    "lib": ["ES2022", "dom"],
+    "lib": [
+      "ES2022",
+      "dom"
+    ],
     "paths": {
-      "@academy/challenges": ["libs/academy/challenges/src/index.ts"],
-      "@academy/content": ["libs/academy/content/src/index.ts"],
-      "@academy/content-model": ["libs/academy/content-model/src/index.ts"],
-      "@academy/data-access": ["libs/academy/data-access/src/index.ts"],
-      "@academy/ui": ["libs/academy/ui/src/index.ts"]
+      "@academy/challenges": [
+        "libs/academy/challenges/src/index.ts"
+      ],
+      "@academy/content": [
+        "libs/academy/content/src/index.ts"
+      ],
+      "@academy/content-model": [
+        "libs/academy/content-model/src/index.ts"
+      ],
+      "@academy/data-access": [
+        "libs/academy/data-access/src/index.ts"
+      ],
+      "@academy/ui": [
+        "libs/academy/ui/src/index.ts"
+      ]
     }
   },
   "angularCompilerOptions": {

@@ -6,7 +6,7 @@
       [(ngModel)]="newResolution"
       placeholder="Enter your resolution..."
       (keyup.enter)="saveResolution()"
-    />
+      />
     <button (click)="saveResolution()">{{ isEditing ? 'Save' : 'Add' }}</button>
     @if (isEditing) {
       <button (click)="cancelEdit()" class="muted">Cancel</button>
@@ -16,12 +16,14 @@
   </div>
 
   <ul>
-    <li *ngFor="let resolution of resolutions; let i = index" [class.editing]="editingIndex === i">
-      <span class="text">{{ resolution }}</span>
-      <span class="actions">
-        <button (click)="editResolution(i)" aria-label="Edit resolution">✏️</button>
-        <button (click)="deleteResolution(i)" class="delete" aria-label="Delete resolution">❌</button>
-      </span>
-    </li>
+    @for (resolution of resolutions; track resolution; let i = $index) {
+      <li [class.editing]="editingIndex === i">
+        <span class="text">{{ resolution }}</span>
+        <span class="actions">
+          <button (click)="editResolution(i)" aria-label="Edit resolution">✏️</button>
+          <button (click)="deleteResolution(i)" class="delete" aria-label="Delete resolution">❌</button>
+        </span>
+      </li>
+    }
   </ul>
 </div>

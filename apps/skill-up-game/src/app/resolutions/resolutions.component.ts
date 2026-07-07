@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { LocalStorageKey, LocalStorageService } from 'src/services/LocalStorageService';
 
 /** Key used by an earlier version of this component; migrated on load. */
@@ -11,7 +11,7 @@ const LEGACY_STORAGE_KEY = 'resolutions';
   selector: 'app-resolutions',
   templateUrl: './resolutions.component.html',
   styleUrls: ['./resolutions.component.scss'],
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
 })
 export class ResolutionsComponent implements OnInit {
   resolutions: string[] = [];

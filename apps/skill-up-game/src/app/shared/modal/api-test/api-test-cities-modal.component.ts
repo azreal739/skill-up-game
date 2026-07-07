@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -7,18 +7,22 @@ import { ApiService } from 'src/services/ApiService';
 @Component({
   selector: 'app-cities',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule],
   template: `
     <ul>
-      <li *ngFor="let city of cities">{{ city }}</li>
+      @for (city of cities; track city) {
+        <li>{{ city }}</li>
+      }
     </ul>
-
+    
     <div class="add-city">
       <input [(ngModel)]="newCity" placeholder="Add a city" (keyup.enter)="onAddCity()" />
       <button (click)="onAddCity()" [disabled]="!newCity.trim()">Add City</button>
     </div>
-    <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
-  `,
+    @if (errorMessage) {
+      <p class="error">{{ errorMessage }}</p>
+    }
+    `,
   styles: [
     `
       :host {

@@ -1,5 +1,5 @@
 import { Component, HostListener, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { A11yModule } from '@angular/cdk/a11y';
 import { ModalService, ModalState, ModalTemplate } from 'src/services/ModalService';
 import { SignUpFormComponent } from './sign-up-form/sign-up-form.component';
@@ -10,7 +10,7 @@ import { WeatherComponent } from './api-test/api-test-weather-modal.component';
 @Component({
   selector: 'main-modal',
   standalone: true,
-  imports: [CommonModule, A11yModule, SignUpFormComponent, GameHistoryModalComponent, CitiesComponent, WeatherComponent],
+  imports: [A11yModule, SignUpFormComponent, GameHistoryModalComponent, CitiesComponent, WeatherComponent],
   templateUrl: './modal.component.html',
   styleUrl: './modal.component.scss'
 })

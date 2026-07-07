@@ -17,15 +17,19 @@
     }
   </div>
   <section class="board">
-    <div class="row" *ngFor="let rowIndex of [0, 1, 2]">
-      <button *ngFor="let colIndex of [0, 1, 2]" class="square" (click)="handleClick(rowIndex * 3 + colIndex)"
+    @for (rowIndex of [0, 1, 2]; track rowIndex) {
+      <div class="row">
+        @for (colIndex of [0, 1, 2]; track colIndex) {
+          <button class="square" (click)="handleClick(rowIndex * 3 + colIndex)"
         [disabled]="!!board[rowIndex * 3 + colIndex] || gameOver" [ngStyle]="{
                 'color': board[rowIndex * 3 + colIndex] === 'X' ? '#0000FF' :
                          (board[rowIndex * 3 + colIndex] === 'O' ? '#FF0000' : '#333')
               }">
-        {{ board[rowIndex * 3 + colIndex] }}
-      </button>
-    </div>
+            {{ board[rowIndex * 3 + colIndex] }}
+          </button>
+        }
+      </div>
+    }
   </section>
   <button (click)="resetGame()" class="reset-button">Reset</button>
 </div>

@@ -1,18 +1,18 @@
 {
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "name": "skill-up-game",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-  "generators": {
-    "@schematics/angular:component": {
-      "style": "scss"
-    }
-  },
   "sourceRoot": "apps/skill-up-game/src",
   "prefix": "app",
   "tags": [
     "type:app",
     "scope:games"
   ],
+  "generators": {
+    "@schematics/angular:component": {
+      "style": "scss"
+    }
+  },
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:application",
@@ -71,7 +71,8 @@
           "buildTarget": "skill-up-game:build:development"
         }
       },
-      "defaultConfiguration": "development"
+      "defaultConfiguration": "development",
+      "continuous": true
     },
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n"
