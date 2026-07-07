@@ -373,3 +373,239 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ---- Campaign tracker (left column) ---- */
+
+.tracker {
+  margin-bottom: 1rem;
+  padding: 0.9rem 1rem;
+}
+
+.tracker__campaign {
+  display: block;
+  margin-bottom: 0.6rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ea-accent);
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    text-decoration: underline;
+  }
+}
+
+.tracker__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.3rem;
+}
+
+.tracker__item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  color: var(--ea-muted);
+
+  &[data-state='done'] .tracker__marker {
+    color: var(--ea-success);
+  }
+
+  &[data-state='current'] {
+    color: var(--ea-text);
+
+    .tracker__marker {
+      color: var(--ea-accent);
+    }
+
+    .tracker__title {
+      font-weight: 600;
+    }
+  }
+
+  &[data-state='locked'] {
+    opacity: 0.55;
+  }
+}
+
+.tracker__marker {
+  flex-shrink: 0;
+  width: 1.2rem;
+  text-align: center;
+  font-family: var(--ea-mono);
+  font-size: 0.7rem;
+}
+
+.tracker__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---- Breadcrumb above the challenge ---- */
+
+.workspace__breadcrumb {
+  margin: 0 0 0.8rem;
+  font-family: var(--ea-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ea-muted);
+}
+
+/* ---- Senior Dev hint character ---- */
+
+.senior-dev__header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.7rem;
+
+  .support__heading {
+    margin-bottom: 0.1rem;
+  }
+}
+
+.senior-dev__avatar {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.senior-dev__status {
+  margin: 0;
+  font-size: 0.72rem;
+  font-style: italic;
+  color: var(--ea-muted);
+}
+
+.senior-dev[data-stress='3'] .senior-dev__avatar,
+.senior-dev[data-stress='4'] .senior-dev__avatar {
+  animation: senior-dev-jitter 2.4s ease-in-out infinite;
+}
+
+.hint__framing {
+  margin: 0 0 0.35rem;
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--ea-text);
+  opacity: 0.85;
+}
+
+@keyframes senior-dev-jitter {
+  0%,
+  92%,
+  100% {
+    transform: none;
+  }
+
+  94% {
+    transform: translateX(-1px) rotate(-2deg);
+  }
+
+  97% {
+    transform: translateX(1px) rotate(2deg);
+  }
+}
+
+/* ---- Mission brief overlay ---- */
+
+.hud-brief-btn {
+  font-size: 0.78rem;
+  padding: 0.35rem 0.8rem;
+}
+
+.brief-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+}
+
+.brief-shield {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  background: rgba(4, 6, 12, 0.65);
+  cursor: pointer;
+}
+
+.brief {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(30rem, 92vw);
+  padding: 1.4rem;
+  overflow-y: auto;
+  background: var(--ea-panel-solid);
+  border-left: 1px solid var(--ea-border);
+  box-shadow: -12px 0 40px rgba(0, 0, 0, 0.5);
+  animation: drawer-in 0.25s ease;
+}
+
+.brief__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+}
+
+.brief__close {
+  border: none;
+  background: transparent;
+  color: var(--ea-muted);
+  font-size: 1rem;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--ea-text);
+  }
+}
+
+.brief__title {
+  font-size: 1.25rem;
+  margin-bottom: 0.3rem;
+}
+
+.brief__summary {
+  color: var(--ea-accent);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.brief__objectives {
+  margin-top: 1.2rem;
+
+  h3 {
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ea-muted);
+    margin-bottom: 0.5rem;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 1.2rem;
+    display: grid;
+    gap: 0.35rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+}
+
+@keyframes drawer-in {
+  from {
+    transform: translateX(2rem);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}

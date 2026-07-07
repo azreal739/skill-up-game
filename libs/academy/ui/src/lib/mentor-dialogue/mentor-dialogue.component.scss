@@ -1,11 +1,23 @@
 .dialogue {
   display: grid;
   gap: 0.9rem;
+
+  &--live {
+    cursor: pointer;
+  }
 }
 
 .dialogue__block {
   border-left: 3px solid var(--ea-accent);
   padding: 0.35rem 0 0.35rem 1rem;
+
+  &--settled {
+    animation: dialogue-arrive 0.25s ease-out;
+  }
+
+  &--active {
+    border-left-color: var(--ea-accent-2);
+  }
 }
 
 .dialogue__speaker {
@@ -18,8 +30,69 @@
   color: var(--ea-accent);
 }
 
+.dialogue__signal {
+  margin-left: 0.6rem;
+  color: var(--ea-accent-2);
+  animation: dialogue-blink 1.1s steps(2) infinite;
+}
+
 .dialogue__text {
   margin: 0;
   color: var(--ea-text);
   line-height: 1.65;
+  // Reserve line height while the incoming shimmer shows so the layout
+  // does not jump when typing starts.
+  min-height: 1.65em;
+}
+
+.dialogue__incoming {
+  color: var(--ea-muted);
+  font-family: var(--ea-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  animation: dialogue-blink 0.9s steps(2) infinite;
+}
+
+.dialogue__cursor {
+  display: inline-block;
+  margin-left: 0.1em;
+  color: var(--ea-accent);
+  animation: dialogue-blink 0.8s steps(2) infinite;
+}
+
+.dialogue__skip {
+  justify-self: start;
+  border: 1px solid var(--ea-border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ea-muted);
+  font-family: var(--ea-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--ea-text);
+    border-color: var(--ea-accent);
+  }
+}
+
+@keyframes dialogue-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes dialogue-blink {
+  50% {
+    opacity: 0;
+  }
 }

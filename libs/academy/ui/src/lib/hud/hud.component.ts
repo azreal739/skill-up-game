@@ -50,6 +50,10 @@ import { MeterComponent } from '../meter/meter.component';
           <span class="hud__slot-value">{{ hintsUsed }}</span>
         </div>
       }
+
+      <div class="hud__actions">
+        <ng-content select="[hud-actions]" />
+      </div>
     </div>
     `,
   styleUrls: ['./hud.component.scss'],
