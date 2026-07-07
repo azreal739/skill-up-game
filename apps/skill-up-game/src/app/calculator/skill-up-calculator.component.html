@@ -10,7 +10,9 @@
     <label class="lbl">
       <span>operator</span>
       <select class="sel" [value]="op()" (change)="onOpChange($event)">
-        <option *ngFor="let o of operators" [value]="o">{{ o }}</option>
+        @for (o of operators; track o) {
+          <option [value]="o">{{ o }}</option>
+        }
       </select>
     </label>
 
@@ -24,11 +26,16 @@
     <button class="btn btn--primary" (click)="compute()">Compute</button>
   </div>
 
-  <div *ngIf="result() as r" class="mt-2">
-    <p class="mono">
-      <span class="font-semibold">result:</span>
-      <ng-container *ngIf="r.ok; else errTpl">{{ r.value | number:'1.0-6' }}</ng-container>
-      <ng-template #errTpl><span class="errText">{{ r.error }}</span></ng-template>
-    </p>
-  </div>
+  @if (result(); as r) {
+    <div class="mt-2">
+      <p class="mono">
+        <span class="font-semibold">result:</span>
+        @if (r.ok) {
+          {{ r.value | number:'1.0-6' }}
+        } @else {
+          <span class="errText">{{ r.error }}</span>
+        }
+      </p>
+    </div>
+  }
 </div>

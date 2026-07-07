@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MeterHealth } from '@academy/content-model';
 
 /**
@@ -9,7 +9,7 @@ import { MeterHealth } from '@academy/content-model';
 @Component({
   selector: 'ea-meter',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="meter" [attr.data-health]="health">

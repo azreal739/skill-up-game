@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import {
   PlatformMeters,
   Rank,
@@ -16,7 +16,7 @@ import { MeterComponent } from '../meter/meter.component';
 @Component({
   selector: 'ea-hud',
   standalone: true,
-  imports: [CommonModule, MeterComponent],
+  imports: [MeterComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="hud">
@@ -24,30 +24,34 @@ import { MeterComponent } from '../meter/meter.component';
         <span class="hud__rank">{{ rank.title }}</span>
         <span class="hud__xp">{{ xp }} XP</span>
         <div class="hud__xpbar" role="progressbar" aria-label="Progress to next rank"
-             [attr.aria-valuenow]="xpProgressPercent" aria-valuemin="0" aria-valuemax="100">
+          [attr.aria-valuenow]="xpProgressPercent" aria-valuemin="0" aria-valuemax="100">
           <div class="hud__xpfill" [style.width.%]="xpProgressPercent"></div>
         </div>
       </div>
-
+    
       <ea-meter label="Stability" [value]="meters.stability" [health]="stabilityHealth" />
       <ea-meter label="Tech Debt" [value]="meters.technicalDebt" [health]="debtHealth" />
-
+    
       <div class="hud__severity" [attr.data-critical]="isCriticalSeverity">
         <span class="hud__severity-label">Severity</span>
         <span class="hud__severity-value">{{ severity }}</span>
       </div>
-
-      <div class="hud__slot" *ngIf="missionTitle">
-        <span class="hud__slot-label">Mission</span>
-        <span class="hud__slot-value">{{ missionTitle }}</span>
-      </div>
-
-      <div class="hud__slot" *ngIf="hintsUsed !== null">
-        <span class="hud__slot-label">Hints</span>
-        <span class="hud__slot-value">{{ hintsUsed }}</span>
-      </div>
+    
+      @if (missionTitle) {
+        <div class="hud__slot">
+          <span class="hud__slot-label">Mission</span>
+          <span class="hud__slot-value">{{ missionTitle }}</span>
+        </div>
+      }
+    
+      @if (hintsUsed !== null) {
+        <div class="hud__slot">
+          <span class="hud__slot-label">Hints</span>
+          <span class="hud__slot-value">{{ hintsUsed }}</span>
+        </div>
+      }
     </div>
-  `,
+    `,
   styleUrls: ['./hud.component.scss'],
 })
 export class HudComponent {

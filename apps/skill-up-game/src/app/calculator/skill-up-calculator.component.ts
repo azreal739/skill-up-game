@@ -1,12 +1,12 @@
 import { Component, signal } from '@angular/core';
-import { NgIf, NgFor, DecimalPipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { CalculatorService } from './calculator.service';
 import { Operator } from './types';
 
 @Component({
   selector: 'skill-up-calculator',
   standalone: true,
-  imports: [NgIf, NgFor, DecimalPipe],
+  imports: [DecimalPipe],
   templateUrl: 'skill-up-calculator.component.html',
   styleUrl: 'skill-up-calculator.component.scss'
 })

@@ -1,21 +1,25 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit } from '@angular/core';
 import { ApiService, WeatherForecast } from 'src/services/ApiService';
 
 @Component({
   selector: 'app-weather',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   template: `
     <ul>
-      <li *ngFor="let forecast of forecasts">
-        <span class="date">{{ forecast.date }}</span>
-        <span class="temp">{{ forecast.temperatureC }}°C</span>
-        <span class="summary">{{ forecast.summary }}</span>
-      </li>
+      @for (forecast of forecasts; track forecast) {
+        <li>
+          <span class="date">{{ forecast.date }}</span>
+          <span class="temp">{{ forecast.temperatureC }}°C</span>
+          <span class="summary">{{ forecast.summary }}</span>
+        </li>
+      }
     </ul>
-    <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
-  `,
+    @if (errorMessage) {
+      <p class="error">{{ errorMessage }}</p>
+    }
+    `,
   styles: [
     `
       :host {
