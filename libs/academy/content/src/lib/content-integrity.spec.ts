@@ -1,5 +1,7 @@
 import { badgeById, campaignPackSchema, helpTopicSchema } from '@academy/content-model';
 import { foundationsPack } from './foundations/campaign';
+import { componentForgePack } from './component-forge/campaign';
+import { typescriptTrialsPack } from './typescript-trials/campaign';
 import { zodGatePack } from './zod-gate/campaign';
 import { helpTopics } from './help-topics';
 
@@ -8,7 +10,7 @@ import { helpTopics } from './help-topics';
  * validate against the schema and all cross-references must resolve.
  */
 describe('content integrity', () => {
-  const packs = [foundationsPack, zodGatePack];
+  const packs = [foundationsPack, componentForgePack, typescriptTrialsPack, zodGatePack];
 
   it('validates every campaign pack against the Zod schema', () => {
     for (const pack of packs) {
@@ -97,10 +99,30 @@ describe('content integrity', () => {
     expect(foundationsPack.missions.slice(0, -1).every((m) => m.difficulty !== 'boss')).toBeTrue();
   });
 
-  it('ships Zod Gate: 8 missions ending in the boss, gated behind Foundations', () => {
-    expect(zodGatePack.missions.length).toBe(8);
-    expect(zodGatePack.campaign.requiredCampaignId).toBe('foundations');
-    expect(zodGatePack.missions[zodGatePack.missions.length - 1].difficulty).toBe('boss');
+  it('every non-boss mission list ends in exactly one boss', () => {
+    for (const pack of packs) {
+      const missions = pack.missions;
+      expect(missions[missions.length - 1].difficulty)
+        .withContext(`${pack.campaign.id} should end in a boss`)
+        .toBe('boss');
+      expect(missions.slice(0, -1).every((m) => m.difficulty !== 'boss'))
+        .withContext(`${pack.campaign.id} should have only one boss`)
+        .toBeTrue();
+    }
+  });
+
+  it('chains campaigns into a linear progression', () => {
+    const chain: Record<string, string | undefined> = {
+      foundations: undefined,
+      'component-forge': 'foundations',
+      'typescript-trials': 'component-forge',
+      'zod-gate': 'typescript-trials',
+    };
+    for (const pack of packs) {
+      expect(pack.campaign.requiredCampaignId)
+        .withContext(pack.campaign.id)
+        .toBe(chain[pack.campaign.id]);
+    }
   });
 
   it('points every requiredCampaignId at a campaign that exists', () => {
