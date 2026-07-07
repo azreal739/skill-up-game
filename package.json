@@ -32,7 +32,7 @@
     "@angular-devkit/schematics": "^18.2.8",
     "@angular/cli": "^18.2.8",
     "@angular/compiler-cli": "^18.2.0",
-    "@eslint/js": "^10.0.1",
+    "@eslint/js": "^9.39.0",
     "@nrwl/angular": "^19.8.4",
     "@nx/angular": "20.4.4",
     "@nx/eslint": "^20.4.4",
