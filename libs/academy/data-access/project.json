@@ -4,6 +4,13 @@
   "projectType": "library",
   "sourceRoot": "libs/academy/data-access/src",
   "prefix": "ea",
-  "tags": ["type:data-access", "scope:academy"],
-  "targets": {}
+  "tags": [
+    "type:data-access",
+    "scope:academy"
+  ],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
 }

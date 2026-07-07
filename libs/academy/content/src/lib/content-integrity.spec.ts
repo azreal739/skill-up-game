@@ -88,4 +88,11 @@ describe('content integrity', () => {
     const ids = helpTopics.map((topic) => topic.id);
     expect(new Set(ids).size).toBe(ids.length);
   });
+
+  it('ships Campaign 1 complete: 10 missions ending in the boss', () => {
+    expect(foundationsPack.missions.length).toBe(10);
+    const last = foundationsPack.missions[foundationsPack.missions.length - 1];
+    expect(last.difficulty).toBe('boss');
+    expect(foundationsPack.missions.slice(0, -1).every((m) => m.difficulty !== 'boss')).toBeTrue();
+  });
 });
