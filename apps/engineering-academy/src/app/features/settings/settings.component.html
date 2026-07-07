@@ -86,6 +86,26 @@
   </section>
 
   <section class="group ea-panel">
+    <h2>Transfer</h2>
+    <p class="group__note">
+      Export your save to back it up or move to another device — or hand it to a facilitator.
+      Importing replaces your current progress.
+    </p>
+    <div class="transfer">
+      <button type="button" class="ea-btn" (click)="exportProgress()">Export progress</button>
+      <label class="ea-btn transfer__import">
+        Import progress
+        <input type="file" accept="application/json,.json" (change)="onImportFile($event)" />
+      </label>
+    </div>
+    @if (transferStatus(); as status) {
+      <p class="transfer__status" [class.transfer__status--error]="!status.ok" role="status">
+        {{ status.message }}
+      </p>
+    }
+  </section>
+
+  <section class="group ea-panel">
     <h2>Progress</h2>
     <p class="group__note">Wipes profile, progress, badges and settings stored on this device.</p>
     <button type="button" class="ea-btn ea-btn--danger" (click)="resetProgress()">

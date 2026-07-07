@@ -101,6 +101,47 @@ describe('GameStateService', () => {
     expect(localStorage.getItem('engineering-academy:save')).toBeNull();
   });
 
+  describe('export / import', () => {
+    it('round-trips a save through export and import', () => {
+      service.createProfile('Avery', 'NullPointer');
+      service.completeMission(
+        { missionId: 'm1', scoreRatio: 1, xpEarned: 120, perfect: true, noHints: true },
+        ['type-guardian']
+      );
+      const exported = service.exportState();
+
+      service.resetProgress();
+      expect(service.hasProfile()).toBeFalse();
+
+      expect(service.importState(exported)).toBeTrue();
+      expect(service.hasProfile()).toBeTrue();
+      expect(service.xp()).toBe(120);
+      expect(service.badges()).toContain('type-guardian');
+      expect(service.state()?.profile.callsign).toBe('NullPointer');
+    });
+
+    it('persists an imported save to storage', () => {
+      service.createProfile('Avery');
+      const exported = service.exportState();
+      service.resetProgress();
+
+      service.importState(exported);
+      expect(localStorage.getItem('engineering-academy:save')).toContain('Avery');
+    });
+
+    it('rejects malformed JSON without changing state', () => {
+      service.createProfile('Keeper');
+      expect(service.importState('{ not json')).toBeFalse();
+      expect(service.state()?.profile.name).toBe('Keeper');
+    });
+
+    it('rejects a well-formed file that fails player-state validation', () => {
+      service.createProfile('Keeper');
+      expect(service.importState(JSON.stringify({ version: 1, xp: -10 }))).toBeFalse();
+      expect(service.state()?.profile.name).toBe('Keeper');
+    });
+  });
+
   describe('campaign unlocking', () => {
     it('always unlocks a campaign with no prerequisite', () => {
       service.createProfile('Avery');

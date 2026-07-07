@@ -1,13 +1,41 @@
 import { Routes } from '@angular/router';
 import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
-import { GameStateService } from '@academy/data-access';
+import { ActivatedRouteSnapshot, CanActivateFn, Router } from '@angular/router';
+import { ContentService, GameStateService } from '@academy/data-access';
 
 /** Screens that need a save file redirect to the landing screen. */
 export const profileGuard: CanActivateFn = () => {
   const gameState = inject(GameStateService);
   const router = inject(Router);
   return gameState.hasProfile() ? true : router.parseUrl('/');
+};
+
+/**
+ * Blocks direct navigation to a mission whose campaign is still locked.
+ * The campaign hub and detail screens already gate visually; this closes
+ * the direct-URL path back to the hub.
+ */
+export const missionUnlockedGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
+  const content = inject(ContentService);
+  const gameState = inject(GameStateService);
+  const router = inject(Router);
+
+  const mission = content.missionById(route.paramMap.get('missionId') ?? '');
+  if (!mission) {
+    // Unknown mission: let the player component render its "not found" state.
+    return true;
+  }
+  const campaign = content.campaignById(mission.campaignId);
+  if (!campaign) {
+    return true;
+  }
+  const prerequisite = campaign.requiredCampaignId
+    ? content.campaignById(campaign.requiredCampaignId)
+    : undefined;
+
+  return gameState.isCampaignUnlocked(campaign, prerequisite)
+    ? true
+    : router.parseUrl('/campaigns');
 };
 
 export const appRoutes: Routes = [
@@ -34,7 +62,7 @@ export const appRoutes: Routes = [
   },
   {
     path: 'missions/:missionId',
-    canActivate: [profileGuard],
+    canActivate: [profileGuard, missionUnlockedGuard],
     loadComponent: () =>
       import('./features/mission-player/mission-player.component').then(
         (m) => m.MissionPlayerComponent
