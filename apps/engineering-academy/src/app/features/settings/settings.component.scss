@@ -66,3 +66,32 @@ select {
   color: var(--ea-text);
   font: inherit;
 }
+
+.transfer {
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.transfer__import {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+
+  input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+}
+
+.transfer__status {
+  margin-top: 0.8rem;
+  font-size: 0.85rem;
+  color: var(--ea-success);
+
+  &--error {
+    color: var(--ea-danger);
+  }
+}

@@ -10,6 +10,7 @@ import {
   createPlayerState,
   initialMeters,
   nextRank,
+  playerStateSchema,
   rankForXp,
   rankProgress,
 } from '@academy/content-model';
@@ -61,6 +62,31 @@ export class GameStateService {
   resetProgress(): void {
     this.persistence.clear();
     this.stateSignal.set(null);
+  }
+
+  /** Serialise the current save for export (facilitation / backup). */
+  exportState(): string {
+    return JSON.stringify(this.requireState(), null, 2);
+  }
+
+  /**
+   * Validate and load an exported save. Returns false (and changes nothing)
+   * if the JSON is malformed or fails player-state validation — the same
+   * boundary discipline the game teaches.
+   */
+  importState(rawJson: string): boolean {
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(rawJson);
+    } catch {
+      return false;
+    }
+    const result = playerStateSchema.safeParse(parsed);
+    if (!result.success) {
+      return false;
+    }
+    this.commit(result.data);
+    return true;
   }
 
   updateSettings(patch: Partial<PlayerSettings>): void {
