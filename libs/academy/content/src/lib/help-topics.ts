@@ -287,6 +287,86 @@ export const helpTopics: HelpTopic[] = [
       'A feature flag lets you ship code dark, enable it for a small percentage of users, watch the dashboards, and expand — or switch it off instantly without a deploy if something breaks. Rolling out gradually turns a potential incident into a contained observation. Big-bang releases give up that safety for no benefit.',
   },
   {
+    id: 'cdn.static-hosting',
+    title: 'Static Hosting and CDNs',
+    tags: ['cicd', 'incident-response'],
+    summary: 'A built SPA is static files served from an edge network, not a running server.',
+    content:
+      'An Angular production build is just static assets — HTML, JS, CSS — uploaded to object storage (e.g. S3) and served through a CDN (e.g. CloudFront) that caches them at edge locations close to users. There is no application server executing your code; the browser downloads the bundle and runs it. Understanding that the CDN sits between your deploy and the user explains most "I deployed but nothing changed" mysteries.',
+  },
+  {
+    id: 'cdn.hashed-assets',
+    title: 'Content-Hashed Assets',
+    tags: ['cicd'],
+    summary: 'Hashed filenames let bundles cache forever while index.html stays fresh.',
+    content:
+      'A production build emits files like main.9f3c2a.js — the hash changes whenever the contents change. Because the name changes, a new deploy produces new URLs that were never cached, so hashed assets can be cached immutably (max-age far in the future). The one file that must NOT be cached long is index.html, because it is the map that points at the current hashed filenames.',
+  },
+  {
+    id: 'cdn.cache-behaviour',
+    title: 'Cache-Control and TTLs',
+    tags: ['cicd'],
+    summary: 'Cache-Control headers decide how long the edge and browser keep a file.',
+    content:
+      'Cache-Control tells the CDN and browser how long a response may be reused. Immutable, content-hashed assets take a long max-age (e.g. one year) safely. Entry files that keep the same URL across deploys — index.html, service workers, config — need a short or no-cache TTL so users pick up the new version quickly. The classic outage is caching index.html as long as the assets it points to.',
+  },
+  {
+    id: 'cdn.invalidation',
+    title: 'Cache Invalidation',
+    tags: ['cicd', 'incident-response'],
+    summary: 'Invalidate the edge cache to force it to re-fetch after a deploy.',
+    content:
+      'A CDN keeps serving a cached object until its TTL expires or you invalidate it. After a deploy, invalidating the paths that reuse the same URL (e.g. /index.html) makes the edge fetch the fresh copy instead of serving the stale one. Hashed assets rarely need invalidation because their URLs change; the files that keep their names are exactly the ones to invalidate.',
+  },
+  {
+    id: 'deploy.environment-config',
+    title: 'Environment Configuration',
+    tags: ['cicd'],
+    summary: 'Keep environment values out of the bundle build; inject them per environment.',
+    content:
+      'API URLs, feature toggles and keys differ per environment. Baking a production URL into a build meant for staging — or shipping a staging URL to production — is a common outage. Prefer configuration resolved per environment (build-time environment files or a runtime config file the app fetches) so the same pipeline promotes cleanly from staging to production without a rebuild that could drift.',
+  },
+  {
+    id: 'deploy.verification',
+    title: 'Deployment Verification',
+    tags: ['cicd', 'incident-response'],
+    summary: 'Prove the new version is actually live before calling a deploy done.',
+    content:
+      'A deploy is not finished when the pipeline goes green — it is finished when users are served the new version. Verify with a smoke test against the real URL, a version/build stamp you can read from the running app, and a check that the edge is serving the new hashed bundle. Skipping verification is how a "successful" deploy still leaves an old bundle live.',
+  },
+  {
+    id: 'incident.impact-assessment',
+    title: 'Impact Assessment and Severity',
+    tags: ['incident-response'],
+    summary: 'Size the blast radius first: who is affected, how badly, and how widely.',
+    content:
+      'Before fixing anything, assess impact: which users, which features, what fraction of traffic, and whether data is at risk. That assessment sets the severity, which drives the response — who is paged, how often you communicate, and whether you roll back immediately. Guessing the severity wrong in either direction wastes the first, most valuable minutes of an incident.',
+  },
+  {
+    id: 'incident.observability',
+    title: 'Logs, Metrics and Traces',
+    tags: ['incident-response'],
+    summary: 'Let the data locate the failure instead of guessing from symptoms.',
+    content:
+      'During an incident, metrics (error rate, latency, saturation) show what changed and when; logs and traces show why. Correlate the spike with a deploy, a config change or a traffic shift before forming a theory. Reading the signals first — rather than jumping to a favourite cause — is what separates a five-minute diagnosis from an hour of guessing.',
+  },
+  {
+    id: 'incident.communication',
+    title: 'Incident Communication',
+    tags: ['incident-response'],
+    summary: 'Tell stakeholders what is happening early, clearly and regularly.',
+    content:
+      'A timely status update — what is affected, what you are doing, when the next update lands — buys trust and stops duplicate escalations. Communicate impact in user terms, not internals, and keep a steady cadence even when there is "nothing new". Silence during an incident is its own second incident: support and customers fill the gap with worst-case assumptions.',
+  },
+  {
+    id: 'incident.post-mortem',
+    title: 'Blameless Post-Incident Review',
+    tags: ['incident-response'],
+    summary: 'Fix the system that allowed the failure, not the person who tripped it.',
+    content:
+      'After service is restored, a blameless review reconstructs the timeline, identifies contributing causes, and produces concrete action items with owners. The goal is a more resilient system — better validation, safer rollouts, faster detection — not attributing fault. Blame drives information underground; a blameless culture is what makes the next incident shorter.',
+  },
+  {
     id: 'incident.rollback-vs-hotfix',
     title: 'Rollback vs Hotfix',
     tags: ['incident-response'],

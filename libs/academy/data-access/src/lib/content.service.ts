@@ -15,6 +15,8 @@ import {
   zodGatePack,
   nxMonorepoMazePack,
   apiContractCrisisPack,
+  cloudfrontOutagePack,
+  saveProductionPack,
   helpTopics,
 } from '@academy/content';
 import { z } from 'zod';
@@ -38,6 +40,8 @@ export class ContentService {
       zodGatePack,
       nxMonorepoMazePack,
       apiContractCrisisPack,
+      cloudfrontOutagePack,
+      saveProductionPack,
     ].map((pack) => this.validatePack(pack));
     this.topics = helpTopics.map((topic) => this.validateTopic(topic));
 

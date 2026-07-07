@@ -5,6 +5,8 @@ import { typescriptTrialsPack } from './typescript-trials/campaign';
 import { zodGatePack } from './zod-gate/campaign';
 import { nxMonorepoMazePack } from './nx-monorepo-maze/campaign';
 import { apiContractCrisisPack } from './api-contract-crisis/campaign';
+import { cloudfrontOutagePack } from './cloudfront-outage/campaign';
+import { saveProductionPack } from './save-production/campaign';
 import { helpTopics } from './help-topics';
 
 /**
@@ -19,6 +21,8 @@ describe('content integrity', () => {
     zodGatePack,
     nxMonorepoMazePack,
     apiContractCrisisPack,
+    cloudfrontOutagePack,
+    saveProductionPack,
   ];
 
   it('validates every campaign pack against the Zod schema', () => {
@@ -128,6 +132,8 @@ describe('content integrity', () => {
       'zod-gate': 'typescript-trials',
       'nx-monorepo-maze': 'zod-gate',
       'api-contract-crisis': 'nx-monorepo-maze',
+      'cloudfront-outage': 'api-contract-crisis',
+      'save-production': 'cloudfront-outage',
     };
     for (const pack of packs) {
       expect(pack.campaign.requiredCampaignId)
