@@ -92,3 +92,14 @@
     opacity: 0.45;
   }
 }
+
+.hud__actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &:empty {
+    display: none;
+  }
+}

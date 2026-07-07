@@ -7,7 +7,13 @@
       [meters]="gameState.meters()"
       [missionTitle]="mission.title"
       [hintsUsed]="totalHintsUsed()"
-    />
+    >
+      @if (session.phase() !== 'briefing') {
+        <button hud-actions type="button" class="ea-btn hud-brief-btn" (click)="briefOpen.set(true)">
+          📋 Mission Brief
+        </button>
+      }
+    </ea-hud>
 
     @switch (session.phase()) {
       <!-- ============ BRIEFING ============ -->
@@ -20,7 +26,11 @@
             <span class="ea-chip">{{ mission.challenges.length }} challenge{{ mission.challenges.length === 1 ? '' : 's' }}</span>
           </div>
 
-          <ea-mentor-dialogue [blocks]="mission.briefing" />
+          <ea-mentor-dialogue
+            [blocks]="mission.briefing"
+            [live]="true"
+            [instant]="gameState.settings().reducedMotion"
+          />
 
           <div class="briefing__objectives">
             <h2>Learning objectives</h2>
@@ -45,6 +55,29 @@
         @if (session.currentRun(); as run) {
           <div class="workspace">
             <aside class="workspace__context">
+              @if (campaign(); as campaign) {
+                <nav class="tracker ea-panel" aria-label="Campaign progress">
+                  <a class="tracker__campaign" [routerLink]="['/campaigns', campaign.id]">
+                    ← {{ campaign.title }}
+                  </a>
+                  <ol class="tracker__list">
+                    @for (item of campaignMissions(); track item.id; let i = $index) {
+                      <li class="tracker__item" [attr.data-state]="trackerState(item.id)">
+                        <span class="tracker__marker" aria-hidden="true">
+                          @switch (trackerState(item.id)) {
+                            @case ('done') { ✓ }
+                            @case ('current') { ▶ }
+                            @case ('locked') { 🔒 }
+                            @default { {{ i + 1 }} }
+                          }
+                        </span>
+                        <span class="tracker__title">{{ item.title }}</span>
+                      </li>
+                    }
+                  </ol>
+                </nav>
+              }
+
               <p class="ea-eyebrow">Mission Context</p>
               <p class="workspace__progress">
                 Challenge {{ session.challengeIndex() + 1 }} / {{ session.totalChallenges() }}
@@ -55,6 +88,12 @@
             </aside>
 
             <section class="workspace__main ea-panel">
+              @if (campaign(); as campaign) {
+                <p class="workspace__breadcrumb">
+                  {{ campaign.title }} · Mission {{ missionIndex() + 1 }} of
+                  {{ campaign.missions.length }}
+                </p>
+              }
               <ea-challenge-host
                 [challenge]="run.challenge"
                 [evaluation]="attemptEvaluation()"
@@ -101,17 +140,24 @@
             </section>
 
             <aside class="workspace__support">
-              <div class="support ea-panel">
-                <h2 class="support__heading">Hints</h2>
+              <div class="support ea-panel senior-dev" [attr.data-stress]="seniorDevStress()">
+                <div class="senior-dev__header">
+                  <span class="senior-dev__avatar" aria-hidden="true">{{ seniorDevAvatar() }}</span>
+                  <div>
+                    <h2 class="support__heading">Senior Dev</h2>
+                    <p class="senior-dev__status">{{ seniorDevStatus() }}</p>
+                  </div>
+                </div>
                 @for (hint of session.revealedHints(); track hint.level) {
                   <div class="hint">
-                    <span class="hint__level">Level {{ hint.level }} — {{ hint.title }}</span>
+                    <p class="hint__framing">“{{ seniorDevLine(hint.level) }}”</p>
+                    <span class="hint__level">Hint {{ hint.level }} — {{ hint.title }}</span>
                     <p class="hint__content">{{ hint.content }}</p>
                   </div>
                 }
                 @if (session.nextHint(); as hint) {
                   <button type="button" class="ea-btn support__hint-btn" (click)="revealHint()">
-                    Reveal hint {{ hint.level }}
+                    Ask the Senior Dev
                     @if (nextHintCost(); as cost) {
                       <span class="support__cost">−{{ cost }} XP</span>
                     } @else {
@@ -119,7 +165,7 @@
                     }
                   </button>
                 } @else if (session.revealedHints().length === 0) {
-                  <p class="support__empty">No hints revealed yet.</p>
+                  <p class="support__empty">Stuck? The Senior Dev two desks over is happy to help.</p>
                 }
               </div>
 
@@ -237,5 +283,40 @@
 
   @if (helpTopic(); as topic) {
     <ea-help-drawer [topic]="topic" (closed)="helpTopic.set(null)" />
+  }
+
+  @if (briefOpen() && mission(); as mission) {
+    <div class="brief-backdrop">
+      <button
+        type="button"
+        class="brief-shield"
+        aria-label="Close mission brief"
+        (click)="briefOpen.set(false)"
+      ></button>
+      <aside class="brief" role="dialog" aria-modal="true" aria-label="Mission briefing">
+        <header class="brief__header">
+          <p class="ea-eyebrow">Mission Briefing</p>
+          <button
+            type="button"
+            class="brief__close"
+            (click)="briefOpen.set(false)"
+            aria-label="Close"
+          >
+            ✕
+          </button>
+        </header>
+        <h2 class="brief__title">{{ mission.title }}</h2>
+        <p class="brief__summary">{{ mission.summary }}</p>
+        <ea-mentor-dialogue [blocks]="mission.briefing" />
+        <div class="brief__objectives">
+          <h3>Learning objectives</h3>
+          <ul>
+            @for (objective of mission.learningObjectives; track objective) {
+              <li>{{ objective }}</li>
+            }
+          </ul>
+        </div>
+      </aside>
+    </div>
   }
 </div>
