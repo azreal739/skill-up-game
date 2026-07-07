@@ -70,7 +70,7 @@ export const cdnMission003CacheBehaviour: MissionDefinition = {
         { level: 4, title: 'Guided solution', content: 'No-cache index.html and config.json; keep the hashed assets immutable.' },
       ],
       rewards: [{ type: 'xp', amount: 25, label: 'TTL fixed' }],
-      consequences: [{ type: 'severity', delta: -5, reason: 'A 3-hour TTL on the entry file delayed every deploy and every rollback.' }],
+      consequences: [{ type: 'severity', delta: 1, reason: 'A 3-hour TTL on the entry file delayed every deploy and every rollback.' }],
       helpLinks: [{ topicId: 'cdn.cache-behaviour', label: 'Cache-Control and TTLs' }],
       successFeedback: 'Entry files now stay fresh; deploys appear immediately while assets stay fast.',
       failureFeedback: 'The 3-hour delay is the index.html TTL. Entry files that reuse URLs must be no-cache.',

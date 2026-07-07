@@ -70,7 +70,7 @@ export const apiMission007ReleaseRisk: MissionDefinition = {
         { level: 4, title: 'Guided solution', content: 'Release behind a flag, ramp gradually while monitoring, keep the contract test in CI.' },
       ],
       rewards: [{ type: 'xp', amount: 50, label: 'Release de-risked' }],
-      consequences: [{ type: 'severity', delta: -10, reason: 'A gradual, flagged rollout kept any residual surprise small and reversible.' }],
+      consequences: [{ type: 'severity', delta: 1, reason: 'An unflagged big-bang release would expose every user to the next drift at once.' }],
       helpLinks: [
         { topicId: 'delivery.feature-flags', label: 'Feature flags and gradual rollout' },
         { topicId: 'testing.contract-tests', label: 'Contract test thinking' },

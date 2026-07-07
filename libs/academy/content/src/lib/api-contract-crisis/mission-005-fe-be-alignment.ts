@@ -70,7 +70,7 @@ export const apiMission005Alignment: MissionDefinition = {
         { level: 4, title: 'Guided solution', content: 'A single boundary adapter that validates and normalises the DTO.' },
       ],
       rewards: [{ type: 'xp', amount: 25, label: 'Boundary aligned' }],
-      consequences: [{ type: 'team-confidence', delta: 10, reason: 'Both teams agreed on a clean seam instead of blaming each other.' }],
+      consequences: [{ type: 'team-confidence', delta: -10, reason: 'Scattered fixes and cross-team blame eroded trust on both sides.' }],
       helpLinks: [
         { topicId: 'api.contract-drift', label: 'API contract drift' },
         { topicId: 'zod.transform', label: 'Transforming with Zod' },

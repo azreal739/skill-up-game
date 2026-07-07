@@ -40,6 +40,7 @@ export const apiMission004JavaAssumption: MissionDefinition = {
     {
       id: 'api-contract-crisis-004-c1',
       type: 'contract-comparison',
+      multiSelect: true,
       title: 'Reconcile the Contracts',
       difficulty: 'medium',
       tags: ['api', 'java'],

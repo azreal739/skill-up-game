@@ -1,4 +1,9 @@
-import { badgeById, campaignPackSchema, helpTopicSchema } from '@academy/content-model';
+import {
+  ChallengeDefinition,
+  badgeById,
+  campaignPackSchema,
+  helpTopicSchema,
+} from '@academy/content-model';
 import { foundationsPack } from './foundations/campaign';
 import { componentForgePack } from './component-forge/campaign';
 import { typescriptTrialsPack } from './typescript-trials/campaign';
@@ -149,6 +154,71 @@ describe('content integrity', () => {
       if (required) {
         expect(ids.has(required)).withContext(`${pack.campaign.id} → ${required}`).toBeTrue();
       }
+    }
+  });
+
+  const allChallenges = (): ChallengeDefinition[] =>
+    packs.flatMap((pack) => pack.missions.flatMap((mission) => mission.challenges));
+
+  const selectables = (challenge: ChallengeDefinition) =>
+    challenge.type === 'code-review' ? challenge.findings : challenge.options;
+
+  it('matches every challenge selection model to its correct-option count', () => {
+    // Single-select UIs can only ever submit one ID, so exactly one option may
+    // be correct; multi-select needs at least two or it should be single.
+    for (const challenge of allChallenges()) {
+      const correct = selectables(challenge).filter((option) => option.isCorrect).length;
+      const multi = challenge.type === 'code-review' || challenge.multiSelect === true;
+      if (multi) {
+        expect(correct)
+          .withContext(`${challenge.id} is multi-select but has ${correct} correct`)
+          .toBeGreaterThanOrEqual(challenge.type === 'code-review' ? 1 : 2);
+      } else {
+        expect(correct)
+          .withContext(`${challenge.id} is single-select but has ${correct} correct options`)
+          .toBe(1);
+      }
+    }
+  });
+
+  it('gives every challenge at least one correct and one incorrect option', () => {
+    for (const challenge of allChallenges()) {
+      const options = selectables(challenge);
+      expect(options.some((option) => option.isCorrect)).withContext(challenge.id).toBeTrue();
+      expect(options.some((option) => !option.isCorrect)).withContext(challenge.id).toBeTrue();
+    }
+  });
+
+  it('applies consequences that punish failure, never reward it', () => {
+    // The engine applies challenge consequences only on wrong answers
+    // (MissionSessionService.submit), so every delta must model harm:
+    // stability/team-confidence drop, technical debt rises, severity climbs
+    // by one step (it is an index into the 6 severity levels).
+    for (const challenge of allChallenges()) {
+      for (const consequence of challenge.consequences) {
+        const context = `${challenge.id} → ${consequence.type} ${consequence.delta}`;
+        switch (consequence.type) {
+          case 'stability':
+          case 'team-confidence':
+            expect(consequence.delta).withContext(context).toBeLessThan(0);
+            break;
+          case 'technical-debt':
+            expect(consequence.delta).withContext(context).toBeGreaterThan(0);
+            break;
+          case 'severity':
+            expect([1, 2]).withContext(context).toContain(consequence.delta);
+            break;
+          case 'time':
+            break;
+        }
+      }
+    }
+  });
+
+  it('gives every challenge a complete hint ladder (levels 1-4)', () => {
+    for (const challenge of allChallenges()) {
+      const levels = challenge.hints.map((hint) => hint.level).sort();
+      expect(levels).withContext(challenge.id).toEqual([1, 2, 3, 4]);
     }
   });
 });

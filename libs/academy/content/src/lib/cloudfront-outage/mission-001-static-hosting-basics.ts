@@ -69,7 +69,7 @@ export const cdnMission001StaticHosting: MissionDefinition = {
         { level: 4, title: 'Guided solution', content: 'Static files, CDN in the middle, browser runs the bundle.' },
       ],
       rewards: [{ type: 'xp', amount: 10, label: 'Model set' }],
-      consequences: [{ type: 'team-confidence', delta: 5, reason: 'The team stopped chasing a server that does not exist.' }],
+      consequences: [{ type: 'team-confidence', delta: -5, reason: 'Chasing a server that does not exist burned the response’s first minutes.' }],
       helpLinks: [{ topicId: 'cdn.static-hosting', label: 'Static hosting and CDNs' }],
       successFeedback: 'Right model: static files behind a CDN. Now the stale-deploy mystery has somewhere real to investigate.',
       failureFeedback: 'There is no running server — it is static files behind a CDN. That cache is where to look.',

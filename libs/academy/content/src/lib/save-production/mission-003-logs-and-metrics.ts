@@ -69,7 +69,7 @@ export const prodMission003LogsAndMetrics: MissionDefinition = {
         { level: 4, title: 'Guided solution', content: 'The v4.7 deploy is the cause; the data converges on it.' },
       ],
       rewards: [{ type: 'xp', amount: 25, label: 'Cause located' }],
-      consequences: [{ type: 'severity', delta: -5, reason: 'Reading the signals pointed straight at the bad deploy instead of a guess.' }],
+      consequences: [{ type: 'severity', delta: 1, reason: 'Guess-driven debugging burned time while checkouts kept failing.' }],
       helpLinks: [{ topicId: 'incident.observability', label: 'Logs, metrics and traces' }],
       successFeedback: 'The data converges on the v4.7 deploy — you have a cause, not a hunch. Now choose how to recover.',
       failureFeedback: 'DB, cache and traffic are all normal. Onset right after the v4.7 deploy plus a matching stack trace names the cause.',

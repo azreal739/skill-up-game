@@ -115,6 +115,8 @@ export interface CodeReviewChallenge extends ChallengeBase {
 export interface ContractComparisonChallenge extends ChallengeBase {
   type: 'contract-comparison';
   options: ChallengeOption[];
+  /** When true the player may select several options; default single select. */
+  multiSelect?: boolean;
 }
 
 export type ChallengeDefinition =

@@ -52,9 +52,10 @@ import { OptionListComponent } from '../option-list/option-list.component';
           <ea-option-list
             [options]="challenge.options"
             [selectedIds]="selectedIds"
+            [multiSelect]="challenge.multiSelect ?? false"
             [disabled]="locked"
             [outcomes]="evaluation?.options ?? null"
-            (toggle)="onToggle($event, false)"
+            (toggle)="onToggle($event, challenge.multiSelect ?? false)"
           />
         }
         @case ('code-review') {

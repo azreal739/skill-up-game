@@ -80,7 +80,7 @@ export const prodMission008PostIncidentReview: MissionDefinition = {
         { level: 4, title: 'Guided solution', content: 'Keep the three concrete owned actions; reject blaming Dan and "write better code".' },
       ],
       rewards: [{ type: 'xp', amount: 50, label: 'Review run' }],
-      consequences: [{ type: 'technical-debt', delta: -15, reason: 'Concrete, owned action items hardened the system against a repeat.' }],
+      consequences: [{ type: 'technical-debt', delta: 15, reason: 'Blame and vague resolutions left the system exactly as fragile as before.' }],
       helpLinks: [{ topicId: 'incident.post-mortem', label: 'Blameless post-incident review' }],
       successFeedback: 'You kept the concrete, owned, systemic actions and cut the blame — the next incident will be shorter because of this review.',
       failureFeedback: 'Keep specific, owned, systemic actions (the test, the flag policy, the alert). Blame and platitudes harden nothing.',

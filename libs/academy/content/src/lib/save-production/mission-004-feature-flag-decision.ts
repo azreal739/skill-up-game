@@ -69,7 +69,7 @@ export const prodMission004FeatureFlagDecision: MissionDefinition = {
         { level: 4, title: 'Guided solution', content: 'Turn the flag off now; fix v4.7 without the clock running.' },
       ],
       rewards: [{ type: 'xp', amount: 25, label: 'Bleeding stopped' }],
-      consequences: [{ type: 'severity', delta: -15, reason: 'Flipping the flag off restored checkout in seconds while the fix was prepared.' }],
+      consequences: [{ type: 'severity', delta: 1, reason: 'Every minute the flag stayed on, nearly a third of checkouts kept failing.' }],
       helpLinks: [{ topicId: 'delivery.feature-flags', label: 'Feature flags and gradual rollout' }],
       successFeedback: 'Flag off, old path serving, impact stopped in seconds — now you can fix v4.7 calmly.',
       failureFeedback: 'The flag flips in seconds to a healthy path. Mitigate first, then fix — don’t rush a hotfix or delete code mid-incident.',

@@ -69,7 +69,7 @@ export const cdnMission002HashedAssets: MissionDefinition = {
         { level: 4, title: 'Guided solution', content: 'Immutable for hashed JS/CSS, no-cache for index.html.' },
       ],
       rewards: [{ type: 'xp', amount: 15, label: 'Hashing understood' }],
-      consequences: [{ type: 'stability', delta: 5, reason: 'Correct caching kept new deploys visible while assets stayed fast.' }],
+      consequences: [{ type: 'stability', delta: -5, reason: 'Mis-cached entry files kept users pinned to stale deploys.' }],
       helpLinks: [
         { topicId: 'cdn.hashed-assets', label: 'Content-hashed assets' },
         { topicId: 'cdn.cache-behaviour', label: 'Cache-Control and TTLs' },

@@ -110,6 +110,7 @@ export const contractComparisonChallengeSchema = z.object({
     .array(challengeOptionSchema)
     .min(2)
     .refine(hasCorrectOption, { message: 'contract-comparison challenge needs a correct option' }),
+  multiSelect: z.boolean().optional(),
 });
 
 export const challengeSchema = z.discriminatedUnion('type', [
