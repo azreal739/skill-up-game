@@ -103,6 +103,46 @@ export const helpTopics: HelpTopic[] = [
       'schema.safeParse(data) returns { success: true, data } or { success: false, error } instead of throwing. Use it at boundaries where bad data is expected and you want a graceful fallback. z.coerce.number() and .transform() can also normalise near-miss data (like "720") while validating it.',
   },
   {
+    id: 'zod.transform',
+    title: 'Transforming with Zod',
+    tags: ['zod'],
+    summary: 'Schemas can normalise data as they validate it.',
+    content:
+      'z.coerce.number() turns "720" into 720; .transform(fn) runs arbitrary reshaping after validation; .default(v) fills a missing field. Doing this at the schema boundary means the rest of the app receives clean, canonical data and never has to patch payload quirks inline.',
+  },
+  {
+    id: 'zod.default-values',
+    title: 'Defaults and Optional Fields',
+    tags: ['zod'],
+    summary: 'Model absent data explicitly instead of letting undefined leak in.',
+    content:
+      'z.string().optional() allows a field to be missing; .default(v) substitutes a value when it is absent or undefined; .nullable() permits an explicit null. Choosing deliberately at the boundary keeps undefined out of your components and makes the “no data” case a designed state, not an accident.',
+  },
+  {
+    id: 'zod.error-handling',
+    title: 'Handling Validation Errors',
+    tags: ['zod'],
+    summary: 'A failed parse is data — read it, do not swallow it.',
+    content:
+      'safeParse returns { success: false, error } on failure. The ZodError lists each issue with its path and message. Map those into a friendly UI state and a developer-facing log; never catch-and-ignore, which turns a precise validation signal into a silent blank screen.',
+  },
+  {
+    id: 'api.error-payloads',
+    title: 'Error Payloads',
+    tags: ['api'],
+    summary: 'Error responses have shapes too — validate them like any other data.',
+    content:
+      'A 4xx or 5xx response usually carries a JSON body describing what went wrong. Treat it as untrusted input: validate it with its own schema, surface the message to the user when it is safe, and log the rest. Assuming an error body’s shape is how one failure cascades into a second crash on the error path.',
+  },
+  {
+    id: 'testing.contract-tests',
+    title: 'Contract Test Thinking',
+    tags: ['testing', 'api'],
+    summary: 'Pin the agreement between front end and back end with a test.',
+    content:
+      'A contract test asserts that a real (or recorded) API payload still satisfies your schema. When the back end changes a field, the contract test fails in CI — before customers hit the runtime error. It converts silent contract drift into a loud, early, fixable signal.',
+  },
+  {
     id: 'api.contract-drift',
     title: 'API Contract Drift',
     tags: ['api', 'java'],

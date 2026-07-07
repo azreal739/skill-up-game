@@ -107,6 +107,21 @@ export class GameStateService {
   }
 
   /**
+   * A campaign is unlocked when it has no prerequisite, or its prerequisite
+   * campaign is complete. The caller resolves the prerequisite definition
+   * (data-access has no content lookup of its own).
+   */
+  isCampaignUnlocked(
+    campaign: CampaignDefinition,
+    prerequisite?: CampaignDefinition
+  ): boolean {
+    if (!campaign.requiredCampaignId) {
+      return true;
+    }
+    return prerequisite ? this.isCampaignCompleted(prerequisite) : false;
+  }
+
+  /**
    * Records a mission run. First completions credit their full XP; replays
    * credit only the improvement over the best previous run, so grinding a
    * mission cannot farm XP but a better score is always worth replaying.

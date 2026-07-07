@@ -10,6 +10,13 @@
       }
     </header>
 
+    @if (locked()) {
+      <div class="ea-panel detail__locked">
+        <h2>🔒 Campaign locked</h2>
+        <p>Complete {{ prerequisiteTitle() }} to unlock this campaign.</p>
+        <a class="ea-btn" routerLink="/campaigns">Back to the hub</a>
+      </div>
+    } @else {
     <ol class="missions">
       @for (node of nodes(); track node.mission.id) {
         <li
@@ -46,6 +53,7 @@
         </li>
       }
     </ol>
+    }
   } @else {
     <div class="ea-panel">
       <h1>Campaign not found</h1>

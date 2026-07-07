@@ -138,6 +138,7 @@ export const campaignSchema = z.object({
   subtitle: z.string().min(1),
   description: z.string().min(1),
   requiredRank: z.string().optional(),
+  requiredCampaignId: z.string().optional(),
   tags: z.array(z.string().min(1)).min(1),
   missions: z.array(z.string().min(1)).min(1),
   rewards: z.array(rewardSchema),

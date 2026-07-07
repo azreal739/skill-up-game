@@ -32,11 +32,18 @@
 
   <section class="campaigns">
     @for (campaign of campaigns; track campaign.id) {
-      <article class="campaign ea-panel" [class.campaign--complete]="isCompleted(campaign.id)">
+      <article
+        class="campaign ea-panel"
+        [class.campaign--complete]="isCompleted(campaign.id)"
+        [class.campaign--locked]="isLocked(campaign.id)"
+        [attr.aria-disabled]="isLocked(campaign.id) ? 'true' : null"
+      >
         <div class="campaign__header">
           <h2 class="campaign__title">{{ campaign.title }}</h2>
           @if (isCompleted(campaign.id)) {
             <span class="ea-chip campaign__done">✓ complete</span>
+          } @else if (isLocked(campaign.id)) {
+            <span class="ea-chip">🔒 locked</span>
           }
         </div>
         <p class="campaign__subtitle">{{ campaign.subtitle }}</p>
@@ -49,35 +56,30 @@
         </div>
 
         <div class="campaign__footer">
-          <div class="campaign__progress">
-            <div
-              class="campaign__bar"
-              role="progressbar"
-              [attr.aria-label]="campaign.title + ' progress'"
-              [attr.aria-valuenow]="(progressFor(campaign.id) * 100).toFixed(0)"
-              aria-valuemin="0"
-              aria-valuemax="100"
-            >
-              <div class="campaign__fill" [style.width.%]="progressFor(campaign.id) * 100"></div>
-            </div>
-            <span class="campaign__percent">
-              {{ progressFor(campaign.id) | percent }} · {{ missionCount(campaign.id) }} missions
+          @if (isLocked(campaign.id)) {
+            <span class="campaign__locked-note">
+              Complete {{ prerequisiteTitle(campaign.id) }} to unlock
             </span>
-          </div>
-          <a class="ea-btn" [routerLink]="['/campaigns', campaign.id]">Open</a>
+          } @else {
+            <div class="campaign__progress">
+              <div
+                class="campaign__bar"
+                role="progressbar"
+                [attr.aria-label]="campaign.title + ' progress'"
+                [attr.aria-valuenow]="(progressFor(campaign.id) * 100).toFixed(0)"
+                aria-valuemin="0"
+                aria-valuemax="100"
+              >
+                <div class="campaign__fill" [style.width.%]="progressFor(campaign.id) * 100"></div>
+              </div>
+              <span class="campaign__percent">
+                {{ progressFor(campaign.id) | percent }} · {{ missionCount(campaign.id) }} missions
+              </span>
+            </div>
+            <a class="ea-btn" [routerLink]="['/campaigns', campaign.id]">Open</a>
+          }
         </div>
       </article>
     }
-    <article class="campaign campaign--locked ea-panel" aria-disabled="true">
-      <div class="campaign__header">
-        <h2 class="campaign__title">Zod Gate</h2>
-        <span class="ea-chip">🔒 next deployment</span>
-      </div>
-      <p class="campaign__subtitle">Defend the runtime boundary</p>
-      <p class="campaign__description">
-        The Java API returned unexpected data. Future campaign — ships as a pure content pack,
-        no engine changes required.
-      </p>
-    </article>
   </section>
 </div>
