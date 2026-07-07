@@ -152,10 +152,10 @@ describe('GameStateService', () => {
     it('locks a gated campaign until its prerequisite is complete', () => {
       service.createProfile('Avery');
       const foundations = content.campaignById('foundations')!;
-      const zodGate = content.campaignById('zod-gate')!;
+      const componentForge = content.campaignById('component-forge')!;
 
-      expect(zodGate.requiredCampaignId).toBe('foundations');
-      expect(service.isCampaignUnlocked(zodGate, foundations)).toBeFalse();
+      expect(componentForge.requiredCampaignId).toBe('foundations');
+      expect(service.isCampaignUnlocked(componentForge, foundations)).toBeFalse();
 
       // Complete every Foundations mission.
       for (const missionId of foundations.missions) {
@@ -165,13 +165,13 @@ describe('GameStateService', () => {
         );
       }
 
-      expect(service.isCampaignUnlocked(zodGate, foundations)).toBeTrue();
+      expect(service.isCampaignUnlocked(componentForge, foundations)).toBeTrue();
     });
 
     it('treats a gated campaign as locked when the prerequisite is not provided', () => {
       service.createProfile('Avery');
-      const zodGate = content.campaignById('zod-gate')!;
-      expect(service.isCampaignUnlocked(zodGate)).toBeFalse();
+      const componentForge = content.campaignById('component-forge')!;
+      expect(service.isCampaignUnlocked(componentForge)).toBeFalse();
     });
   });
 });

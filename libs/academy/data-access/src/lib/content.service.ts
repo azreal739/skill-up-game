@@ -8,7 +8,13 @@ import {
   campaignPackSchema,
   helpTopicSchema,
 } from '@academy/content-model';
-import { foundationsPack, zodGatePack, helpTopics } from '@academy/content';
+import {
+  foundationsPack,
+  componentForgePack,
+  typescriptTrialsPack,
+  zodGatePack,
+  helpTopics,
+} from '@academy/content';
 import { z } from 'zod';
 
 /**
@@ -23,7 +29,12 @@ export class ContentService {
   private readonly missionIndex = new Map<string, MissionDefinition>();
 
   constructor() {
-    this.packs = [foundationsPack, zodGatePack].map((pack) => this.validatePack(pack));
+    this.packs = [
+      foundationsPack,
+      componentForgePack,
+      typescriptTrialsPack,
+      zodGatePack,
+    ].map((pack) => this.validatePack(pack));
     this.topics = helpTopics.map((topic) => this.validateTopic(topic));
 
     for (const pack of this.packs) {

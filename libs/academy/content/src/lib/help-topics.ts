@@ -7,6 +7,54 @@ import { HelpTopic } from '@academy/content-model';
  */
 export const helpTopics: HelpTopic[] = [
   {
+    id: 'angular.presentational-vs-container',
+    title: 'Presentational vs Container Components',
+    tags: ['angular'],
+    summary: 'Presentational components render inputs; containers wire in data.',
+    content:
+      'A presentational (dumb) component takes @Inputs, emits @Outputs, and holds no service dependencies — easy to reuse and test. A container (smart) component injects services, fetches data, and passes it down to presentational children. Keeping the two separate is what makes a UI library reusable across features.',
+  },
+  {
+    id: 'a11y.semantics',
+    title: 'Accessible Markup and Semantics',
+    tags: ['angular', 'a11y'],
+    summary: 'Use real semantic elements and ARIA only when semantics fall short.',
+    content:
+      'A native <button> is focusable, keyboard-operable and announced correctly for free — a clickable <div> is none of those. Reach for semantic HTML first; add ARIA (roles, aria-label, aria-pressed) only to fill gaps semantics cannot. Every interactive control needs a keyboard path and an accessible name, and information must never be conveyed by colour alone.',
+  },
+  {
+    id: 'scss.responsive',
+    title: 'Responsive Layout with SCSS',
+    tags: ['scss'],
+    summary: 'Fluid layouts and a few well-chosen breakpoints beat fixed pixels.',
+    content:
+      'Prefer intrinsic layout — flexbox/grid with min/max and fr units — so components adapt without media queries. Where you do need breakpoints, drive them from a shared mixin so they stay consistent, and design mobile-first (base styles small, layer enhancements up). Avoid fixed pixel widths that overflow small screens.',
+  },
+  {
+    id: 'typescript.unknown-vs-any',
+    title: 'unknown vs any',
+    tags: ['typescript'],
+    summary: 'unknown forces a check before use; any disables the compiler.',
+    content:
+      'Both accept any value, but unknown will not let you use the value until you narrow it (typeof, a schema, a type guard), so the compiler stays on. any silently turns off all checking and lets bugs through. At untyped boundaries — JSON.parse, external APIs — prefer unknown and narrow deliberately.',
+  },
+  {
+    id: 'typescript.generics',
+    title: 'Generics',
+    tags: ['typescript'],
+    summary: 'Generics preserve type relationships instead of widening to any.',
+    content:
+      'A generic like function first<T>(items: T[]): T | undefined keeps the caller’s element type flowing through the function, so first([1,2]) is number | undefined — not any. Reach for generics when a function or type must work over many types while preserving the relationship between input and output.',
+  },
+  {
+    id: 'angular.change-detection',
+    title: 'OnPush Change Detection',
+    tags: ['angular'],
+    summary: 'OnPush re-renders only when inputs change or events fire.',
+    content:
+      'By default Angular checks every component on each change-detection cycle. ChangeDetectionStrategy.OnPush limits checks to when an @Input reference changes, an event fires in the component, or an observable it subscribes to (via async pipe) emits. Combined with immutable data and signals, it keeps large UIs fast — but it means mutating an object in place will not be picked up.',
+  },
+  {
     id: 'angular.components',
     title: 'Angular Components',
     tags: ['angular'],

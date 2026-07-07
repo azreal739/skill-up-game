@@ -21,7 +21,7 @@ export const zodGatePack: CampaignPack = {
     subtitle: 'Defend the runtime boundary',
     description:
       'The Java API keeps returning unexpected data. Stand the gate: validate at the boundary, transform quirks away, design honest failure states, and catch drift in CI before customers do.',
-    requiredCampaignId: 'foundations',
+    requiredCampaignId: 'typescript-trials',
     tags: ['zod', 'api', 'typescript', 'testing'],
     missions: [
       'zod-gate-001-runtime-boundary',

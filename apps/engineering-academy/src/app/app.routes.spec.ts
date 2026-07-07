@@ -52,7 +52,7 @@ describe('route guards', () => {
     });
 
     it('redirects a mission in a locked campaign to the hub', () => {
-      expect(asUrl(runMissionGuard('zod-gate-001-runtime-boundary'))).toBe(
+      expect(asUrl(runMissionGuard('component-forge-001-ui-blueprint'))).toBe(
         router.parseUrl('/campaigns').toString()
       );
     });
@@ -75,7 +75,7 @@ describe('route guards', () => {
           []
         );
       }
-      expect(runMissionGuard('zod-gate-001-runtime-boundary')).toBeTrue();
+      expect(runMissionGuard('component-forge-001-ui-blueprint')).toBeTrue();
     });
 
     it('allows an unknown mission through to its not-found state', () => {
