@@ -48,7 +48,9 @@ export class AppComponent {
       const settings = this.gameState.settings();
       document.body.classList.toggle('ea-reduced-motion', settings.reducedMotion);
       document.body.classList.toggle('ea-high-contrast', settings.highContrast);
-      document.body.style.fontSize = `${settings.textScale * 100}%`;
+      // Text scale must land on the root element: rem-based sizes (which is
+      // most of the UI) resolve against <html>, not <body>.
+      document.documentElement.style.fontSize = `${settings.textScale * 100}%`;
     });
   }
 
