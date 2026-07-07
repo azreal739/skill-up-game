@@ -28,6 +28,21 @@
   color: var(--ea-success);
 }
 
+.detail__locked {
+  text-align: center;
+  display: grid;
+  gap: 0.8rem;
+  justify-items: center;
+
+  h2 {
+    font-size: 1.3rem;
+  }
+
+  p {
+    color: var(--ea-muted);
+  }
+}
+
 .missions {
   list-style: none;
   margin: 0;

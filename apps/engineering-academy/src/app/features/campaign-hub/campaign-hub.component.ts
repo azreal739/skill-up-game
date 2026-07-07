@@ -19,6 +19,9 @@ export class CampaignHubComponent {
   /** The first incomplete mission across unlocked campaigns. */
   protected readonly recommendedMission = computed(() => {
     for (const campaign of this.campaigns) {
+      if (!this.gameState.isCampaignUnlocked(campaign, this.prerequisiteOf(campaign))) {
+        continue;
+      }
       for (const missionId of campaign.missions) {
         if (!this.gameState.isMissionCompleted(missionId)) {
           const mission = this.content.missionById(missionId);
@@ -43,5 +46,21 @@ export class CampaignHubComponent {
   isCompleted(campaignId: string): boolean {
     const campaign = this.content.campaignById(campaignId);
     return campaign ? this.gameState.isCampaignCompleted(campaign) : false;
+  }
+
+  isLocked(campaignId: string): boolean {
+    const campaign = this.content.campaignById(campaignId);
+    return campaign ? !this.gameState.isCampaignUnlocked(campaign, this.prerequisiteOf(campaign)) : true;
+  }
+
+  prerequisiteTitle(campaignId: string): string | null {
+    const campaign = this.content.campaignById(campaignId);
+    return campaign ? (this.prerequisiteOf(campaign)?.title ?? null) : null;
+  }
+
+  private prerequisiteOf(campaign: { requiredCampaignId?: string }) {
+    return campaign.requiredCampaignId
+      ? this.content.campaignById(campaign.requiredCampaignId)
+      : undefined;
   }
 }

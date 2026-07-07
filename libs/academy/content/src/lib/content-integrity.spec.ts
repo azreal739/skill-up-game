@@ -1,5 +1,6 @@
 import { badgeById, campaignPackSchema, helpTopicSchema } from '@academy/content-model';
 import { foundationsPack } from './foundations/campaign';
+import { zodGatePack } from './zod-gate/campaign';
 import { helpTopics } from './help-topics';
 
 /**
@@ -7,7 +8,7 @@ import { helpTopics } from './help-topics';
  * validate against the schema and all cross-references must resolve.
  */
 describe('content integrity', () => {
-  const packs = [foundationsPack];
+  const packs = [foundationsPack, zodGatePack];
 
   it('validates every campaign pack against the Zod schema', () => {
     for (const pack of packs) {
@@ -94,5 +95,21 @@ describe('content integrity', () => {
     const last = foundationsPack.missions[foundationsPack.missions.length - 1];
     expect(last.difficulty).toBe('boss');
     expect(foundationsPack.missions.slice(0, -1).every((m) => m.difficulty !== 'boss')).toBeTrue();
+  });
+
+  it('ships Zod Gate: 8 missions ending in the boss, gated behind Foundations', () => {
+    expect(zodGatePack.missions.length).toBe(8);
+    expect(zodGatePack.campaign.requiredCampaignId).toBe('foundations');
+    expect(zodGatePack.missions[zodGatePack.missions.length - 1].difficulty).toBe('boss');
+  });
+
+  it('points every requiredCampaignId at a campaign that exists', () => {
+    const ids = new Set(packs.map((pack) => pack.campaign.id));
+    for (const pack of packs) {
+      const required = pack.campaign.requiredCampaignId;
+      if (required) {
+        expect(ids.has(required)).withContext(`${pack.campaign.id} → ${required}`).toBeTrue();
+      }
+    }
   });
 });

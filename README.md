@@ -11,12 +11,18 @@ An Nx monorepo with two Angular 18 apps:
 
 *Learn. Build. Defend. Lead.*
 
-The vertical slice ships Campaign 1 — **Foundations of the Platform** — with
-four playable missions (multiple choice, code review and contract-comparison
-challenges), a four-level hint ladder, contextual help, platform meters,
-XP/rank/badge progression and local save state. Content is data-driven and
-validated with Zod; adding missions or campaigns means adding data, not
-engine code.
+Two full campaigns ship today, each ending in a multi-stage boss incident:
+
+- **Foundations of the Platform** (10 missions) — Angular, TypeScript, SCSS,
+  Git and testing basics, culminating in the Dashboard v2 launch.
+- **Zod Gate** (8 missions) — runtime validation at the API boundary; unlocks
+  once Foundations is complete.
+
+Both run on the same engine: multiple-choice, code-review and
+contract-comparison challenges, a four-level hint ladder, contextual help,
+platform meters, XP/rank/badge progression, campaign unlock gating and local
+save state. Content is data-driven and validated with Zod; adding missions or
+campaigns means adding data, not engine code.
 
 Key entry points:
 

@@ -55,4 +55,22 @@ export class CampaignDetailComponent {
     const campaign = this.campaign();
     return campaign ? this.gameState.isCampaignCompleted(campaign) : false;
   });
+
+  protected readonly locked = computed(() => {
+    const campaign = this.campaign();
+    if (!campaign) {
+      return false;
+    }
+    const prerequisite = campaign.requiredCampaignId
+      ? this.content.campaignById(campaign.requiredCampaignId)
+      : undefined;
+    return !this.gameState.isCampaignUnlocked(campaign, prerequisite);
+  });
+
+  protected readonly prerequisiteTitle = computed(() => {
+    const campaign = this.campaign();
+    return campaign?.requiredCampaignId
+      ? (this.content.campaignById(campaign.requiredCampaignId)?.title ?? null)
+      : null;
+  });
 }

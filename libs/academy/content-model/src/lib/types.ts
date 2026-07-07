@@ -143,6 +143,8 @@ export interface CampaignDefinition {
   subtitle: string;
   description: string;
   requiredRank?: string;
+  /** Campaign that must be completed before this one unlocks. */
+  requiredCampaignId?: string;
   tags: string[];
   /** Ordered mission IDs; each mission unlocks when the previous completes. */
   missions: string[];

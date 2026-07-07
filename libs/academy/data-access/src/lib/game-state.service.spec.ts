@@ -100,4 +100,37 @@ describe('GameStateService', () => {
     expect(service.hasProfile()).toBeFalse();
     expect(localStorage.getItem('engineering-academy:save')).toBeNull();
   });
+
+  describe('campaign unlocking', () => {
+    it('always unlocks a campaign with no prerequisite', () => {
+      service.createProfile('Avery');
+      const foundations = content.campaigns().find((c) => c.id === 'foundations')!;
+      expect(service.isCampaignUnlocked(foundations)).toBeTrue();
+    });
+
+    it('locks a gated campaign until its prerequisite is complete', () => {
+      service.createProfile('Avery');
+      const foundations = content.campaignById('foundations')!;
+      const zodGate = content.campaignById('zod-gate')!;
+
+      expect(zodGate.requiredCampaignId).toBe('foundations');
+      expect(service.isCampaignUnlocked(zodGate, foundations)).toBeFalse();
+
+      // Complete every Foundations mission.
+      for (const missionId of foundations.missions) {
+        service.completeMission(
+          { missionId, scoreRatio: 1, xpEarned: 10, perfect: true, noHints: true },
+          []
+        );
+      }
+
+      expect(service.isCampaignUnlocked(zodGate, foundations)).toBeTrue();
+    });
+
+    it('treats a gated campaign as locked when the prerequisite is not provided', () => {
+      service.createProfile('Avery');
+      const zodGate = content.campaignById('zod-gate')!;
+      expect(service.isCampaignUnlocked(zodGate)).toBeFalse();
+    });
+  });
 });
