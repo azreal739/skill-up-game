@@ -3,6 +3,8 @@ import { foundationsPack } from './foundations/campaign';
 import { componentForgePack } from './component-forge/campaign';
 import { typescriptTrialsPack } from './typescript-trials/campaign';
 import { zodGatePack } from './zod-gate/campaign';
+import { nxMonorepoMazePack } from './nx-monorepo-maze/campaign';
+import { apiContractCrisisPack } from './api-contract-crisis/campaign';
 import { helpTopics } from './help-topics';
 
 /**
@@ -10,7 +12,14 @@ import { helpTopics } from './help-topics';
  * validate against the schema and all cross-references must resolve.
  */
 describe('content integrity', () => {
-  const packs = [foundationsPack, componentForgePack, typescriptTrialsPack, zodGatePack];
+  const packs = [
+    foundationsPack,
+    componentForgePack,
+    typescriptTrialsPack,
+    zodGatePack,
+    nxMonorepoMazePack,
+    apiContractCrisisPack,
+  ];
 
   it('validates every campaign pack against the Zod schema', () => {
     for (const pack of packs) {
@@ -117,6 +126,8 @@ describe('content integrity', () => {
       'component-forge': 'foundations',
       'typescript-trials': 'component-forge',
       'zod-gate': 'typescript-trials',
+      'nx-monorepo-maze': 'zod-gate',
+      'api-contract-crisis': 'nx-monorepo-maze',
     };
     for (const pack of packs) {
       expect(pack.campaign.requiredCampaignId)

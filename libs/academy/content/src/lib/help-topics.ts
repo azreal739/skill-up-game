@@ -223,6 +223,38 @@ export const helpTopics: HelpTopic[] = [
       'A unit test arranges inputs, acts on one function or component, and asserts the outcome. Pure functions (scoring, validation, evaluation) are the easiest and most valuable to test. Cover the unhappy paths — empty data, invalid payloads — because that is where production incidents live.',
   },
   {
+    id: 'nx.apps-vs-libs',
+    title: 'Apps vs Libraries',
+    tags: ['nx'],
+    summary: 'Apps stay thin; the real code lives in libraries.',
+    content:
+      'In an Nx workspace an application is a thin shell that wires libraries together and configures build/deploy. The features, UI, data-access and utilities live in libraries so they can be owned, tested, tagged and reused independently. A common smell is a fat app with logic that should be in a lib.',
+  },
+  {
+    id: 'nx.affected-graph',
+    title: 'Affected Builds and the Dependency Graph',
+    tags: ['nx'],
+    summary: 'Nx rebuilds and retests only what a change can affect.',
+    content:
+      'Nx models the workspace as a dependency graph. `nx affected` uses it to run build/test/lint only for the projects touched by a change and everything downstream of them — not the whole repo. Reading the graph (`nx graph`) also reveals unexpected couplings before they bite.',
+  },
+  {
+    id: 'nx.tag-rules',
+    title: 'Tags and Boundary Rules',
+    tags: ['nx'],
+    summary: 'Tags plus lint rules enforce who may depend on whom.',
+    content:
+      'Each project declares tags (e.g. type:feature, type:ui, scope:orders). The enforce-module-boundaries lint rule reads depConstraints to allow or forbid dependencies by tag — features may use ui/util, ui may not import features, one scope may not reach into another. The rule turns architecture decisions into a failing lint instead of a code-review argument.',
+  },
+  {
+    id: 'api.dto',
+    title: 'Reading a DTO',
+    tags: ['api', 'java'],
+    summary: 'A DTO is the wire shape the back end promises — read it precisely.',
+    content:
+      'A Data Transfer Object defines the exact fields, types and nullability the API sends. Front-end models should mirror the DTO you actually receive, not what you wish it were: check each field name, its type (a number vs a numeric string), and whether it can be null or absent. Misreading the DTO is the root of most contract drift.',
+  },
+  {
     id: 'nx.libraries-boundaries',
     title: 'Nx Libraries and Boundaries',
     tags: ['nx'],
