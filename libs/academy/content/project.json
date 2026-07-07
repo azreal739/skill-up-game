@@ -4,6 +4,13 @@
   "projectType": "library",
   "sourceRoot": "libs/academy/content/src",
   "prefix": "ea",
-  "tags": ["type:content", "scope:academy"],
-  "targets": {}
+  "tags": [
+    "type:content",
+    "scope:academy"
+  ],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
 }

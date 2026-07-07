@@ -6,7 +6,8 @@
     "start:academy": "nx serve engineering-academy",
     "build": "nx run-many -t build",
     "watch": "nx build skill-up-game --watch --configuration development",
-    "test": "nx run-many -t test -- --watch=false"
+    "test": "nx run-many -t test -- --watch=false",
+    "lint": "nx run-many -t lint"
   },
   "private": true,
   "dependencies": {
@@ -31,11 +32,15 @@
     "@angular-devkit/schematics": "^18.2.8",
     "@angular/cli": "^18.2.8",
     "@angular/compiler-cli": "^18.2.0",
+    "@eslint/js": "^10.0.1",
     "@nrwl/angular": "^19.8.4",
     "@nx/angular": "20.4.4",
+    "@nx/eslint": "^20.4.4",
+    "@nx/eslint-plugin": "^20.4.4",
     "@nx/workspace": "20.4.4",
     "@schematics/angular": "^18.2.8",
     "@types/jasmine": "~5.1.0",
+    "eslint": "^9.39.4",
     "jasmine-core": "~5.2.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
@@ -44,7 +49,8 @@
     "karma-jasmine-html-reporter": "~2.1.0",
     "msw": "^2.7.3",
     "nx": "20.4.4",
-    "typescript": "~5.5.2"
+    "typescript": "~5.5.2",
+    "typescript-eslint": "^8.62.1"
   },
   "msw": {
     "workerDirectory": [

@@ -4,6 +4,14 @@
   "projectType": "library",
   "sourceRoot": "libs/academy/challenges/src",
   "prefix": "ea",
-  "tags": ["type:feature", "scope:academy", "scope:challenge"],
-  "targets": {}
+  "tags": [
+    "type:feature",
+    "scope:academy",
+    "scope:challenge"
+  ],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
 }

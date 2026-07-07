@@ -9,7 +9,10 @@
   },
   "sourceRoot": "apps/skill-up-game/src",
   "prefix": "app",
-  "tags": ["type:app", "scope:games"],
+  "tags": [
+    "type:app",
+    "scope:games"
+  ],
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:application",
@@ -17,7 +20,9 @@
         "outputPath": "dist/apps/skill-up-game",
         "index": "apps/skill-up-game/src/index.html",
         "browser": "apps/skill-up-game/src/main.ts",
-        "polyfills": ["zone.js"],
+        "polyfills": [
+          "zone.js"
+        ],
         "tsConfig": "apps/skill-up-game/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [
@@ -28,7 +33,9 @@
             "output": ""
           }
         ],
-        "styles": ["apps/skill-up-game/src/styles.scss"]
+        "styles": [
+          "apps/skill-up-game/src/styles.scss"
+        ]
       },
       "configurations": {
         "production": {
@@ -73,7 +80,10 @@
       "executor": "@angular-devkit/build-angular:karma",
       "options": {
         "karmaConfig": "apps/skill-up-game/karma.conf.js",
-        "polyfills": ["zone.js", "zone.js/testing"],
+        "polyfills": [
+          "zone.js",
+          "zone.js/testing"
+        ],
         "tsConfig": "apps/skill-up-game/tsconfig.spec.json",
         "inlineStyleLanguage": "scss",
         "assets": [
@@ -82,9 +92,14 @@
             "input": "apps/skill-up-game/public"
           }
         ],
-        "styles": ["apps/skill-up-game/src/styles.scss"],
+        "styles": [
+          "apps/skill-up-game/src/styles.scss"
+        ],
         "scripts": []
       }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
     }
   }
 }

@@ -9,7 +9,10 @@
   },
   "sourceRoot": "apps/engineering-academy/src",
   "prefix": "ea",
-  "tags": ["type:app", "scope:academy"],
+  "tags": [
+    "type:app",
+    "scope:academy"
+  ],
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:application",
@@ -17,7 +20,9 @@
         "outputPath": "dist/apps/engineering-academy",
         "index": "apps/engineering-academy/src/index.html",
         "browser": "apps/engineering-academy/src/main.ts",
-        "polyfills": ["zone.js"],
+        "polyfills": [
+          "zone.js"
+        ],
         "tsConfig": "apps/engineering-academy/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [
@@ -27,7 +32,9 @@
             "output": ""
           }
         ],
-        "styles": ["apps/engineering-academy/src/styles.scss"]
+        "styles": [
+          "apps/engineering-academy/src/styles.scss"
+        ]
       },
       "configurations": {
         "production": {
@@ -69,12 +76,20 @@
       "executor": "@angular-devkit/build-angular:karma",
       "options": {
         "karmaConfig": "apps/engineering-academy/karma.conf.js",
-        "polyfills": ["zone.js", "zone.js/testing"],
+        "polyfills": [
+          "zone.js",
+          "zone.js/testing"
+        ],
         "tsConfig": "apps/engineering-academy/tsconfig.spec.json",
         "inlineStyleLanguage": "scss",
-        "styles": ["apps/engineering-academy/src/styles.scss"],
+        "styles": [
+          "apps/engineering-academy/src/styles.scss"
+        ],
         "scripts": []
       }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
     }
   }
 }

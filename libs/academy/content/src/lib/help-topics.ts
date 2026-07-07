@@ -143,6 +143,30 @@ export const helpTopics: HelpTopic[] = [
       'In an Nx workspace, apps stay thin and code lives in focused libraries: feature, ui, data-access, util. Tags on each project declare its role, and boundary rules keep dependencies pointed the right way — UI must not import features, content must not import UI. The dependency graph makes coupling visible before it becomes chaos.',
   },
   {
+    id: 'git.undoing-changes',
+    title: 'Undoing Changes: revert vs reset',
+    tags: ['git'],
+    summary: 'revert adds a new commit that undoes; reset rewrites history.',
+    content:
+      'git revert creates a new commit that reverses an earlier one — safe on shared branches because history only moves forward. git reset rewrites history and needs a force push, which breaks everyone who already pulled. On anything shared (like main), revert; keep reset for local work you have not pushed.',
+  },
+  {
+    id: 'testing.flaky-tests',
+    title: 'Flaky Tests and Determinism',
+    tags: ['testing', 'cicd'],
+    summary: 'A test that sometimes fails erodes trust in the whole suite.',
+    content:
+      'Tests must be deterministic: same code, same result, every run. The usual culprits are real clocks (new Date()), randomness, network calls and shared state between tests. Fix flakiness by controlling the inputs — inject a fixed clock, seed the random source, mock the network. Deleting or endlessly re-running a flaky test hides a real signal.',
+  },
+  {
+    id: 'delivery.feature-flags',
+    title: 'Feature Flags and Gradual Rollout',
+    tags: ['cicd', 'incident-response'],
+    summary: 'Flags separate deploying code from releasing it to users.',
+    content:
+      'A feature flag lets you ship code dark, enable it for a small percentage of users, watch the dashboards, and expand — or switch it off instantly without a deploy if something breaks. Rolling out gradually turns a potential incident into a contained observation. Big-bang releases give up that safety for no benefit.',
+  },
+  {
     id: 'incident.rollback-vs-hotfix',
     title: 'Rollback vs Hotfix',
     tags: ['incident-response'],
