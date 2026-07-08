@@ -156,3 +156,47 @@
   flex-shrink: 0;
   margin-right: 0.2rem;
 }
+
+/* Cards materialise in sequence when the hub opens. */
+.campaign {
+  animation: card-in 0.45s ease both;
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Slow light sweep across progress bars — the platform is always working. */
+.campaign__bar {
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 34px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
+    animation: bar-sheen 3.2s ease-in-out infinite;
+  }
+}
+
+@keyframes bar-sheen {
+  0% {
+    left: -34px;
+  }
+
+  60%,
+  100% {
+    left: 100%;
+  }
+}

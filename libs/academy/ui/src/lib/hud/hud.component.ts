@@ -9,6 +9,7 @@ import {
   stabilityHealth,
 } from '@academy/content-model';
 import { MeterComponent } from '../meter/meter.component';
+import { CountUpComponent } from '../count-up/count-up.component';
 
 /**
  * Mission HUD (07_UI_UX_SPECIFICATION.md): rank, XP, platform stability,
@@ -17,7 +18,7 @@ import { MeterComponent } from '../meter/meter.component';
 @Component({
   selector: 'ea-hud',
   standalone: true,
-  imports: [MeterComponent],
+  imports: [MeterComponent, CountUpComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="hud">
@@ -26,7 +27,7 @@ import { MeterComponent } from '../meter/meter.component';
           <span class="hud__level">LV {{ level.level }} · {{ level.codename }}</span>
         }
         <span class="hud__rank">{{ rank.title }}</span>
-        <span class="hud__xp">{{ xp }} XP</span>
+        <span class="hud__xp"><ea-count-up [value]="xp" suffix=" XP" [instant]="!animateNumbers" /></span>
         <div class="hud__xpbar" role="progressbar" [attr.aria-label]="progressLabel"
           [attr.aria-valuenow]="xpProgressPercent" aria-valuemin="0" aria-valuemax="100">
           <div class="hud__xpfill" [style.width.%]="xpProgressPercent"></div>
@@ -72,6 +73,8 @@ export class HudComponent {
   @Input() levelProgress: number | null = null;
   @Input() missionTitle: string | null = null;
   @Input() hintsUsed: number | null = null;
+  /** Count XP changes up smoothly; callers pass false for reduced motion. */
+  @Input() animateNumbers = true;
 
   get xpProgressPercent(): number {
     const progress = this.level && this.levelProgress !== null ? this.levelProgress : this.rankProgress;

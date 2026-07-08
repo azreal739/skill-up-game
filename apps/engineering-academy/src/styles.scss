@@ -279,3 +279,14 @@ body.ea-high-contrast {
   color: var(--ea-danger);
   border-color: rgba(248, 113, 113, 0.5);
 }
+
+/* View-transition cross-fade pacing; fully disabled under reduced motion. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.22s;
+}
+
+html.ea-reduced-motion::view-transition-old(root),
+html.ea-reduced-motion::view-transition-new(root) {
+  animation: none !important;
+}
