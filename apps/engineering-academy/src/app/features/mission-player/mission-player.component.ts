@@ -80,16 +80,13 @@ export class MissionPlayerComponent {
   );
 
   constructor() {
-    effect(
-      () => {
-        const mission = this.mission();
-        if (mission && this.session.mission()?.id !== mission.id) {
-          this.session.start(mission);
-          this.attemptEvaluation.set(null);
-        }
-      },
-      { allowSignalWrites: true }
-    );
+    effect(() => {
+      const mission = this.mission();
+      if (mission && this.session.mission()?.id !== mission.id) {
+        this.session.start(mission);
+        this.attemptEvaluation.set(null);
+      }
+    });
   }
 
   protected readonly totalHintsUsed = computed(() =>
