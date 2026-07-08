@@ -46,6 +46,26 @@
             <span class="ea-chip">{{ tag }}</span>
           }
         </div>
+
+        @if (gameState.hasProfile()) {
+          <div class="help__note">
+            <button type="button" class="ea-btn" (click)="toggleNote()">
+              {{ noteOpen() ? 'Hide note' : 'Add a note' }}
+            </button>
+            @if (noteOpen()) {
+              <div class="help__note-composer">
+                <ea-note-composer
+                  linkType="help-topic"
+                  [linkId]="topic.id"
+                  [suggestedTitle]="topic.title"
+                  [nudge]="noteNudge"
+                  (saved)="noteOpen.set(false)"
+                  (dismissed)="noteOpen.set(false)"
+                />
+              </div>
+            }
+          </div>
+        }
       </article>
     }
   </div>

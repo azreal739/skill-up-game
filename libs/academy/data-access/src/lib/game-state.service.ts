@@ -5,6 +5,8 @@ import {
   ChallengeProgress,
   ConsequenceDefinition,
   MissionRecord,
+  NoteLinkType,
+  PlayerNote,
   PlayerSettings,
   PlayerState,
   Rank,
@@ -88,6 +90,17 @@ export interface ReviewOutcomeResult {
   xpAwarded: number;
   rankBefore: Rank;
   rankAfter: Rank;
+}
+
+/** The fields a player supplies when writing a note (Review Loop spec 06). */
+export interface NoteInput {
+  title: string;
+  body: string;
+  tags: string[];
+  pinned?: boolean;
+  linkedEntityType: NoteLinkType;
+  /** Empty for a `general` note. */
+  linkedEntityId: string;
 }
 
 /**
@@ -481,6 +494,79 @@ export class GameStateService {
     return { attempt, remediated: input.isCorrect, xpAwarded, rankBefore, rankAfter: rankForXp(nextXp) };
   }
 
+  /** Notes attached to a given entity, newest first (Review Loop spec 06). */
+  notesForEntity(type: NoteLinkType, id: string): PlayerNote[] {
+    return this.notes()
+      .filter((note) => note.linkedEntityType === type && note.linkedEntityId === id)
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  }
+
+  noteById(id: string): PlayerNote | undefined {
+    return this.notes().find((note) => note.id === id);
+  }
+
+  /**
+   * Creates a note. When it links to a Technical Debt item the item's
+   * `noteIds` list is kept in sync in the same commit so the backlog can show
+   * that the concept has captured reflections.
+   */
+  createNote(input: NoteInput): PlayerNote {
+    const now = new Date().toISOString();
+    const note: PlayerNote = {
+      id: createId('note'),
+      title: input.title,
+      body: input.body,
+      tags: input.tags,
+      pinned: input.pinned ?? false,
+      linkedEntityType: input.linkedEntityType,
+      linkedEntityId: input.linkedEntityId,
+      createdAt: now,
+      updatedAt: now,
+    };
+    this.mutate((state) => ({
+      ...state,
+      notes: [...state.notes, note],
+      technicalDebtItems: linkNoteToDebt(state.technicalDebtItems, note),
+    }));
+    return note;
+  }
+
+  /** Updates the editable fields of a note; leaves links and timestamps intact. */
+  updateNote(
+    id: string,
+    patch: Partial<Pick<PlayerNote, 'title' | 'body' | 'tags' | 'pinned'>>
+  ): void {
+    const now = new Date().toISOString();
+    this.mutate((state) => ({
+      ...state,
+      notes: state.notes.map((note) =>
+        note.id === id ? { ...note, ...patch, updatedAt: now } : note
+      ),
+    }));
+  }
+
+  toggleNotePin(id: string): void {
+    const now = new Date().toISOString();
+    this.mutate((state) => ({
+      ...state,
+      notes: state.notes.map((note) =>
+        note.id === id ? { ...note, pinned: !note.pinned, updatedAt: now } : note
+      ),
+    }));
+  }
+
+  deleteNote(id: string): void {
+    this.mutate((state) => ({
+      ...state,
+      notes: state.notes.filter((note) => note.id !== id),
+      technicalDebtItems: state.technicalDebtItems.map((item) =>
+        item.noteIds.includes(id)
+          ? { ...item, noteIds: item.noteIds.filter((n) => n !== id) }
+          : item
+      ),
+    }));
+  }
+
   private mutate(update: (state: PlayerState) => PlayerState): void {
     this.commit(update(this.requireState()));
   }
@@ -497,6 +583,18 @@ export class GameStateService {
     this.stateSignal.set(state);
     this.persistence.save(state);
   }
+}
+
+/** Adds a note's id to its linked Technical Debt item, if it links to one. */
+function linkNoteToDebt(items: TechnicalDebtItem[], note: PlayerNote): TechnicalDebtItem[] {
+  if (note.linkedEntityType !== 'technical-debt') {
+    return items;
+  }
+  return items.map((item) =>
+    item.id === note.linkedEntityId && !item.noteIds.includes(note.id)
+      ? { ...item, noteIds: [...item.noteIds, note.id] }
+      : item
+  );
 }
 
 const CONSEQUENCE_LABELS: Record<ConsequenceDefinition['type'], string> = {

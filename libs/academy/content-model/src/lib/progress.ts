@@ -98,10 +98,16 @@ export const noteLinkTypeSchema = z.enum([
   'challenge',
   'technical-debt',
   'help-topic',
+  // A free-standing reflection not tied to any single piece of content.
+  'general',
 ]);
 export type NoteLinkType = z.infer<typeof noteLinkTypeSchema>;
 
-/** A player-authored lesson, optionally linked to game content. */
+/**
+ * A player-authored lesson. `linkedEntityType` records the context it was
+ * written in; a `general` note (with an empty `linkedEntityId`) is a
+ * free-standing reflection captured from the Notes page.
+ */
 export const playerNoteSchema = z.object({
   id: z.string().min(1),
   title: z.string(),

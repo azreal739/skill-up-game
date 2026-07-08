@@ -91,7 +91,22 @@
                 <button type="button" class="ea-btn ea-btn--primary" (click)="backToBacklog()">
                   Back to backlog
                 </button>
+                <button type="button" class="ea-btn" (click)="toggleNote()">
+                  {{ noteOpen() ? 'Hide note' : 'Add a note' }}
+                </button>
               </div>
+              @if (noteOpen()) {
+                <div class="review__note">
+                  <ea-note-composer
+                    linkType="technical-debt"
+                    [linkId]="item.id"
+                    [suggestedTitle]="item.challengeTitle + ' — what changed'"
+                    [nudge]="noteNudge"
+                    (saved)="noteOpen.set(false)"
+                    (dismissed)="noteOpen.set(false)"
+                  />
+                </div>
+              }
             } @else {
               <p class="review__result-title">Still needs review</p>
               <p class="review__result-body">

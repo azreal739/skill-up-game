@@ -1,0 +1,149 @@
+.notes__header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.notes__title {
+  font-size: 1.7rem;
+  margin: 0.15rem 0 0.4rem;
+}
+
+.notes__lede {
+  color: var(--ea-muted);
+  max-width: 40rem;
+}
+
+.notes__count {
+  margin-top: 0.5rem;
+  font-family: var(--ea-mono);
+  font-size: 0.8rem;
+  color: var(--ea-muted);
+}
+
+.notes__header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.notes__editor {
+  margin-top: 1.25rem;
+}
+
+.notes__editor-title {
+  font-size: 1.1rem;
+  margin-bottom: 0.9rem;
+}
+
+.notes__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1.25rem 0 0.5rem;
+}
+
+.notes__filter {
+  cursor: pointer;
+  background: var(--ea-panel);
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+
+  &:hover {
+    color: var(--ea-text);
+    border-color: var(--ea-accent);
+  }
+
+  &.is-active {
+    color: #06121a;
+    background: linear-gradient(110deg, rgba(34, 211, 238, 0.9), rgba(167, 139, 250, 0.9));
+    border-color: transparent;
+  }
+}
+
+.notes__list {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.notes__item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+
+  &.is-pinned {
+    border-color: rgba(34, 211, 238, 0.45);
+  }
+}
+
+.notes__item-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.notes__link {
+  display: inline-block;
+  font-family: var(--ea-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ea-accent);
+
+  &[data-type='technical-debt'] {
+    color: var(--ea-warn);
+  }
+  &[data-type='help-topic'] {
+    color: var(--ea-accent-2);
+  }
+  &[data-type='general'] {
+    color: var(--ea-muted);
+  }
+}
+
+.notes__item-title {
+  font-size: 1.1rem;
+  margin-top: 0.25rem;
+}
+
+.notes__pin-mark {
+  font-size: 0.85rem;
+}
+
+.notes__body {
+  color: var(--ea-text);
+  white-space: pre-wrap;
+  line-height: 1.55;
+}
+
+.notes__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.notes__item-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.2rem;
+}
+
+.notes__empty {
+  margin-top: 1.25rem;
+  text-align: center;
+  color: var(--ea-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.notes__empty-title {
+  font-size: 1.15rem;
+  color: var(--ea-text);
+}

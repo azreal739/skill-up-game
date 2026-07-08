@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { GameStateService } from './game-state.service';
 import { ContentService } from './content.service';
+import { MissionSessionService } from './mission-session.service';
 
 describe('GameStateService', () => {
   let service: GameStateService;
@@ -173,6 +174,96 @@ describe('GameStateService', () => {
       service.createProfile('Avery');
       const componentForge = content.campaignById('component-forge')!;
       expect(service.isCampaignUnlocked(componentForge)).toBeFalse();
+    });
+  });
+
+  describe('notes (Review Loop spec 06)', () => {
+    beforeEach(() => service.createProfile('Avery'));
+
+    it('creates a general note and persists it across a reload', () => {
+      const note = service.createNote({
+        title: 'Runtime boundary lesson',
+        body: 'Validate at the edge.',
+        tags: ['zod', 'boundaries'],
+        linkedEntityType: 'general',
+        linkedEntityId: '',
+      });
+
+      expect(service.notes().length).toBe(1);
+      expect(note.pinned).toBeFalse();
+
+      // A fresh store instance (new injector) rehydrates from localStorage.
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({});
+      const reloaded = TestBed.inject(GameStateService);
+      expect(reloaded.notes().length).toBe(1);
+      expect(reloaded.notes()[0].title).toBe('Runtime boundary lesson');
+    });
+
+    it('edits, pins and deletes a note', () => {
+      const note = service.createNote({
+        title: 'Draft',
+        body: '',
+        tags: [],
+        linkedEntityType: 'general',
+        linkedEntityId: '',
+      });
+
+      service.updateNote(note.id, { title: 'Final', tags: ['typescript'] });
+      expect(service.noteById(note.id)?.title).toBe('Final');
+      expect(service.noteById(note.id)?.tags).toEqual(['typescript']);
+
+      service.toggleNotePin(note.id);
+      expect(service.noteById(note.id)?.pinned).toBeTrue();
+      service.toggleNotePin(note.id);
+      expect(service.noteById(note.id)?.pinned).toBeFalse();
+
+      service.deleteNote(note.id);
+      expect(service.notes().length).toBe(0);
+    });
+
+    it('filters notes by linked entity', () => {
+      service.createNote({
+        title: 'A',
+        body: '',
+        tags: [],
+        linkedEntityType: 'mission',
+        linkedEntityId: 'm1',
+      });
+      service.createNote({
+        title: 'B',
+        body: '',
+        tags: [],
+        linkedEntityType: 'help-topic',
+        linkedEntityId: 'topic-1',
+      });
+
+      expect(service.notesForEntity('mission', 'm1').map((n) => n.title)).toEqual(['A']);
+      expect(service.notesForEntity('help-topic', 'topic-1').map((n) => n.title)).toEqual(['B']);
+      expect(service.notesForEntity('mission', 'other')).toEqual([]);
+    });
+
+    it('links a note to its Technical Debt item and unlinks it on delete', () => {
+      // File a debt item by missing the first challenge of a real mission.
+      const session = TestBed.inject(MissionSessionService);
+      const mission = content.missionById('foundations-001-welcome')!;
+      session.start(mission);
+      session.beginChallenges();
+      session.submit(['b']); // wrong
+      const debt = service.technicalDebtItems()[0];
+      expect(debt.noteIds).toEqual([]);
+
+      const note = service.createNote({
+        title: 'What changed',
+        body: 'string vs number.',
+        tags: [],
+        linkedEntityType: 'technical-debt',
+        linkedEntityId: debt.id,
+      });
+      expect(service.debtItemById(debt.id)?.noteIds).toEqual([note.id]);
+
+      service.deleteNote(note.id);
+      expect(service.debtItemById(debt.id)?.noteIds).toEqual([]);
     });
   });
 });

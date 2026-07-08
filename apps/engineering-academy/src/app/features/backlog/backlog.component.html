@@ -49,6 +49,11 @@
               </div>
               <p class="backlog__card-why">{{ item.whyItMatters }}</p>
               <p class="backlog__card-consequence">{{ item.consequenceSummary }}</p>
+              @if (item.noteIds.length > 0) {
+                <a class="backlog__card-notes" routerLink="/notes">
+                  🗒 {{ item.noteIds.length }} note{{ item.noteIds.length === 1 ? '' : 's' }}
+                </a>
+              }
               <div class="backlog__card-actions">
                 @if (item.status === 'remediated') {
                   <a class="ea-btn" [routerLink]="['/review', item.id]">Review again</a>

@@ -81,6 +81,12 @@ export const appRoutes: Routes = [
       import('./features/backlog/backlog.component').then((m) => m.BacklogComponent),
   },
   {
+    path: 'notes',
+    canActivate: [profileGuard],
+    loadComponent: () =>
+      import('./features/notes/notes.component').then((m) => m.NotesComponent),
+  },
+  {
     path: 'review/:debtItemId',
     canActivate: [profileGuard],
     loadComponent: () =>

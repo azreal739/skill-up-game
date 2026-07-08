@@ -26,6 +26,7 @@ import { WaveBackgroundComponent } from './shared/wave-background/wave-backgroun
               }}</span>
             }
           </a>
+          <a routerLink="/notes" routerLinkActive="is-active">Notes</a>
           <a routerLink="/profile" routerLinkActive="is-active">Profile</a>
         }
         <a routerLink="/help" routerLinkActive="is-active">Help Centre</a>
