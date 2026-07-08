@@ -1,0 +1,123 @@
+<div class="review ea-page">
+  @if (item(); as item) {
+    <a class="review__back" routerLink="/backlog">← Technical Debt Backlog</a>
+
+    <header class="review__header ea-panel">
+      <p class="ea-eyebrow">Academy Review</p>
+      <h1 class="review__title">{{ item.challengeTitle }}</h1>
+      <p class="review__source">
+        @if (campaign(); as campaign) { {{ campaign.title }} · }
+        @if (mission(); as mission) { {{ mission.title }} }
+      </p>
+      <div class="review__tags">
+        @for (tag of item.conceptTags; track tag) {
+          <span class="ea-chip">{{ tag }}</span>
+        }
+        <span class="ea-chip review__status" [attr.data-status]="item.status">{{ item.status }}</span>
+      </div>
+    </header>
+
+    <section class="review__context ea-panel">
+      <h2>What happened</h2>
+      <p class="review__first">
+        <span class="review__first-label">Your first decision</span>
+        @for (label of firstAnswerLabels(); track label) {
+          <span class="review__first-answer">{{ label }}</span>
+        }
+      </p>
+      <h3>Why it matters</h3>
+      <p class="review__why">{{ item.whyItMatters }}</p>
+      <p class="review__explanation">{{ item.explanation }}</p>
+      <p class="review__consequence">Impact recorded: {{ item.consequenceSummary }}</p>
+
+      @if (relatedHelp().length > 0) {
+        <div class="review__help">
+          <h3>Related Help Centre topics</h3>
+          <ul class="review__help-list">
+            @for (topic of relatedHelp(); track topic.id) {
+              <li>
+                <button type="button" class="review__help-link" (click)="showHelp(topic)">
+                  📖 {{ topic.title }}
+                </button>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+    </section>
+
+    @if (openHelpTopic(); as topic) {
+      <aside class="review__help-panel ea-panel" role="note">
+        <div class="review__help-head">
+          <h3>{{ topic.title }}</h3>
+          <button type="button" class="review__help-close" (click)="openHelpTopic.set(null)" aria-label="Close help">✕</button>
+        </div>
+        <p class="review__help-summary">{{ topic.summary }}</p>
+        <p class="review__help-content">{{ topic.content }}</p>
+      </aside>
+    }
+
+    @if (challenge(); as challenge) {
+      <section class="review__replay ea-panel">
+        <h2>Replay the decision</h2>
+        <ea-challenge-host
+          [challenge]="challenge"
+          [evaluation]="evaluation()"
+          [locked]="evaluation() !== null"
+          (submitted)="onSubmit($event)"
+        />
+
+        @if (evaluation(); as evaluation) {
+          <div
+            class="review__result"
+            [class.review__result--success]="remediated()"
+            [class.review__result--retry]="!remediated()"
+            role="status"
+          >
+            @if (remediated()) {
+              <p class="review__result-title">✓ Technical Debt Remediated</p>
+              <p class="review__result-body">
+                You corrected your understanding of {{ item.conceptTags.join(', ') || 'this concept' }}.
+              </p>
+              <dl class="review__result-meta">
+                <div><dt>First attempt</dt><dd>Incorrect</dd></div>
+                <div><dt>Review attempt</dt><dd>Correct</dd></div>
+                <div><dt>Status</dt><dd>Remediated</dd></div>
+                @if (xpAwarded() > 0) {
+                  <div><dt>Remediation XP</dt><dd>+{{ xpAwarded() }}</dd></div>
+                }
+              </dl>
+              <div class="review__result-actions">
+                <button type="button" class="ea-btn ea-btn--primary" (click)="backToBacklog()">
+                  Back to backlog
+                </button>
+              </div>
+            } @else {
+              <p class="review__result-title">Still needs review</p>
+              <p class="review__result-body">
+                This concept is still open. Mission Control recommends reviewing the linked Help
+                Centre topic or adding a note before trying again.
+              </p>
+              <div class="review__result-actions">
+                <button type="button" class="ea-btn ea-btn--primary" (click)="tryReviewAgain()">
+                  Try review again
+                </button>
+                <button type="button" class="ea-btn" (click)="backToBacklog()">Back to backlog</button>
+              </div>
+            }
+          </div>
+        }
+      </section>
+    } @else {
+      <section class="ea-panel">
+        <p>The challenge behind this item could not be loaded.</p>
+      </section>
+    }
+  } @else {
+    <section class="ea-panel">
+      <h1>Item not found</h1>
+      <p>This Technical Debt item does not exist or has been cleared.</p>
+      <a class="ea-btn" routerLink="/backlog">Back to backlog</a>
+    </section>
+  }
+</div>

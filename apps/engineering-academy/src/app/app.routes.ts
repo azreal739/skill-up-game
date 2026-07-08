@@ -75,6 +75,18 @@ export const appRoutes: Routes = [
       import('./features/profile/profile.component').then((m) => m.ProfileComponent),
   },
   {
+    path: 'backlog',
+    canActivate: [profileGuard],
+    loadComponent: () =>
+      import('./features/backlog/backlog.component').then((m) => m.BacklogComponent),
+  },
+  {
+    path: 'review/:debtItemId',
+    canActivate: [profileGuard],
+    loadComponent: () =>
+      import('./features/review/review.component').then((m) => m.ReviewComponent),
+  },
+  {
     path: 'help',
     loadComponent: () =>
       import('./features/help-centre/help-centre.component').then((m) => m.HelpCentreComponent),

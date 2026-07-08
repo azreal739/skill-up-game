@@ -9,6 +9,7 @@ import {
   PlayerState,
   Rank,
   TechnicalDebtItem,
+  TechnicalDebtStatus,
   applyConsequence,
   createPlayerState,
   initialMeters,
@@ -66,6 +67,27 @@ export interface ChallengeOutcomeResult {
   attempt: ChallengeAttempt;
   /** The debt item created or reopened by a first-try miss, if any. */
   debtItem: TechnicalDebtItem | null;
+}
+
+/** A remediation attempt against a filed debt item (Review Loop spec 05/08). */
+export interface ReviewOutcomeInput {
+  debtItemId: string;
+  challengeId: string;
+  missionId: string;
+  campaignId: string;
+  selectedAnswerIds: string[];
+  isCorrect: boolean;
+  /** Remediation XP to credit — only on the first successful remediation. */
+  remediationXp: number;
+}
+
+export interface ReviewOutcomeResult {
+  attempt: ChallengeAttempt;
+  remediated: boolean;
+  /** XP actually credited (0 for a miss or an already-remediated item). */
+  xpAwarded: number;
+  rankBefore: Rank;
+  rankAfter: Rank;
 }
 
 /**
@@ -352,6 +374,111 @@ export class GameStateService {
     });
 
     return { attempt, debtItem };
+  }
+
+  /** Mark a debt item as being worked on when the player opens Review. */
+  markDebtInReview(debtItemId: string): void {
+    const item = this.debtItemById(debtItemId);
+    if (!item || (item.status !== 'open' && item.status !== 'reopened')) {
+      return; // Nothing to change — avoid a needless write.
+    }
+    const now = new Date().toISOString();
+    this.mutate((state) => ({
+      ...state,
+      technicalDebtItems: state.technicalDebtItems.map((i) =>
+        i.id === debtItemId ? { ...i, status: 'in-review', updatedAt: now } : i
+      ),
+    }));
+  }
+
+  /**
+   * Records an Academy Review attempt: appends a review attempt, updates the
+   * challenge's progress and the debt item's status, and — on the first
+   * successful remediation only — credits remediation XP. The original first
+   * attempt is never touched, and a correct review does not restore
+   * perfect-mission eligibility (Review Loop spec 05/08).
+   */
+  recordReviewOutcome(input: ReviewOutcomeInput): ReviewOutcomeResult {
+    const state = this.requireState();
+    const now = new Date().toISOString();
+    const item = state.technicalDebtItems.find((i) => i.id === input.debtItemId);
+    const alreadyRemediated = item?.status === 'remediated';
+    const willAward = input.isCorrect && !alreadyRemediated;
+    const xpAwarded = willAward ? input.remediationXp : 0;
+
+    const attempt: ChallengeAttempt = {
+      id: createId('att'),
+      challengeId: input.challengeId,
+      missionId: input.missionId,
+      campaignId: input.campaignId,
+      mode: 'review',
+      selectedAnswerIds: input.selectedAnswerIds,
+      isCorrect: input.isCorrect,
+      submittedAt: now,
+      xpAwarded,
+    };
+
+    const existing = state.challengeProgress.find((p) => p.challengeId === input.challengeId);
+    const progress: ChallengeProgress = existing
+      ? {
+          ...existing,
+          latestAttemptId: attempt.id,
+          latestAttemptCorrect: input.isCorrect,
+          totalAttempts: existing.totalAttempts + 1,
+          reviewAttempts: existing.reviewAttempts + 1,
+          isRemediated: existing.isRemediated || input.isCorrect,
+          remediatedAt: existing.isRemediated
+            ? existing.remediatedAt
+            : input.isCorrect
+              ? now
+              : existing.remediatedAt,
+          technicalDebtItemId: existing.technicalDebtItemId ?? input.debtItemId,
+        }
+      : {
+          challengeId: input.challengeId,
+          missionId: input.missionId,
+          campaignId: input.campaignId,
+          latestAttemptId: attempt.id,
+          latestAttemptCorrect: input.isCorrect,
+          totalAttempts: 1,
+          reviewAttempts: 1,
+          isRemediated: input.isCorrect,
+          remediatedAt: input.isCorrect ? now : undefined,
+          technicalDebtItemId: input.debtItemId,
+        };
+    const challengeProgress = existing
+      ? state.challengeProgress.map((p) => (p.challengeId === input.challengeId ? progress : p))
+      : [...state.challengeProgress, progress];
+
+    const technicalDebtItems = state.technicalDebtItems.map((i) => {
+      if (i.id !== input.debtItemId) {
+        return i;
+      }
+      const status: TechnicalDebtStatus = alreadyRemediated
+        ? 'remediated'
+        : input.isCorrect
+          ? 'remediated'
+          : 'reopened';
+      return {
+        ...i,
+        status,
+        updatedAt: now,
+        remediatedAt: input.isCorrect ? (i.remediatedAt ?? now) : i.remediatedAt,
+        reviewAttemptIds: [...i.reviewAttemptIds, attempt.id],
+      };
+    });
+
+    const rankBefore = rankForXp(state.xp);
+    const nextXp = state.xp + xpAwarded;
+    this.commit({
+      ...state,
+      xp: nextXp,
+      challengeAttempts: [...state.challengeAttempts, attempt],
+      challengeProgress,
+      technicalDebtItems,
+    });
+
+    return { attempt, remediated: input.isCorrect, xpAwarded, rankBefore, rankAfter: rankForXp(nextXp) };
   }
 
   private mutate(update: (state: PlayerState) => PlayerState): void {

@@ -18,6 +18,14 @@ import { WaveBackgroundComponent } from './shared/wave-background/wave-backgroun
       <nav class="topbar__nav" aria-label="Primary">
         @if (gameState.hasProfile()) {
           <a routerLink="/campaigns" routerLinkActive="is-active">Campaigns</a>
+          <a routerLink="/backlog" routerLinkActive="is-active">
+            Backlog
+            @if (gameState.openDebtCount() > 0) {
+              <span class="topbar__badge" aria-label="{{ gameState.openDebtCount() }} open items">{{
+                gameState.openDebtCount()
+              }}</span>
+            }
+          </a>
           <a routerLink="/profile" routerLinkActive="is-active">Profile</a>
         }
         <a routerLink="/help" routerLinkActive="is-active">Help Centre</a>

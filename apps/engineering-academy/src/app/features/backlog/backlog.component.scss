@@ -1,0 +1,160 @@
+.backlog {
+  display: grid;
+  gap: 1.2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.backlog__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.backlog__title {
+  margin: 0.2rem 0;
+  font-size: 1.7rem;
+}
+
+.backlog__summary {
+  margin: 0;
+  color: var(--ea-muted);
+  max-width: 60ch;
+  line-height: 1.6;
+}
+
+.backlog__stat {
+  margin: 0;
+  color: var(--ea-muted);
+  font-size: 0.9rem;
+}
+
+.backlog__empty {
+  text-align: center;
+  display: grid;
+  gap: 0.5rem;
+  justify-items: center;
+  padding: 2.5rem 1.5rem;
+}
+
+.backlog__empty-glyph {
+  font-size: 2rem;
+  margin: 0;
+}
+
+.backlog__group {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.backlog__group-head {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.backlog__group-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 1.1rem;
+
+  // Status accent — a soft left rule, colour-coded (spec 09).
+  padding-left: 0.6rem;
+  border-left: 3px solid var(--ea-border);
+
+  &[data-status='open'] { border-left-color: #38bdf8; }
+  &[data-status='reopened'] { border-left-color: #fb923c; }
+  &[data-status='in-review'] { border-left-color: #818cf8; }
+  &[data-status='remediated'] { border-left-color: #34d399; }
+}
+
+.backlog__group-count {
+  font-size: 0.8rem;
+  color: var(--ea-muted);
+  border: 1px solid var(--ea-border);
+  border-radius: 999px;
+  padding: 0.05rem 0.5rem;
+}
+
+.backlog__group-hint {
+  margin: 0 0 0 0.6rem;
+  color: var(--ea-muted);
+  font-size: 0.85rem;
+}
+
+.backlog__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 0.8rem;
+}
+
+.backlog__card {
+  display: grid;
+  gap: 0.4rem;
+  align-content: start;
+  border-left: 3px solid var(--ea-border);
+
+  &[data-status='open'] { border-left-color: #38bdf8; }
+  &[data-status='reopened'] { border-left-color: #fb923c; }
+  &[data-status='in-review'] { border-left-color: #818cf8; }
+  &[data-status='remediated'] { border-left-color: #34d399; }
+}
+
+.backlog__card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.backlog__card-title {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.backlog__card-status {
+  font-size: 0.68rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ea-muted);
+  white-space: nowrap;
+
+  &[data-status='open'] { color: #7dd3fc; }
+  &[data-status='reopened'] { color: #fdba74; }
+  &[data-status='in-review'] { color: #a5b4fc; }
+  &[data-status='remediated'] { color: #6ee7b7; }
+}
+
+.backlog__card-source {
+  margin: 0;
+  color: var(--ea-muted);
+  font-size: 0.82rem;
+}
+
+.backlog__card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.backlog__card-why {
+  margin: 0.2rem 0 0;
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.backlog__card-consequence {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--ea-warn);
+}
+
+.backlog__card-actions {
+  margin-top: 0.4rem;
+}

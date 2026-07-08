@@ -1,0 +1,67 @@
+<div class="backlog ea-page">
+  <header class="backlog__header">
+    <div>
+      <p class="ea-eyebrow">Academy Review</p>
+      <h1 class="backlog__title">Technical Debt Backlog</h1>
+      <p class="backlog__summary">
+        Concepts discovered during missions. Remediate them in Academy Review to strengthen the
+        platform — your first attempts stay on record either way.
+      </p>
+    </div>
+    <a class="ea-btn" routerLink="/campaigns">Back to campaigns</a>
+  </header>
+
+  @if (totalItems() === 0) {
+    <section class="backlog__empty ea-panel">
+      <p class="backlog__empty-glyph" aria-hidden="true">🟢</p>
+      <h2>No technical debt</h2>
+      <p>Every decision so far has held up. Keep shipping — Mission Control is impressed.</p>
+      <a class="ea-btn ea-btn--primary" routerLink="/campaigns">Continue a campaign</a>
+    </section>
+  } @else {
+    <p class="backlog__stat" role="status">
+      {{ remediatedCount() }} of {{ totalItems() }} remediated ·
+      {{ gameState.openDebtCount() }} still open
+    </p>
+
+    @for (group of groups(); track group.status) {
+      <section class="backlog__group">
+        <header class="backlog__group-head">
+          <h2 class="backlog__group-title" [attr.data-status]="group.status">
+            {{ group.label }}
+            <span class="backlog__group-count">{{ group.items.length }}</span>
+          </h2>
+          <p class="backlog__group-hint">{{ group.hint }}</p>
+        </header>
+
+        <ul class="backlog__list">
+          @for (item of group.items; track item.id) {
+            <li class="backlog__card ea-panel" [attr.data-status]="item.status">
+              <div class="backlog__card-head">
+                <h3 class="backlog__card-title">{{ item.challengeTitle }}</h3>
+                <span class="backlog__card-status" [attr.data-status]="item.status">{{ item.status }}</span>
+              </div>
+              <p class="backlog__card-source">{{ campaignTitle(item) }} · {{ missionTitle(item) }}</p>
+              <div class="backlog__card-tags">
+                @for (tag of item.conceptTags; track tag) {
+                  <span class="ea-chip">{{ tag }}</span>
+                }
+              </div>
+              <p class="backlog__card-why">{{ item.whyItMatters }}</p>
+              <p class="backlog__card-consequence">{{ item.consequenceSummary }}</p>
+              <div class="backlog__card-actions">
+                @if (item.status === 'remediated') {
+                  <a class="ea-btn" [routerLink]="['/review', item.id]">Review again</a>
+                } @else {
+                  <a class="ea-btn ea-btn--primary" [routerLink]="['/review', item.id]">
+                    Review challenge
+                  </a>
+                }
+              </div>
+            </li>
+          }
+        </ul>
+      </section>
+    }
+  }
+</div>
