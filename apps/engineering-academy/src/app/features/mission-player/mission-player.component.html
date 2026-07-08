@@ -167,6 +167,11 @@
                     <button type="button" class="ea-btn ea-btn--primary" (click)="continueAfterDecision()">
                       {{ session.challengeIndex() + 1 === session.totalChallenges() ? 'Finish mission' : 'Continue' }}
                     </button>
+                    @if (!evaluation.correct) {
+                      <button type="button" class="ea-btn" (click)="toggleNote()">
+                        {{ noteOpen() ? 'Hide note' : 'Add a note' }}
+                      </button>
+                    }
                     @if (!evaluation.correct && run.challenge.helpLinks.length > 0) {
                       <button
                         type="button"
@@ -177,6 +182,19 @@
                       </button>
                     }
                   </div>
+
+                  @if (!evaluation.correct && noteOpen()) {
+                    <div class="feedback__note">
+                      <ea-note-composer
+                        linkType="challenge"
+                        [linkId]="run.challenge.id"
+                        [suggestedTitle]="run.challenge.title + ' — lesson'"
+                        [nudge]="noteNudge"
+                        (saved)="noteOpen.set(false)"
+                        (dismissed)="noteOpen.set(false)"
+                      />
+                    </div>
+                  }
                 </div>
               }
             </section>

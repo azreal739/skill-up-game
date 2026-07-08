@@ -10,6 +10,7 @@ import {
   GameStateService,
 } from '@academy/data-access';
 import { ChallengeHostComponent } from '@academy/challenges';
+import { NoteComposerComponent } from '../../shared/note-composer/note-composer.component';
 
 /**
  * Academy Review mode (Review Loop spec 05): replay a filed Technical Debt
@@ -19,7 +20,7 @@ import { ChallengeHostComponent } from '@academy/challenges';
 @Component({
   selector: 'ea-review',
   standalone: true,
-  imports: [RouterLink, ChallengeHostComponent],
+  imports: [RouterLink, ChallengeHostComponent, NoteComposerComponent],
   templateUrl: './review.component.html',
   styleUrls: ['./review.component.scss'],
 })
@@ -67,6 +68,16 @@ export class ReviewComponent {
   protected readonly remediated = signal(false);
   protected readonly xpAwarded = signal(0);
   protected readonly openHelpTopic = signal<HelpTopic | null>(null);
+  protected readonly noteOpen = signal(false);
+
+  /** Post-remediation nudge (Review Loop spec 06). */
+  protected readonly noteNudge =
+    'Add a short note about what changed in your understanding.';
+
+  toggleNote(): void {
+    this.audio.play('click');
+    this.noteOpen.update((open) => !open);
+  }
 
   constructor() {
     // Opening the review marks the item In Review. Read/write the store inside

@@ -246,6 +246,12 @@
   flex-wrap: wrap;
 }
 
+.feedback__note {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--ea-border);
+}
+
 /* ---- Results ---- */
 
 .results {

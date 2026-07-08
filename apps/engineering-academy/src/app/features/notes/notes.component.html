@@ -1,0 +1,119 @@
+<div class="notes ea-page">
+  <header class="notes__header ea-panel">
+    <div class="notes__headline">
+      <p class="ea-eyebrow">Engineering Notebook</p>
+      <h1 class="notes__title">My Notes</h1>
+      <p class="notes__lede">
+        Lessons you have captured during missions, review and the Help Centre. Pin the ones you
+        want to keep close.
+      </p>
+      <p class="notes__count">
+        {{ gameState.notes().length }} note{{ gameState.notes().length === 1 ? '' : 's' }}
+      </p>
+    </div>
+    <div class="notes__header-actions">
+      <button type="button" class="ea-btn ea-btn--primary" (click)="startNewNote()">
+        + New note
+      </button>
+      <a class="ea-btn" routerLink="/profile">← Profile</a>
+    </div>
+  </header>
+
+  @if (editing() === 'new') {
+    <section class="notes__editor ea-panel">
+      <h2 class="notes__editor-title">New note</h2>
+      <ea-note-composer
+        linkType="general"
+        (saved)="closeEditor()"
+        (dismissed)="closeEditor()"
+      />
+    </section>
+  }
+
+  @if (allTags().length > 0) {
+    <div class="notes__filters" role="group" aria-label="Filter notes by tag">
+      <button
+        type="button"
+        class="ea-chip notes__filter"
+        [class.is-active]="activeTag() === null"
+        (click)="filterByTag(null)"
+      >
+        All
+      </button>
+      @for (tag of allTags(); track tag) {
+        <button
+          type="button"
+          class="ea-chip notes__filter"
+          [class.is-active]="activeTag() === tag"
+          (click)="filterByTag(tag)"
+        >
+          {{ tag }}
+        </button>
+      }
+    </div>
+  }
+
+  @if (visibleNotes().length > 0) {
+    <ul class="notes__list">
+      @for (note of visibleNotes(); track note.id) {
+        <li class="notes__item ea-panel" [class.is-pinned]="note.pinned">
+          @if (editing() === note.id) {
+            <ea-note-composer
+              [note]="note"
+              (saved)="closeEditor()"
+              (dismissed)="closeEditor()"
+            />
+          } @else {
+            <div class="notes__item-head">
+              <div>
+                <span class="notes__link" [attr.data-type]="note.linkedEntityType">
+                  {{ linkLabel(note) }}
+                  @if (linkTarget(note); as target) { · {{ target }} }
+                </span>
+                <h3 class="notes__item-title">
+                  @if (note.pinned) { <span class="notes__pin-mark" aria-label="Pinned">📌</span> }
+                  {{ note.title }}
+                </h3>
+              </div>
+            </div>
+
+            @if (note.body) {
+              <p class="notes__body">{{ note.body }}</p>
+            }
+
+            @if (note.tags.length > 0) {
+              <div class="notes__tags">
+                @for (tag of note.tags; track tag) {
+                  <span class="ea-chip">{{ tag }}</span>
+                }
+              </div>
+            }
+
+            <div class="notes__item-actions">
+              <button type="button" class="ea-btn" (click)="togglePin(note)">
+                {{ note.pinned ? 'Unpin' : 'Pin' }}
+              </button>
+              <button type="button" class="ea-btn" (click)="editNote(note)">Edit</button>
+              <button type="button" class="ea-btn ea-btn--danger" (click)="deleteNote(note)">
+                Delete
+              </button>
+            </div>
+          }
+        </li>
+      }
+    </ul>
+  } @else if (gameState.notes().length === 0) {
+    <section class="notes__empty ea-panel">
+      <p class="notes__empty-title">No notes yet</p>
+      <p>
+        Notes turn a wrong answer into a lesson you keep. After a mission decision, a review, or a
+        Help Centre read, look for <strong>Add a note</strong> — or start one now.
+      </p>
+    </section>
+  } @else {
+    <section class="notes__empty ea-panel">
+      <p>No notes match <strong>{{ activeTag() }}</strong>.</p>
+      <button type="button" class="ea-btn" (click)="filterByTag(null)">Clear filter</button>
+    </section>
+  }
+</div>

@@ -32,6 +32,7 @@ import {
 import { ChallengeHostComponent } from '@academy/challenges';
 import { HelpDrawerComponent } from './help-drawer.component';
 import { WaveStateService } from '../../shared/wave-background/wave-state.service';
+import { NoteComposerComponent } from '../../shared/note-composer/note-composer.component';
 
 @Component({
   selector: 'ea-mission-player',
@@ -45,6 +46,7 @@ import { WaveStateService } from '../../shared/wave-background/wave-state.servic
     BadgeChipComponent,
     ChallengeHostComponent,
     HelpDrawerComponent,
+    NoteComposerComponent,
   ],
   templateUrl: './mission-player.component.html',
   styleUrls: ['./mission-player.component.scss'],
@@ -70,6 +72,12 @@ export class MissionPlayerComponent implements OnDestroy {
   protected readonly helpTopic = signal<HelpTopic | null>(null);
   /** Mission-brief overlay, reachable from the HUD during challenges. */
   protected readonly briefOpen = signal(false);
+  /** Whether the "capture a lesson" note composer is open under the feedback. */
+  protected readonly noteOpen = signal(false);
+
+  /** Senior-Dev nudge shown above the note composer (Review Loop spec 06). */
+  protected readonly noteNudge =
+    'Want to write this down? This is one of those lessons that saves production later.';
 
   protected readonly campaign = computed(() => {
     const mission = this.mission();
@@ -207,8 +215,14 @@ export class MissionPlayerComponent implements OnDestroy {
       return;
     }
     this.attemptEvaluation.set(evaluation);
+    this.noteOpen.set(false);
     this.audio.play(evaluation.correct ? 'correct' : 'incorrect');
     this.waves.pulse(evaluation.correct ? 'correct' : 'incorrect');
+  }
+
+  toggleNote(): void {
+    this.audio.play('click');
+    this.noteOpen.update((open) => !open);
   }
 
   /** The Technical Debt item filed for the current challenge, if it was missed. */
@@ -224,6 +238,7 @@ export class MissionPlayerComponent implements OnDestroy {
 
   private advance(): void {
     this.attemptEvaluation.set(null);
+    this.noteOpen.set(false);
     this.session.advance();
     if (this.session.phase() === 'results') {
       const result = this.session.result();

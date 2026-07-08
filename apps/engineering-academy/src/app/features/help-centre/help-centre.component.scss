@@ -105,6 +105,16 @@
   flex-wrap: wrap;
 }
 
+.help__note {
+  margin-top: 1.2rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--ea-border);
+}
+
+.help__note-composer {
+  margin-top: 1rem;
+}
+
 @media (max-width: 820px) {
   .help__layout {
     grid-template-columns: 1fr;

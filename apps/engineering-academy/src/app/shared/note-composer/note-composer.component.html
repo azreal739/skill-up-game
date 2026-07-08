@@ -1,0 +1,60 @@
+<form class="composer" (submit)="$event.preventDefault(); save()">
+  @if (nudge) {
+    <p class="composer__nudge">{{ nudge }}</p>
+  }
+
+  <label class="composer__field">
+    <span class="composer__label">Title</span>
+    <input
+      class="composer__input"
+      type="text"
+      [ngModel]="title()"
+      (ngModelChange)="title.set($event)"
+      name="note-title"
+      placeholder="Name the lesson"
+      autocomplete="off"
+    />
+  </label>
+
+  <label class="composer__field">
+    <span class="composer__label">What you learned</span>
+    <textarea
+      class="composer__input composer__textarea"
+      [ngModel]="body()"
+      (ngModelChange)="body.set($event)"
+      name="note-body"
+      rows="5"
+      [placeholder]="bodyPlaceholder"
+    ></textarea>
+  </label>
+
+  <label class="composer__field">
+    <span class="composer__label">Tags <em>(comma separated)</em></span>
+    <input
+      class="composer__input"
+      type="text"
+      [ngModel]="tagsText()"
+      (ngModelChange)="tagsText.set($event)"
+      name="note-tags"
+      placeholder="typescript, api-boundary"
+      autocomplete="off"
+    />
+  </label>
+
+  <label class="composer__pin">
+    <input
+      type="checkbox"
+      [ngModel]="pinned()"
+      (ngModelChange)="pinned.set($event)"
+      name="note-pinned"
+    />
+    <span>Pin to the top of my notes</span>
+  </label>
+
+  <div class="composer__actions">
+    <button type="submit" class="ea-btn ea-btn--primary" [disabled]="!canSave">
+      {{ note ? 'Save changes' : 'Save note' }}
+    </button>
+    <button type="button" class="ea-btn" (click)="cancel()">Cancel</button>
+  </div>
+</form>
