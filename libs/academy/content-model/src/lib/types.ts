@@ -139,11 +139,15 @@ export interface MissionDefinition {
   rewards: RewardDefinition[];
 }
 
+/** Expected challenge level, shown on campaign cards before starting. */
+export type CampaignDifficulty = 'beginner' | 'intermediate' | 'advanced' | 'expert';
+
 export interface CampaignDefinition {
   id: string;
   title: string;
   subtitle: string;
   description: string;
+  difficulty: CampaignDifficulty;
   requiredRank?: string;
   /** Campaign that must be completed before this one unlocks. */
   requiredCampaignId?: string;

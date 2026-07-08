@@ -4,6 +4,9 @@
     <header class="detail__header">
       <p class="ea-eyebrow">{{ campaign.subtitle }}</p>
       <h1>{{ campaign.title }}</h1>
+      <span class="ea-chip campaign__difficulty" [attr.data-difficulty]="campaign.difficulty">
+        {{ campaign.difficulty }}
+      </span>
       <p class="detail__description">{{ campaign.description }}</p>
       @if (campaignComplete()) {
         <p class="detail__complete">✓ Campaign complete — replay any mission for a better score.</p>

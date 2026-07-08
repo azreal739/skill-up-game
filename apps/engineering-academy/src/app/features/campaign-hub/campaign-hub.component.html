@@ -50,6 +50,9 @@
         <p class="campaign__description">{{ campaign.description }}</p>
 
         <div class="campaign__tags">
+          <span class="ea-chip campaign__difficulty" [attr.data-difficulty]="campaign.difficulty">
+            {{ campaign.difficulty }}
+          </span>
           @for (tag of campaign.tags; track tag) {
             <span class="ea-chip">{{ tag }}</span>
           }

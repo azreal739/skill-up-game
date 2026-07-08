@@ -144,3 +144,12 @@
     text-align: center;
   }
 }
+
+.identity__level {
+  margin: 0 0 0.1rem;
+  font-family: var(--ea-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ea-accent);
+}

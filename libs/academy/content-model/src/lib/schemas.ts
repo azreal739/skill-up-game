@@ -133,11 +133,19 @@ export const missionSchema = z.object({
   rewards: z.array(rewardSchema),
 });
 
+export const campaignDifficultySchema = z.enum([
+  'beginner',
+  'intermediate',
+  'advanced',
+  'expert',
+]);
+
 export const campaignSchema = z.object({
   id: z.string().min(1),
   title: z.string().min(1),
   subtitle: z.string().min(1),
   description: z.string().min(1),
+  difficulty: campaignDifficultySchema,
   requiredRank: z.string().optional(),
   requiredCampaignId: z.string().optional(),
   tags: z.array(z.string().min(1)).min(1),
