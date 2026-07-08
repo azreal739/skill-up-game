@@ -313,6 +313,11 @@
                   Next mission: {{ next.title }}
                 </button>
               }
+              @if (gameState.openDebtCount() > 0) {
+                <a class="ea-btn" routerLink="/backlog">
+                  Review Technical Debt ({{ gameState.openDebtCount() }})
+                </a>
+              }
               <button type="button" class="ea-btn" (click)="replay()">Replay mission</button>
               <a class="ea-btn" [routerLink]="['/campaigns', mission.campaignId]">Back to campaign</a>
             </div>
