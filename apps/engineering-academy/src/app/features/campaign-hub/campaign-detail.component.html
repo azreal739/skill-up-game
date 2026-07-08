@@ -2,8 +2,17 @@
   @if (campaign(); as campaign) {
     <a class="detail__back" routerLink="/campaigns">← Campaign Hub</a>
     <header class="detail__header">
-      <p class="ea-eyebrow">{{ campaign.subtitle }}</p>
-      <h1>{{ campaign.title }}</h1>
+      <div class="detail__title-row">
+        <ea-campaign-emblem
+          [campaignId]="campaign.id"
+          [difficulty]="campaign.difficulty"
+          [size]="64"
+        />
+        <div>
+          <p class="ea-eyebrow">{{ campaign.subtitle }}</p>
+          <h1>{{ campaign.title }}</h1>
+        </div>
+      </div>
       <span class="ea-chip campaign__difficulty" [attr.data-difficulty]="campaign.difficulty">
         {{ campaign.difficulty }}
       </span>

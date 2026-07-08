@@ -8,7 +8,7 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { ChallengeDefinition, EvaluationResult } from '@academy/content-model';
-import { CodeViewerComponent } from '@academy/ui';
+import { CodeViewerComponent, IconComponent } from '@academy/ui';
 import { OptionListComponent } from '../option-list/option-list.component';
 
 /**
@@ -20,13 +20,18 @@ import { OptionListComponent } from '../option-list/option-list.component';
 @Component({
   selector: 'ea-challenge-host',
   standalone: true,
-  imports: [CodeViewerComponent, OptionListComponent],
+  imports: [CodeViewerComponent, IconComponent, OptionListComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section class="challenge">
       <header class="challenge__header">
         <span class="challenge__type">{{ typeLabel }}</span>
         <span class="challenge__difficulty">{{ challenge.difficulty }}</span>
+        <span class="challenge__tags">
+          @for (tag of challenge.tags; track tag) {
+            <span class="challenge__tag" [title]="tag"><ea-icon [name]="tag" [size]="13" /></span>
+          }
+        </span>
       </header>
       <h2 class="challenge__title">{{ challenge.title }}</h2>
       <p class="challenge__story">{{ challenge.storyContext }}</p>

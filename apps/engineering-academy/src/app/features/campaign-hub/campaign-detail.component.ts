@@ -4,6 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { ContentService, GameStateService } from '@academy/data-access';
 import { MissionDefinition } from '@academy/content-model';
+import { CampaignEmblemComponent } from './campaign-emblem.component';
 
 interface MissionNode {
   mission: MissionDefinition;
@@ -17,7 +18,7 @@ interface MissionNode {
 @Component({
   selector: 'ea-campaign-detail',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, CampaignEmblemComponent],
   templateUrl: './campaign-detail.component.html',
   styleUrls: ['./campaign-detail.component.scss'],
 })
