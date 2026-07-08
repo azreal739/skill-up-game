@@ -39,6 +39,12 @@
         [attr.aria-disabled]="isLocked(campaign.id) ? 'true' : null"
       >
         <div class="campaign__header">
+          <ea-campaign-emblem
+            class="campaign__emblem"
+            [campaignId]="campaign.id"
+            [difficulty]="campaign.difficulty"
+            [size]="42"
+          />
           <h2 class="campaign__title">{{ campaign.title }}</h2>
           @if (isCompleted(campaign.id)) {
             <span class="ea-chip campaign__done">✓ complete</span>
@@ -54,7 +60,7 @@
             {{ campaign.difficulty }}
           </span>
           @for (tag of campaign.tags; track tag) {
-            <span class="ea-chip">{{ tag }}</span>
+            <span class="ea-chip"><ea-icon [name]="tag" [size]="12" />{{ tag }}</span>
           }
         </div>
 

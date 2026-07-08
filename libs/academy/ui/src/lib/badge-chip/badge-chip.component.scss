@@ -23,3 +23,19 @@
   font-size: 0.68rem;
   color: var(--ea-muted);
 }
+
+/* Earned badges glow softly and pop on hover. */
+.badge:not(.badge--locked) {
+  border-color: rgba(34, 211, 238, 0.35);
+  box-shadow:
+    0 0 14px rgba(34, 211, 238, 0.12),
+    inset 0 0 8px rgba(34, 211, 238, 0.06);
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px) scale(1.03);
+    box-shadow:
+      0 0 22px rgba(34, 211, 238, 0.25),
+      inset 0 0 10px rgba(34, 211, 238, 0.1);
+  }
+}

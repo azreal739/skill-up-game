@@ -2,11 +2,13 @@ import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { PercentPipe } from '@angular/common';
 import { ContentService, GameStateService } from '@academy/data-access';
+import { IconComponent } from '@academy/ui';
+import { CampaignEmblemComponent } from './campaign-emblem.component';
 
 @Component({
   selector: 'ea-campaign-hub',
   standalone: true,
-  imports: [RouterLink, PercentPipe],
+  imports: [RouterLink, PercentPipe, IconComponent, CampaignEmblemComponent],
   templateUrl: './campaign-hub.component.html',
   styleUrls: ['./campaign-hub.component.scss'],
 })

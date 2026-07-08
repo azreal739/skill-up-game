@@ -163,3 +163,10 @@
     0 16px 36px rgba(2, 6, 18, 0.45),
     0 0 30px rgba(251, 146, 60, 0.16);
 }
+
+.detail__title-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.4rem;
+}
