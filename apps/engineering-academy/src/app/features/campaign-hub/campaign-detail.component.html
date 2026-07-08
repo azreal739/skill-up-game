@@ -26,6 +26,7 @@
           class="mission ea-panel"
           [class.mission--locked]="!node.unlocked"
           [class.mission--complete]="node.completed"
+          [class.mission--boss]="node.mission.difficulty === 'boss'"
         >
           <div class="mission__index" aria-hidden="true">
             {{ node.completed ? '✓' : node.unlocked ? node.index + 1 : '🔒' }}

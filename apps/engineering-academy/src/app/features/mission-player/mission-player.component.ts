@@ -17,6 +17,7 @@ import {
 import { CodeViewerComponent, HudComponent, MentorDialogueComponent, BadgeChipComponent } from '@academy/ui';
 import { ChallengeHostComponent } from '@academy/challenges';
 import { HelpDrawerComponent } from './help-drawer.component';
+import { WaveStateService } from '../../shared/wave-background/wave-state.service';
 
 @Component({
   selector: 'ea-mission-player',
@@ -38,6 +39,7 @@ export class MissionPlayerComponent {
   private readonly router = inject(Router);
   private readonly content = inject(ContentService);
   private readonly audio = inject(AudioService);
+  private readonly waves = inject(WaveStateService);
   protected readonly session = inject(MissionSessionService);
   protected readonly gameState = inject(GameStateService);
 
@@ -69,6 +71,13 @@ export class MissionPlayerComponent {
     const mission = this.mission();
     return campaign && mission ? campaign.missions.indexOf(mission.id) : -1;
   });
+
+  protected readonly isBoss = computed(() => this.mission()?.difficulty === 'boss');
+
+  /** Boss stages beaten so far — drives the System Integrity bar. */
+  protected readonly stagesCleared = computed(
+    () => this.session.runs().filter((run) => run.completed).length
+  );
 
   constructor() {
     effect(
@@ -178,6 +187,7 @@ export class MissionPlayerComponent {
     }
     this.attemptEvaluation.set(evaluation);
     this.audio.play(evaluation.correct ? 'correct' : 'incorrect');
+    this.waves.pulse(evaluation.correct ? 'correct' : 'incorrect');
   }
 
   tryAgain(): void {

@@ -1,12 +1,14 @@
 import { Component, effect, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AudioService, GameStateService } from '@academy/data-access';
+import { WaveBackgroundComponent } from './shared/wave-background/wave-background.component';
 
 @Component({
   selector: 'ea-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, WaveBackgroundComponent],
   template: `
+    <ea-wave-background />
     <a class="ea-visually-hidden" href="#ea-main">Skip to content</a>
     <header class="topbar">
       <a class="topbar__brand" routerLink="/">

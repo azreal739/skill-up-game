@@ -124,3 +124,23 @@
     align-items: flex-start;
   }
 }
+
+.mission--boss {
+  border-color: rgba(251, 146, 60, 0.45);
+  background:
+    linear-gradient(180deg, rgba(251, 146, 60, 0.05), rgba(248, 113, 113, 0.04)),
+    var(--ea-panel);
+  box-shadow: 0 0 26px rgba(251, 146, 60, 0.1);
+
+  .mission__index {
+    color: var(--ea-orange);
+  }
+
+  .mission__meta .ea-chip:first-child {
+    color: var(--ea-danger);
+    border-color: rgba(248, 113, 113, 0.6);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+  }
+}
