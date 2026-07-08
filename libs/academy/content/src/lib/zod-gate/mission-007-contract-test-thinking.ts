@@ -5,7 +5,8 @@ export const zodMission007ContractTestThinking: MissionDefinition = {
   id: 'zod-gate-007-contract-test-thinking',
   campaignId: 'zod-gate',
   title: 'Contract Test Thinking',
-  summary: 'Stop finding drift in production. Catch it in CI with a contract test.',
+  summary:
+    'Stop finding drift in production. Catch it in CI with a contract test.',
   difficulty: 'hard',
   learningObjectives: [
     'Understand what a contract test asserts',
@@ -29,7 +30,7 @@ export const zodMission007ContractTestThinking: MissionDefinition = {
       title: 'A recorded real response, committed as a fixture',
       language: 'ts',
       content:
-        "// fixtures/customer.sample.json — captured from the staging API\n{\n  \"id\": \"42\",\n  \"name\": \"Avery Chen\",\n  \"score\": 720\n}",
+        '// fixtures/customer.sample.json — captured from the staging API\n{\n  "id": "42",\n  "name": "Avery Chen",\n  "score": 720\n}',
     },
   ],
   challenges: [
@@ -39,17 +40,10 @@ export const zodMission007ContractTestThinking: MissionDefinition = {
       title: 'Design the Contract Test',
       difficulty: 'hard',
       tags: ['testing', 'zod', 'api'],
-      storyContext: 'You want CI to fail the moment the payload stops matching CustomerSchema.',
+      storyContext:
+        'You want CI to fail the moment the payload stops matching CustomerSchema.',
       prompt: 'Which test actually guards the contract?',
       options: [
-        {
-          id: 'a',
-          label:
-            "it('customer payload matches the schema', () => {\n  expect(CustomerSchema.safeParse(recordedPayload).success).toBe(true);\n});\n// with the fixture refreshed from staging in CI",
-          isCorrect: true,
-          feedback:
-            'Validating a real recorded payload against the schema fails the instant the back end drifts — the drift surfaces in CI, not production.',
-        },
         {
           id: 'b',
           label:
@@ -66,9 +60,22 @@ export const zodMission007ContractTestThinking: MissionDefinition = {
           feedback:
             'A component test with a mocked service proves your UI works against your mock, not against what the API sends.',
         },
+        {
+          id: 'a',
+          label:
+            "it('customer payload matches the schema', () => {\n  expect(CustomerSchema.safeParse(recordedPayload).success).toBe(true);\n});\n// with the fixture refreshed from staging in CI",
+          isCorrect: true,
+          feedback:
+            'Validating a real recorded payload against the schema fails the instant the back end drifts — the drift surfaces in CI, not production.',
+        },
       ],
       hints: [
-        { level: 1, title: 'Direction', content: 'The test must involve data that actually came from the API.' },
+        {
+          level: 1,
+          title: 'Direction',
+          content:
+            'The test must involve data that actually came from the API.',
+        },
         {
           level: 2,
           title: 'Concept',
@@ -78,7 +85,8 @@ export const zodMission007ContractTestThinking: MissionDefinition = {
         {
           level: 3,
           title: 'Specific clue',
-          content: 'Look for the option that validates a recorded/staging payload, not a hand-made object.',
+          content:
+            'Look for the option that validates a recorded/staging payload, not a hand-made object.',
         },
         {
           level: 4,
@@ -92,14 +100,16 @@ export const zodMission007ContractTestThinking: MissionDefinition = {
         {
           type: 'stability',
           delta: -5,
-          reason: 'Drift kept reaching production because only mocks were tested.',
+          reason:
+            'Drift kept reaching production because only mocks were tested.',
         },
       ],
       helpLinks: [
         { topicId: 'testing.contract-tests', label: 'Contract test thinking' },
         { topicId: 'api.contract-drift', label: 'Contract drift' },
       ],
-      successFeedback: 'CI now fails on drift the day it happens — no more learning it from customers.',
+      successFeedback:
+        'CI now fails on drift the day it happens — no more learning it from customers.',
       failureFeedback:
         'A test that only validates your own mock cannot see the back end. The contract test needs real payload data.',
     },

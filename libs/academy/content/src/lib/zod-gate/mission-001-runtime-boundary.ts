@@ -5,7 +5,8 @@ export const zodMission001RuntimeBoundary: MissionDefinition = {
   id: 'zod-gate-001-runtime-boundary',
   campaignId: 'zod-gate',
   title: 'Runtime Boundary',
-  summary: 'Find the one place external data enters the app and decide what belongs there.',
+  summary:
+    'Find the one place external data enters the app and decide what belongs there.',
   difficulty: 'easy',
   learningObjectives: [
     'Locate the runtime trust boundary in a data flow',
@@ -36,7 +37,7 @@ export const zodMission001RuntimeBoundary: MissionDefinition = {
       title: 'customer.service.ts',
       language: 'ts',
       content:
-        "getCustomer(id: string): Observable<Customer> {\n  return this.http.get<Customer>(`/api/customers/${id}`);\n}",
+        'getCustomer(id: string): Observable<Customer> {\n  return this.http.get<Customer>(`/api/customers/${id}`);\n}',
     },
   ],
   challenges: [
@@ -46,9 +47,19 @@ export const zodMission001RuntimeBoundary: MissionDefinition = {
       title: 'Mark the Boundary',
       difficulty: 'easy',
       tags: ['api', 'typescript', 'zod'],
-      storyContext: 'The <Customer> generic on http.get looks like validation, but it is not.',
-      prompt: 'Where is the runtime trust boundary, and what does http.get<Customer>() actually guarantee?',
+      storyContext:
+        'The <Customer> generic on http.get looks like validation, but it is not.',
+      prompt:
+        'Where is the runtime trust boundary, and what does http.get<Customer>() actually guarantee?',
       options: [
+        {
+          id: 'b',
+          label:
+            'The boundary is the template; Angular validates bindings at runtime',
+          isCorrect: false,
+          feedback:
+            'By the template the bad data has already flowed through the whole app — and Angular checks bindings, not payload shape.',
+        },
         {
           id: 'a',
           label:
@@ -58,15 +69,9 @@ export const zodMission001RuntimeBoundary: MissionDefinition = {
             'Exactly. The generic is a compile-time promise the server may break; the response is the seam where a schema must verify reality.',
         },
         {
-          id: 'b',
-          label: 'The boundary is the template; Angular validates bindings at runtime',
-          isCorrect: false,
-          feedback:
-            'By the template the bad data has already flowed through the whole app — and Angular checks bindings, not payload shape.',
-        },
-        {
           id: 'c',
-          label: 'There is no boundary; the <Customer> generic guarantees the shape at runtime',
+          label:
+            'There is no boundary; the <Customer> generic guarantees the shape at runtime',
           isCorrect: false,
           feedback:
             'Generics are erased at build time. http.get<Customer> returns whatever the server sent, typed as Customer on faith.',
@@ -76,7 +81,8 @@ export const zodMission001RuntimeBoundary: MissionDefinition = {
         {
           level: 1,
           title: 'Direction',
-          content: 'Ask which step in the flow is the first that the front end does not control.',
+          content:
+            'Ask which step in the flow is the first that the front end does not control.',
         },
         {
           level: 2,
@@ -87,7 +93,8 @@ export const zodMission001RuntimeBoundary: MissionDefinition = {
         {
           level: 3,
           title: 'Specific clue',
-          content: 'http.get<Customer> types the result but runs no check — so the boundary is the response itself.',
+          content:
+            'http.get<Customer> types the result but runs no check — so the boundary is the response itself.',
         },
         {
           level: 4,
@@ -114,6 +121,7 @@ export const zodMission001RuntimeBoundary: MissionDefinition = {
         'Follow the data: the boundary is the first step the front end cannot control, and a generic never checks runtime data.',
     },
   ],
-  reflectionPrompt: 'In your own codebase, how many HTTP calls use a generic as if it were validation?',
+  reflectionPrompt:
+    'In your own codebase, how many HTTP calls use a generic as if it were validation?',
   rewards: [{ type: 'xp', amount: 5, label: 'Gate opened' }],
 };

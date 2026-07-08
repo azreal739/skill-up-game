@@ -5,7 +5,8 @@ export const prodMission008PostIncidentReview: MissionDefinition = {
   id: 'save-production-008-post-incident-review',
   campaignId: 'save-production',
   title: 'Post-Incident Review',
-  summary: 'Draft the review. Keep the action items that make the system more resilient; cut the blame.',
+  summary:
+    'Draft the review. Keep the action items that make the system more resilient; cut the blame.',
   difficulty: 'hard',
   learningObjectives: [
     'Run a blameless post-incident review',
@@ -34,58 +35,100 @@ export const prodMission008PostIncidentReview: MissionDefinition = {
       title: 'Review the Action Items',
       difficulty: 'hard',
       tags: ['incident-response'],
-      storyContext: 'A blameless review produces concrete, owned actions that harden the system — not blame or platitudes.',
-      prompt: 'Select every item that genuinely belongs in a blameless post-incident review.',
+      storyContext:
+        'A blameless review produces concrete, owned actions that harden the system — not blame or platitudes.',
+      prompt:
+        'Select every item that genuinely belongs in a blameless post-incident review.',
       findings: [
         {
-          id: 'contract-test',
-          label: 'Add a test covering the null cart total that v4.7 crashed on, so the bug cannot recur silently (owner: checkout team)',
-          isCorrect: true,
-          feedback: 'A concrete, owned, systemic action that turns this specific failure into a caught regression. Exactly what a review should produce.',
-        },
-        {
-          id: 'flag-policy',
-          label: 'Require revenue-critical services (like pricing) to ship behind a flag or with a one-click rollback, so mitigation is always seconds away (owner: platform)',
-          isCorrect: true,
-          feedback: 'Addresses the contributing cause — pricing had no flag — with a durable, owned policy. Makes the next incident shorter.',
-        },
-        {
-          id: 'faster-alert',
-          label: 'Tune the checkout alert so it fires closer to impact onset, shrinking detection time (owner: SRE)',
-          isCorrect: true,
-          feedback: 'Detection time is a real lever on incident length; a concrete, owned tuning task is a legitimate action item.',
-        },
-        {
           id: 'blame-dan',
-          label: 'Add a note that Dan caused the outage and should be more careful when deploying',
+          label:
+            'Add a note that Dan caused the outage and should be more careful when deploying',
           isCorrect: false,
-          feedback: 'Blame belongs nowhere in the review. It drives honesty underground and fixes no system. Focus on the system that let the bug reach production.',
+          feedback:
+            'Blame belongs nowhere in the review. It drives honesty underground and fixes no system. Focus on the system that let the bug reach production.',
+        },
+        {
+          id: 'contract-test',
+          label:
+            'Add a test covering the null cart total that v4.7 crashed on, so the bug cannot recur silently (owner: checkout team)',
+          isCorrect: true,
+          feedback:
+            'A concrete, owned, systemic action that turns this specific failure into a caught regression. Exactly what a review should produce.',
         },
         {
           id: 'vague',
-          label: '"Everyone should write better code and test more thoroughly going forward"',
+          label:
+            '"Everyone should write better code and test more thoroughly going forward"',
           isCorrect: false,
-          feedback: 'Vague, unowned, unmeasurable — a platitude, not an action item. Replace with the specific, owned tasks above.',
+          feedback:
+            'Vague, unowned, unmeasurable — a platitude, not an action item. Replace with the specific, owned tasks above.',
+        },
+        {
+          id: 'flag-policy',
+          label:
+            'Require revenue-critical services (like pricing) to ship behind a flag or with a one-click rollback, so mitigation is always seconds away (owner: platform)',
+          isCorrect: true,
+          feedback:
+            'Addresses the contributing cause — pricing had no flag — with a durable, owned policy. Makes the next incident shorter.',
+        },
+        {
+          id: 'faster-alert',
+          label:
+            'Tune the checkout alert so it fires closer to impact onset, shrinking detection time (owner: SRE)',
+          isCorrect: true,
+          feedback:
+            'Detection time is a real lever on incident length; a concrete, owned tuning task is a legitimate action item.',
         },
       ],
       hints: [
-        { level: 1, title: 'Direction', content: 'Which items are concrete, owned, and make the system more resilient?' },
+        {
+          level: 1,
+          title: 'Direction',
+          content:
+            'Which items are concrete, owned, and make the system more resilient?',
+        },
         {
           level: 2,
           title: 'Concept',
           content:
             'A blameless review produces specific action items with owners that harden the system — better tests, safer rollout, faster detection. It never assigns fault or ships vague resolutions.',
         },
-        { level: 3, title: 'Specific clue', content: 'Three real items (the test, the flag/rollback policy, the alert tuning); cut the blame note and the platitude.' },
-        { level: 4, title: 'Guided solution', content: 'Keep the three concrete owned actions; reject blaming Dan and "write better code".' },
+        {
+          level: 3,
+          title: 'Specific clue',
+          content:
+            'Three real items (the test, the flag/rollback policy, the alert tuning); cut the blame note and the platitude.',
+        },
+        {
+          level: 4,
+          title: 'Guided solution',
+          content:
+            'Keep the three concrete owned actions; reject blaming Dan and "write better code".',
+        },
       ],
       rewards: [{ type: 'xp', amount: 50, label: 'Review run' }],
-      consequences: [{ type: 'technical-debt', delta: 15, reason: 'Blame and vague resolutions left the system exactly as fragile as before.' }],
-      helpLinks: [{ topicId: 'incident.post-mortem', label: 'Blameless post-incident review' }],
-      successFeedback: 'You kept the concrete, owned, systemic actions and cut the blame — the next incident will be shorter because of this review.',
-      failureFeedback: 'Keep specific, owned, systemic actions (the test, the flag policy, the alert). Blame and platitudes harden nothing.',
+      consequences: [
+        {
+          type: 'technical-debt',
+          delta: 15,
+          reason:
+            'Blame and vague resolutions left the system exactly as fragile as before.',
+        },
+      ],
+      helpLinks: [
+        {
+          topicId: 'incident.post-mortem',
+          label: 'Blameless post-incident review',
+        },
+      ],
+      successFeedback:
+        'You kept the concrete, owned, systemic actions and cut the blame — the next incident will be shorter because of this review.',
+      failureFeedback:
+        'Keep specific, owned, systemic actions (the test, the flag policy, the alert). Blame and platitudes harden nothing.',
     },
   ],
-  reflectionPrompt: 'Why does naming a culprit in a review make the next incident more likely, not less?',
+  reflectionPrompt:
+    'Why does naming a culprit in a review make the next incident more likely, not less?',
   rewards: [{ type: 'xp', amount: 5, label: 'System hardened' }],
 };

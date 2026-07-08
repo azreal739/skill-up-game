@@ -5,7 +5,8 @@ export const apiMission001ReadTheDto: MissionDefinition = {
   id: 'api-contract-crisis-001-read-the-dto',
   campaignId: 'api-contract-crisis',
   title: 'Read the DTO',
-  summary: 'A new integration is failing. Before writing a model, read what the API actually sends.',
+  summary:
+    'A new integration is failing. Before writing a model, read what the API actually sends.',
   difficulty: 'easy',
   learningObjectives: [
     'Read a back-end DTO precisely',
@@ -43,12 +44,15 @@ export const apiMission001ReadTheDto: MissionDefinition = {
       title: 'Spot the Mismatch',
       difficulty: 'easy',
       tags: ['api'],
-      storyContext: 'The front-end interface was written from a wishlist, not from the DTO.',
-      prompt: 'Reading the DTO against the front-end model, what is actually wrong?',
+      storyContext:
+        'The front-end interface was written from a wishlist, not from the DTO.',
+      prompt:
+        'Reading the DTO against the front-end model, what is actually wrong?',
       options: [
         {
           id: 'a',
-          label: 'total arrives as a numeric string ("129.90"), and customerRef can be null — the model claims number and non-null string',
+          label:
+            'total arrives as a numeric string ("129.90"), and customerRef can be null — the model claims number and non-null string',
           isCorrect: true,
           feedback:
             'The DTO serialises total as a String and marks customerRef nullable. The front-end model assumed number and a guaranteed string — the exact drift crashing the dashboard.',
@@ -62,29 +66,56 @@ export const apiMission001ReadTheDto: MissionDefinition = {
         },
         {
           id: 'c',
-          label: 'itemCount should be a string because everything from Java is a string',
+          label:
+            'itemCount should be a string because everything from Java is a string',
           isCorrect: false,
-          feedback: 'Not everything — itemCount is an Integer and arrives as a number. Read each field on its own merits.',
+          feedback:
+            'Not everything — itemCount is an Integer and arrives as a number. Read each field on its own merits.',
         },
       ],
       hints: [
-        { level: 1, title: 'Direction', content: 'Compare each field’s type and nullability, not just its name.' },
+        {
+          level: 1,
+          title: 'Direction',
+          content:
+            'Compare each field’s type and nullability, not just its name.',
+        },
         {
           level: 2,
           title: 'Concept',
           content:
             'A DTO promises exact types and nullability. total is a String here; customerRef is nullable. TypeScript types are erased at runtime, so a wrong assumption becomes a production error, not a compile error.',
         },
-        { level: 3, title: 'Specific clue', content: 'Look at total (String vs number) and customerRef (nullable vs required).' },
-        { level: 4, title: 'Guided solution', content: 'total is a numeric string; customerRef can be null. The model is wrong on both.' },
+        {
+          level: 3,
+          title: 'Specific clue',
+          content:
+            'Look at total (String vs number) and customerRef (nullable vs required).',
+        },
+        {
+          level: 4,
+          title: 'Guided solution',
+          content:
+            'total is a numeric string; customerRef can be null. The model is wrong on both.',
+        },
       ],
       rewards: [{ type: 'xp', amount: 10, label: 'DTO read' }],
-      consequences: [{ type: 'stability', delta: -5, reason: 'A model written from assumptions crashed on the real payload.' }],
+      consequences: [
+        {
+          type: 'stability',
+          delta: -5,
+          reason:
+            'A model written from assumptions crashed on the real payload.',
+        },
+      ],
       helpLinks: [{ topicId: 'api.dto', label: 'Reading a DTO' }],
-      successFeedback: 'You read the wire shape as it is: total is a string, customerRef is nullable. Now the model can be honest.',
-      failureFeedback: 'Compare types and nullability field by field — total is a String, customerRef is nullable.',
+      successFeedback:
+        'You read the wire shape as it is: total is a string, customerRef is nullable. Now the model can be honest.',
+      failureFeedback:
+        'Compare types and nullability field by field — total is a String, customerRef is nullable.',
     },
   ],
-  reflectionPrompt: 'When a payload surprises you, is the fix usually in your code or in reading the contract more carefully first?',
+  reflectionPrompt:
+    'When a payload surprises you, is the fix usually in your code or in reading the contract more carefully first?',
   rewards: [{ type: 'xp', amount: 5, label: 'Contract crisis begins' }],
 };

@@ -38,43 +38,70 @@ export const nxMission004Circular: MissionDefinition = {
       prompt: 'What is the clean way to break the circular dependency?',
       options: [
         {
+          id: 'b',
+          label: 'Use a dynamic import() inside one library to defer the other',
+          isCorrect: false,
+          feedback:
+            'A lazy import hides the cycle from the bundler but the design is still circular — the coupling remains.',
+        },
+        {
           id: 'a',
-          label: 'Move the two shared helpers into a lower-level util/primitives library both depend on',
+          label:
+            'Move the two shared helpers into a lower-level util/primitives library both depend on',
           isCorrect: true,
           feedback:
             'Extracting the mutually-needed helpers to a shared lower layer removes the cycle — both libs now depend downward, not on each other.',
         },
         {
-          id: 'b',
-          label: 'Use a dynamic import() inside one library to defer the other',
-          isCorrect: false,
-          feedback: 'A lazy import hides the cycle from the bundler but the design is still circular — the coupling remains.',
-        },
-        {
           id: 'c',
-          label: 'Merge both libraries into one so there is no import between them',
+          label:
+            'Merge both libraries into one so there is no import between them',
           isCorrect: false,
-          feedback: 'Merging unrelated concerns to dodge a cycle creates a grab-bag library — it treats the symptom, not the design.',
+          feedback:
+            'Merging unrelated concerns to dodge a cycle creates a grab-bag library — it treats the symptom, not the design.',
         },
       ],
       hints: [
-        { level: 1, title: 'Direction', content: 'If A needs B and B needs A, what could both depend on instead?' },
+        {
+          level: 1,
+          title: 'Direction',
+          content:
+            'If A needs B and B needs A, what could both depend on instead?',
+        },
         {
           level: 2,
           title: 'Concept',
           content:
             'Cycles are broken by extracting the shared pieces to a lower layer both sides depend on, turning a loop into a tree. Lazy imports and merging only mask the coupling.',
         },
-        { level: 3, title: 'Specific clue', content: 'Pull the two shared helpers down into a common library.' },
-        { level: 4, title: 'Guided solution', content: 'Extract both helpers into a shared lower-level util library.' },
+        {
+          level: 3,
+          title: 'Specific clue',
+          content: 'Pull the two shared helpers down into a common library.',
+        },
+        {
+          level: 4,
+          title: 'Guided solution',
+          content:
+            'Extract both helpers into a shared lower-level util library.',
+        },
       ],
       rewards: [{ type: 'xp', amount: 25, label: 'Cycle broken' }],
-      consequences: [{ type: 'stability', delta: -10, reason: 'The build stayed broken while the cycle was patched over.' }],
+      consequences: [
+        {
+          type: 'stability',
+          delta: -10,
+          reason: 'The build stayed broken while the cycle was patched over.',
+        },
+      ],
       helpLinks: [{ topicId: 'nx.affected-graph', label: 'Dependency graph' }],
-      successFeedback: 'Shared helpers pulled to a lower layer — the loop is now a tree, and the build is green.',
-      failureFeedback: 'Lazy imports and merging hide the cycle. Extract the shared pieces to a lower layer.',
+      successFeedback:
+        'Shared helpers pulled to a lower layer — the loop is now a tree, and the build is green.',
+      failureFeedback:
+        'Lazy imports and merging hide the cycle. Extract the shared pieces to a lower layer.',
     },
   ],
-  reflectionPrompt: 'Why is a circular dependency a design smell, not just a build error?',
+  reflectionPrompt:
+    'Why is a circular dependency a design smell, not just a build error?',
   rewards: [{ type: 'xp', amount: 5, label: 'Loop untied' }],
 };

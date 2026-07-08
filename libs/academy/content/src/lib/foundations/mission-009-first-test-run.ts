@@ -5,7 +5,8 @@ export const mission009FirstTestRun: MissionDefinition = {
   id: 'foundations-009-first-test-run',
   campaignId: 'foundations',
   title: 'First Test Run',
-  summary: 'Review a new spec file and decide which test actually protects the platform.',
+  summary:
+    'Review a new spec file and decide which test actually protects the platform.',
   difficulty: 'medium',
   learningObjectives: [
     'Recognise tests that assert nothing',
@@ -39,22 +40,32 @@ export const mission009FirstTestRun: MissionDefinition = {
       title: 'Audit the Spec File',
       difficulty: 'medium',
       tags: ['testing'],
-      storyContext: 'Two of these tests undermine the suite; one is genuinely good.',
+      storyContext:
+        'Two of these tests undermine the suite; one is genuinely good.',
       prompt: 'Select every real problem in score.service.spec.ts.',
       findings: [
         {
+          id: 'no-assertion',
+          label:
+            "The 'works' test calls the function but never asserts anything",
+          isCorrect: true,
+          feedback:
+            'It passes as long as the code does not throw — a green light that verifies nothing. Every test needs an expectation.',
+        },
+        {
           id: 'exact-assert',
-          label: "The bonus test asserts an exact value (toBe(35)) — too strict",
+          label:
+            'The bonus test asserts an exact value (toBe(35)) — too strict',
           isCorrect: false,
           feedback:
             'Exact assertions on deterministic maths are ideal — this is the healthiest test in the file.',
         },
         {
-          id: 'no-assertion',
-          label: "The 'works' test calls the function but never asserts anything",
-          isCorrect: true,
+          id: 'describe-name',
+          label: "Using describe('calculateScore') as the suite name is wrong",
+          isCorrect: false,
           feedback:
-            'It passes as long as the code does not throw — a green light that verifies nothing. Every test needs an expectation.',
+            'Naming the suite after the unit under test is exactly the convention.',
         },
         {
           id: 'real-date',
@@ -63,18 +74,13 @@ export const mission009FirstTestRun: MissionDefinition = {
           feedback:
             'new Date() makes the result change with the calendar — this is the random CI failure. Pass a fixed date into the test instead.',
         },
-        {
-          id: 'describe-name',
-          label: "Using describe('calculateScore') as the suite name is wrong",
-          isCorrect: false,
-          feedback: 'Naming the suite after the unit under test is exactly the convention.',
-        },
       ],
       hints: [
         {
           level: 1,
           title: 'Direction',
-          content: 'Ask two questions of each test: does it check anything, and will it give the same answer tomorrow?',
+          content:
+            'Ask two questions of each test: does it check anything, and will it give the same answer tomorrow?',
         },
         {
           level: 2,
@@ -85,7 +91,8 @@ export const mission009FirstTestRun: MissionDefinition = {
         {
           level: 3,
           title: 'Specific clue',
-          content: "One test has no expect at all; another calls new Date() inside the expectation.",
+          content:
+            'One test has no expect at all; another calls new Date() inside the expectation.',
         },
         {
           level: 4,
@@ -104,7 +111,8 @@ export const mission009FirstTestRun: MissionDefinition = {
         {
           type: 'team-confidence',
           delta: -5,
-          reason: 'Engineers started re-running CI instead of reading failures.',
+          reason:
+            'Engineers started re-running CI instead of reading failures.',
         },
       ],
       helpLinks: [
@@ -127,8 +135,17 @@ export const mission009FirstTestRun: MissionDefinition = {
       prompt: 'Which test do you write first?',
       options: [
         {
+          id: 'c',
+          label:
+            'calculateScore([]) — a failing regression test that reproduces the empty-history crash, written before the fix',
+          isCorrect: true,
+          feedback:
+            'Reproduce first: the failing test proves you understand the bug, then proves the fix, then guards it forever.',
+        },
+        {
           id: 'a',
-          label: 'A test asserting the private helper normalises its internal cache correctly',
+          label:
+            'A test asserting the private helper normalises its internal cache correctly',
           isCorrect: false,
           feedback:
             'Testing internals couples the suite to the implementation — refactors break tests without breaking behaviour.',
@@ -141,16 +158,9 @@ export const mission009FirstTestRun: MissionDefinition = {
             'Slow, broad and brittle — it might catch the crash but tells you almost nothing about where or why.',
         },
         {
-          id: 'c',
-          label:
-            "calculateScore([]) — a failing regression test that reproduces the empty-history crash, written before the fix",
-          isCorrect: true,
-          feedback:
-            'Reproduce first: the failing test proves you understand the bug, then proves the fix, then guards it forever.',
-        },
-        {
           id: 'd',
-          label: 'No test — fix the crash first and add tests when there is time',
+          label:
+            'No test — fix the crash first and add tests when there is time',
           isCorrect: false,
           feedback:
             '“When there is time” is how the same crash returns in six months with nothing to catch it.',
@@ -171,7 +181,8 @@ export const mission009FirstTestRun: MissionDefinition = {
         {
           level: 3,
           title: 'Specific clue',
-          content: 'The crashing input is an empty array — one option calls the function with exactly that.',
+          content:
+            'The crashing input is an empty array — one option calls the function with exactly that.',
         },
         {
           level: 4,
@@ -189,7 +200,8 @@ export const mission009FirstTestRun: MissionDefinition = {
         },
       ],
       helpLinks: [{ topicId: 'testing.unit-tests', label: 'Unit tests' }],
-      successFeedback: 'Reproduce, fix, guard — the unhappy path is covered for good.',
+      successFeedback:
+        'Reproduce, fix, guard — the unhappy path is covered for good.',
       failureFeedback:
         'The most valuable first test is the one that fails for exactly the reported reason.',
     },

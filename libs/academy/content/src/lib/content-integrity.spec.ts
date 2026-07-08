@@ -240,6 +240,36 @@ describe('content integrity', () => {
     }
   });
 
+  it('does not telegraph answers through option order', () => {
+    // Players must not be able to win by always picking the same position
+    // (or the first N options in multi-select). Positions are shuffled in
+    // the content; this guards the distribution.
+    const singles = allChallenges().filter(
+      (challenge) => challenge.type !== 'code-review' && challenge.multiSelect !== true
+    );
+    const positions = singles.map((challenge) =>
+      selectables(challenge).findIndex((option) => option.isCorrect)
+    );
+    for (let index = 0; index < 4; index++) {
+      const share = positions.filter((p) => p === index).length / positions.length;
+      expect(share)
+        .withContext(`position ${index} holds ${(share * 100).toFixed(0)}% of correct answers`)
+        .toBeLessThan(0.45);
+    }
+
+    const multis = allChallenges().filter(
+      (challenge) => challenge.type === 'code-review' || challenge.multiSelect === true
+    );
+    const packedFirst = multis.filter((challenge) => {
+      const options = selectables(challenge);
+      const correctCount = options.filter((option) => option.isCorrect).length;
+      return options.slice(0, correctCount).every((option) => option.isCorrect);
+    }).length;
+    expect(packedFirst / multis.length)
+      .withContext(`${packedFirst}/${multis.length} multi-selects have all correct options first`)
+      .toBeLessThan(0.45);
+  });
+
   it('anchors the progression curve to the maximum earnable XP', () => {
     // A perfect, hint-free playthrough of every mission defines the XP
     // ceiling. The final rank tier must be demanding (>80% of the ceiling)

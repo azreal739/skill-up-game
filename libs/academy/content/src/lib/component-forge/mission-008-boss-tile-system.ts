@@ -9,7 +9,8 @@ export const cfMission008BossTileSystem: MissionDefinition = {
   id: 'component-forge-008-boss-tile-system',
   campaignId: 'component-forge',
   title: 'Boss: Build the Reusable Tile System',
-  summary: 'Ship the tile system the whole platform will adopt — split, typed, accessible, well-placed.',
+  summary:
+    'Ship the tile system the whole platform will adopt — split, typed, accessible, well-placed.',
   difficulty: 'boss',
   learningObjectives: [
     'Combine smart/dumb separation, typing, a11y and boundaries',
@@ -46,16 +47,19 @@ export const cfMission008BossTileSystem: MissionDefinition = {
       prompt: 'What is the correct component split?',
       options: [
         {
-          id: 'a',
-          label: 'A presentational Tile (@Input customer, @Output selected) + a per-screen container that loads data',
-          isCorrect: true,
-          feedback: 'Dumb tile, smart containers — reusable across every data source.',
-        },
-        {
           id: 'b',
           label: 'One Tile that injects the service and fetches by id',
           isCorrect: false,
-          feedback: 'Couples the tile to one data source — the three screens load differently.',
+          feedback:
+            'Couples the tile to one data source — the three screens load differently.',
+        },
+        {
+          id: 'a',
+          label:
+            'A presentational Tile (@Input customer, @Output selected) + a per-screen container that loads data',
+          isCorrect: true,
+          feedback:
+            'Dumb tile, smart containers — reusable across every data source.',
         },
         {
           id: 'c',
@@ -65,14 +69,41 @@ export const cfMission008BossTileSystem: MissionDefinition = {
         },
       ],
       hints: [
-        { level: 1, title: 'Direction', content: 'Separate rendering from data-loading.' },
-        { level: 2, title: 'Concept', content: 'Presentational inputs + container fetching = reusable.' },
-        { level: 3, title: 'Specific clue', content: 'The tile takes a resolved customer and emits selection.' },
-        { level: 4, title: 'Guided solution', content: 'Pick the presentational tile + per-screen container.' },
+        {
+          level: 1,
+          title: 'Direction',
+          content: 'Separate rendering from data-loading.',
+        },
+        {
+          level: 2,
+          title: 'Concept',
+          content: 'Presentational inputs + container fetching = reusable.',
+        },
+        {
+          level: 3,
+          title: 'Specific clue',
+          content: 'The tile takes a resolved customer and emits selection.',
+        },
+        {
+          level: 4,
+          title: 'Guided solution',
+          content: 'Pick the presentational tile + per-screen container.',
+        },
       ],
       rewards: [{ type: 'xp', amount: 25, label: 'Split right' }],
-      consequences: [{ type: 'technical-debt', delta: 10, reason: 'A coupled tile blocked reuse.' }],
-      helpLinks: [{ topicId: 'angular.presentational-vs-container', label: 'Presentational vs container' }],
+      consequences: [
+        {
+          type: 'technical-debt',
+          delta: 10,
+          reason: 'A coupled tile blocked reuse.',
+        },
+      ],
+      helpLinks: [
+        {
+          topicId: 'angular.presentational-vs-container',
+          label: 'Presentational vs container',
+        },
+      ],
       successFeedback: 'Dumb tile, smart containers.',
       failureFeedback: 'The reusable tile renders a customer it is given.',
     },
@@ -86,32 +117,60 @@ export const cfMission008BossTileSystem: MissionDefinition = {
       prompt: 'Which public API is correctly typed?',
       options: [
         {
-          id: 'a',
-          label: '@Input({ required: true }) customer!: Customer;\n@Output() selected = new EventEmitter<Customer>();',
-          isCorrect: true,
-          feedback: 'A required, typed input and a typed output — consumers get full compile-time safety.',
-        },
-        {
           id: 'b',
-          label: '@Input() customer: any;\n@Output() selected = new EventEmitter<any>();',
+          label:
+            '@Input() customer: any;\n@Output() selected = new EventEmitter<any>();',
           isCorrect: false,
-          feedback: 'any on a shared API removes safety for everyone binding to it.',
+          feedback:
+            'any on a shared API removes safety for everyone binding to it.',
         },
         {
           id: 'c',
           label: '@Input() customerJson: string; // parse inside the tile',
           isCorrect: false,
-          feedback: 'Passing JSON strings pushes parsing into the presentational component — wrong layer and untyped.',
+          feedback:
+            'Passing JSON strings pushes parsing into the presentational component — wrong layer and untyped.',
+        },
+        {
+          id: 'a',
+          label:
+            '@Input({ required: true }) customer!: Customer;\n@Output() selected = new EventEmitter<Customer>();',
+          isCorrect: true,
+          feedback:
+            'A required, typed input and a typed output — consumers get full compile-time safety.',
         },
       ],
       hints: [
-        { level: 1, title: 'Direction', content: 'Shared APIs deserve precise types.' },
-        { level: 2, title: 'Concept', content: 'Required typed inputs and typed outputs protect every consumer.' },
-        { level: 3, title: 'Specific clue', content: 'Look for Customer and EventEmitter<Customer>, no any.' },
-        { level: 4, title: 'Guided solution', content: 'Pick the required Customer input + EventEmitter<Customer>.' },
+        {
+          level: 1,
+          title: 'Direction',
+          content: 'Shared APIs deserve precise types.',
+        },
+        {
+          level: 2,
+          title: 'Concept',
+          content:
+            'Required typed inputs and typed outputs protect every consumer.',
+        },
+        {
+          level: 3,
+          title: 'Specific clue',
+          content: 'Look for Customer and EventEmitter<Customer>, no any.',
+        },
+        {
+          level: 4,
+          title: 'Guided solution',
+          content: 'Pick the required Customer input + EventEmitter<Customer>.',
+        },
       ],
       rewards: [{ type: 'xp', amount: 25, label: 'API typed' }],
-      consequences: [{ type: 'technical-debt', delta: 10, reason: 'An any-typed shared API weakened every consumer.' }],
+      consequences: [
+        {
+          type: 'technical-debt',
+          delta: 10,
+          reason: 'An any-typed shared API weakened every consumer.',
+        },
+      ],
       helpLinks: [{ topicId: 'typescript.interfaces', label: 'Interfaces' }],
       successFeedback: 'A typed, required API — safe to build on.',
       failureFeedback: 'Avoid any and stringly-typed inputs on a shared API.',
@@ -148,29 +207,57 @@ export const cfMission008BossTileSystem: MissionDefinition = {
           feedback: 'Add aria-label="Open {{ customer.name }}".',
         },
         {
+          id: 'gap',
+          label: 'The gap between name and dot is too small',
+          isCorrect: false,
+          feedback:
+            'Spacing is a visual-polish concern, not an accessibility blocker.',
+        },
+        {
           id: 'colour',
           label: 'Status conveyed by dot colour alone',
           isCorrect: true,
           feedback: 'Add text/label — never colour alone.',
         },
-        {
-          id: 'gap',
-          label: 'The gap between name and dot is too small',
-          isCorrect: false,
-          feedback: 'Spacing is a visual-polish concern, not an accessibility blocker.',
-        },
       ],
       hints: [
-        { level: 1, title: 'Direction', content: 'Keyboard, name, and non-colour status.' },
-        { level: 2, title: 'Concept', content: 'Semantic control + accessible name + status not by colour alone.' },
-        { level: 3, title: 'Specific clue', content: 'Three blockers; the spacing note is not one.' },
-        { level: 4, title: 'Guided solution', content: 'Flag the div, the missing name, and the colour-only status.' },
+        {
+          level: 1,
+          title: 'Direction',
+          content: 'Keyboard, name, and non-colour status.',
+        },
+        {
+          level: 2,
+          title: 'Concept',
+          content:
+            'Semantic control + accessible name + status not by colour alone.',
+        },
+        {
+          level: 3,
+          title: 'Specific clue',
+          content: 'Three blockers; the spacing note is not one.',
+        },
+        {
+          level: 4,
+          title: 'Guided solution',
+          content:
+            'Flag the div, the missing name, and the colour-only status.',
+        },
       ],
       rewards: [{ type: 'xp', amount: 50, label: 'Accessible' }],
-      consequences: [{ type: 'team-confidence', delta: -5, reason: 'An inaccessible shared tile would exclude users platform-wide.' }],
+      consequences: [
+        {
+          type: 'team-confidence',
+          delta: -5,
+          reason:
+            'An inaccessible shared tile would exclude users platform-wide.',
+        },
+      ],
       helpLinks: [{ topicId: 'a11y.semantics', label: 'Accessible markup' }],
-      successFeedback: 'Operable, named, and status conveyed in more than colour.',
-      failureFeedback: 'Keyboard access, an accessible name, and non-colour status are the three blockers.',
+      successFeedback:
+        'Operable, named, and status conveyed in more than colour.',
+      failureFeedback:
+        'Keyboard access, an accessible name, and non-colour status are the three blockers.',
     },
     {
       id: 'component-forge-008-c4',
@@ -192,27 +279,57 @@ export const cfMission008BossTileSystem: MissionDefinition = {
           id: 'b',
           label: 'Inside the ops-dashboard feature, imported by the others',
           isCorrect: false,
-          feedback: 'Feature-to-feature imports violate Nx boundaries and tangle ownership.',
+          feedback:
+            'Feature-to-feature imports violate Nx boundaries and tangle ownership.',
         },
         {
           id: 'c',
           label: 'Directly in the app so any component can reach it',
           isCorrect: false,
-          feedback: 'App-level components are not shareable as a library and blur the boundary between app and reusable UI.',
+          feedback:
+            'App-level components are not shareable as a library and blur the boundary between app and reusable UI.',
         },
       ],
       hints: [
-        { level: 1, title: 'Direction', content: 'Shared UI has one correct kind of home.' },
-        { level: 2, title: 'Concept', content: 'Features depend on ui libraries, never on each other.' },
-        { level: 3, title: 'Specific clue', content: 'The answer is a ui library.' },
-        { level: 4, title: 'Guided solution', content: 'Place it in libs/ui/tile.' },
+        {
+          level: 1,
+          title: 'Direction',
+          content: 'Shared UI has one correct kind of home.',
+        },
+        {
+          level: 2,
+          title: 'Concept',
+          content: 'Features depend on ui libraries, never on each other.',
+        },
+        {
+          level: 3,
+          title: 'Specific clue',
+          content: 'The answer is a ui library.',
+        },
+        {
+          level: 4,
+          title: 'Guided solution',
+          content: 'Place it in libs/ui/tile.',
+        },
       ],
       rewards: [{ type: 'xp', amount: 100, label: 'Tile system shipped' }],
-      consequences: [{ type: 'technical-debt', delta: 10, reason: 'Misplacing shared UI tangles the graph for every team.' }],
-      helpLinks: [{ topicId: 'nx.libraries-boundaries', label: 'Nx libraries and boundaries' }],
+      consequences: [
+        {
+          type: 'technical-debt',
+          delta: 10,
+          reason: 'Misplacing shared UI tangles the graph for every team.',
+        },
+      ],
+      helpLinks: [
+        {
+          topicId: 'nx.libraries-boundaries',
+          label: 'Nx libraries and boundaries',
+        },
+      ],
       successFeedback:
         'A reusable, typed, accessible tile system in a shared ui library — the whole platform can build on it. The Forge is complete.',
-      failureFeedback: 'Shared UI belongs in a ui library, not inside a feature or the app.',
+      failureFeedback:
+        'Shared UI belongs in a ui library, not inside a feature or the app.',
     },
   ],
   reflectionPrompt:

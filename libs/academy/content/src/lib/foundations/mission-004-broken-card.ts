@@ -8,7 +8,8 @@ export const mission004BrokenCard: MissionDefinition = {
   id: 'foundations-004-broken-card',
   campaignId: 'foundations',
   title: 'Mini Incident: Broken Card',
-  summary: 'The credit score card fails at runtime even though the app compiles. Find the contract mismatch.',
+  summary:
+    'The credit score card fails at runtime even though the app compiles. Find the contract mismatch.',
   difficulty: 'hard',
   learningObjectives: [
     'Understand that TypeScript does not validate runtime data',
@@ -38,13 +39,15 @@ export const mission004BrokenCard: MissionDefinition = {
       type: 'code',
       title: 'Front-end interface',
       language: 'ts',
-      content: 'interface CreditScoreResponse {\n  customerName: string;\n  creditScore: number;\n}',
+      content:
+        'interface CreditScoreResponse {\n  customerName: string;\n  creditScore: number;\n}',
     },
     {
       id: 'error-log',
       type: 'log',
       title: 'Production log excerpt',
-      content: "TypeError: score.toFixed is not a function\n    at CreditScoreCard.render (main.js:1042)",
+      content:
+        'TypeError: score.toFixed is not a function\n    at CreditScoreCard.render (main.js:1042)',
     },
   ],
   challenges: [
@@ -54,12 +57,14 @@ export const mission004BrokenCard: MissionDefinition = {
       title: 'Find the Mismatch',
       difficulty: 'hard',
       tags: ['api', 'typescript', 'java'],
-      storyContext: 'The payload, the interface and the stack trace disagree about one thing.',
+      storyContext:
+        'The payload, the interface and the stack trace disagree about one thing.',
       prompt: 'What is the actual contract mismatch breaking the card?',
       options: [
         {
           id: 'a',
-          label: 'creditScore is returned as a string but the front end expects a number',
+          label:
+            'creditScore is returned as a string but the front end expects a number',
           isCorrect: true,
           feedback:
             'The payload has "creditScore": "720" (a string); the interface — and .toFixed — need a number. That is the runtime break.',
@@ -68,26 +73,30 @@ export const mission004BrokenCard: MissionDefinition = {
           id: 'b',
           label: 'customerName is missing from the API response',
           isCorrect: false,
-          feedback: 'customerName is present and correctly a string — the name renders fine.',
+          feedback:
+            'customerName is present and correctly a string — the name renders fine.',
         },
         {
           id: 'c',
           label: 'The interface property names do not match the payload keys',
           isCorrect: false,
-          feedback: 'Both sides use customerName and creditScore — the names align; the types do not.',
+          feedback:
+            'Both sides use customerName and creditScore — the names align; the types do not.',
         },
         {
           id: 'd',
           label: 'The API should return XML instead of JSON',
           isCorrect: false,
-          feedback: 'The payload format is fine; the problem is inside one field of the JSON.',
+          feedback:
+            'The payload format is fine; the problem is inside one field of the JSON.',
         },
       ],
       hints: [
         {
           level: 1,
           title: 'Direction',
-          content: 'Read the stack trace: which operation failed, and on what kind of value does it exist?',
+          content:
+            'Read the stack trace: which operation failed, and on what kind of value does it exist?',
         },
         {
           level: 2,
@@ -141,6 +150,14 @@ export const mission004BrokenCard: MissionDefinition = {
       prompt: 'Which change best protects the front end right now?',
       options: [
         {
+          id: 'b',
+          label:
+            'Change the interface to creditScore: string and update the card to parse it inline',
+          isCorrect: false,
+          feedback:
+            'That spreads the API quirk through the codebase and breaks again the day the Java fix lands and the field becomes a number.',
+        },
+        {
           id: 'a',
           label:
             'Validate and transform the response at the API boundary:\nconst CreditScoreResponseSchema = z.object({\n  customerName: z.string(),\n  creditScore: z.coerce.number()\n});',
@@ -149,15 +166,9 @@ export const mission004BrokenCard: MissionDefinition = {
             'A Zod schema at the boundary validates reality and coerces "720" to 720 — the rest of the app keeps its clean number type.',
         },
         {
-          id: 'b',
-          label: 'Change the interface to creditScore: string and update the card to parse it inline',
-          isCorrect: false,
-          feedback:
-            'That spreads the API quirk through the codebase and breaks again the day the Java fix lands and the field becomes a number.',
-        },
-        {
           id: 'c',
-          label: 'Cast the response: const data = response as CreditScoreResponse',
+          label:
+            'Cast the response: const data = response as CreditScoreResponse',
           isCorrect: false,
           feedback:
             'A cast only changes what the compiler believes. The runtime string sails straight through to .toFixed again.',
@@ -174,7 +185,8 @@ export const mission004BrokenCard: MissionDefinition = {
         {
           level: 1,
           title: 'Direction',
-          content: 'Where does external data first enter the front end? Defend that spot.',
+          content:
+            'Where does external data first enter the front end? Defend that spot.',
         },
         {
           level: 2,
@@ -185,7 +197,8 @@ export const mission004BrokenCard: MissionDefinition = {
         {
           level: 3,
           title: 'Specific clue',
-          content: 'One option both validates the shape and coerces the string to a number in a single schema.',
+          content:
+            'One option both validates the shape and coerces the string to a number in a single schema.',
         },
         {
           level: 4,
@@ -199,7 +212,8 @@ export const mission004BrokenCard: MissionDefinition = {
         {
           type: 'technical-debt',
           delta: 15,
-          reason: 'A workaround was smeared across components instead of fixing the boundary.',
+          reason:
+            'A workaround was smeared across components instead of fixing the boundary.',
         },
       ],
       helpLinks: [

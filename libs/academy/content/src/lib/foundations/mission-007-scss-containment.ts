@@ -5,7 +5,8 @@ export const mission007ScssContainment: MissionDefinition = {
   id: 'foundations-007-scss-containment',
   campaignId: 'foundations',
   title: 'SCSS Containment',
-  summary: 'A styling change in one card broke three unrelated screens. Contain the styles.',
+  summary:
+    'A styling change in one card broke three unrelated screens. Contain the styles.',
   difficulty: 'medium',
   learningObjectives: [
     'Spot selectors that couple styles to DOM structure',
@@ -39,25 +40,31 @@ export const mission007ScssContainment: MissionDefinition = {
       title: 'Find the Escape Hatches',
       difficulty: 'medium',
       tags: ['scss', 'angular'],
-      storyContext: 'Two patterns in this file are style-containment violations; two lines are healthy.',
-      prompt: 'Select every genuine styling issue in promo-card.component.scss.',
+      storyContext:
+        'Two patterns in this file are style-containment violations; two lines are healthy.',
+      prompt:
+        'Select every genuine styling issue in promo-card.component.scss.',
       findings: [
         {
           id: 'deep-nesting',
-          label: 'Four-level selector nesting (.card .body .footer .actions button)',
+          label:
+            'Four-level selector nesting (.card .body .footer .actions button)',
           isCorrect: true,
           feedback:
             'Deep nesting welds styles to today’s DOM structure — moving one wrapper breaks the styling. Keep selectors shallow and class-based.',
         },
         {
           id: 'host-display',
-          label: ':host { display: block } overrides the component’s natural display',
+          label:
+            ':host { display: block } overrides the component’s natural display',
           isCorrect: false,
-          feedback: 'Setting display on :host is normal and healthy for layout components.',
+          feedback:
+            'Setting display on :host is normal and healthy for layout components.',
         },
         {
           id: 'ng-deep-important',
-          label: '::ng-deep with !important restyles buttons outside this component',
+          label:
+            '::ng-deep with !important restyles buttons outside this component',
           isCorrect: true,
           feedback:
             'This is the leak QA found: ::ng-deep pierces encapsulation and !important makes the escape nearly impossible to override. This rule reaches every .toolbar button in the app.',
@@ -74,7 +81,8 @@ export const mission007ScssContainment: MissionDefinition = {
         {
           level: 1,
           title: 'Direction',
-          content: 'Ask of each rule: could this affect elements outside the promo card, or break when markup moves?',
+          content:
+            'Ask of each rule: could this affect elements outside the promo card, or break when markup moves?',
         },
         {
           level: 2,
@@ -85,7 +93,8 @@ export const mission007ScssContainment: MissionDefinition = {
         {
           level: 3,
           title: 'Specific clue',
-          content: 'One offender is the nesting pyramid; the other combines two escape hatches in a single rule.',
+          content:
+            'One offender is the nesting pyramid; the other combines two escape hatches in a single rule.',
         },
         {
           level: 4,
@@ -99,10 +108,13 @@ export const mission007ScssContainment: MissionDefinition = {
         {
           type: 'technical-debt',
           delta: 15,
-          reason: 'Global style overrides accumulated and now fight each other.',
+          reason:
+            'Global style overrides accumulated and now fight each other.',
         },
       ],
-      helpLinks: [{ topicId: 'scss.component-styles', label: 'Component-scoped SCSS' }],
+      helpLinks: [
+        { topicId: 'scss.component-styles', label: 'Component-scoped SCSS' },
+      ],
       successFeedback:
         'Containment restored — styles stay inside the component and survive markup changes.',
       failureFeedback:
@@ -119,6 +131,14 @@ export const mission007ScssContainment: MissionDefinition = {
       prompt: 'How should the team share the brand colour across components?',
       options: [
         {
+          id: 'c',
+          label:
+            'Define --brand-primary once as a design token on :root and reference var(--brand-primary) everywhere',
+          isCorrect: true,
+          feedback:
+            'Design tokens give one source of truth with zero encapsulation leaks — components opt in by referencing the variable.',
+        },
+        {
           id: 'a',
           label: 'Copy the hex value #7c3aed into each component stylesheet',
           isCorrect: false,
@@ -127,25 +147,19 @@ export const mission007ScssContainment: MissionDefinition = {
         },
         {
           id: 'b',
-          label: 'Put one global rule with ::ng-deep that recolours every button in the app',
+          label:
+            'Put one global rule with ::ng-deep that recolours every button in the app',
           isCorrect: false,
           feedback:
             'That recreates exactly the leak this mission started with — unscoped overrides fighting component styles.',
-        },
-        {
-          id: 'c',
-          label:
-            'Define --brand-primary once as a design token on :root and reference var(--brand-primary) everywhere',
-          isCorrect: true,
-          feedback:
-            'Design tokens give one source of truth with zero encapsulation leaks — components opt in by referencing the variable.',
         },
       ],
       hints: [
         {
           level: 1,
           title: 'Direction',
-          content: 'The goal is one place to change the colour without any style reaching into other components.',
+          content:
+            'The goal is one place to change the colour without any style reaching into other components.',
         },
         {
           level: 2,
@@ -156,12 +170,14 @@ export const mission007ScssContainment: MissionDefinition = {
         {
           level: 3,
           title: 'Specific clue',
-          content: 'This codebase already does it — look at how .card__cta gets its colour.',
+          content:
+            'This codebase already does it — look at how .card__cta gets its colour.',
         },
         {
           level: 4,
           title: 'Guided solution',
-          content: 'Choose the :root design-token option — declare once, consume with var() everywhere.',
+          content:
+            'Choose the :root design-token option — declare once, consume with var() everywhere.',
         },
       ],
       rewards: [{ type: 'xp', amount: 25, label: 'Tokens adopted' }],
@@ -178,6 +194,7 @@ export const mission007ScssContainment: MissionDefinition = {
         'Duplicating values and global overrides both fail the “change it once, break nothing” test.',
     },
   ],
-  reflectionPrompt: 'When is ::ng-deep ever justified — and what would you document if you used it?',
+  reflectionPrompt:
+    'When is ::ng-deep ever justified — and what would you document if you used it?',
   rewards: [{ type: 'xp', amount: 5, label: 'Styles contained' }],
 };

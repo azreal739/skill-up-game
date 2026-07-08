@@ -5,7 +5,8 @@ export const cfMission007ComponentReview: MissionDefinition = {
   id: 'component-forge-007-component-review',
   campaignId: 'component-forge',
   title: 'Component Review',
-  summary: 'Review a pull request that adds a new shared component before it merges.',
+  summary:
+    'Review a pull request that adds a new shared component before it merges.',
   difficulty: 'hard',
   learningObjectives: [
     'Apply the full reusable-component checklist under review',
@@ -35,9 +36,24 @@ export const cfMission007ComponentReview: MissionDefinition = {
       title: 'Gate the Merge',
       difficulty: 'hard',
       tags: ['angular', 'a11y', 'typescript'],
-      storyContext: 'Four candidate problems; three are real blockers for a shared component.',
+      storyContext:
+        'Four candidate problems; three are real blockers for a shared component.',
       prompt: 'Select every genuine problem that should block this merge.',
       findings: [
+        {
+          id: 'clickable-div',
+          label: 'A clickable div with colour-only trend is inaccessible',
+          isCorrect: true,
+          feedback:
+            'Not keyboard-operable, no accessible name, and trend is colour-only — three a11y failures in one line.',
+        },
+        {
+          id: 'selector-prefix',
+          label: 'The ui- selector prefix is wrong for a shared library',
+          isCorrect: false,
+          feedback:
+            'A distinct prefix like ui- for shared components is good practice, not a problem.',
+        },
         {
           id: 'service-dep',
           label: 'A shared presentational component injects AnalyticsService',
@@ -52,22 +68,14 @@ export const cfMission007ComponentReview: MissionDefinition = {
           feedback:
             'any on a shared component’s public API removes safety for every consumer. Type it (string | number).',
         },
-        {
-          id: 'clickable-div',
-          label: 'A clickable div with colour-only trend is inaccessible',
-          isCorrect: true,
-          feedback:
-            'Not keyboard-operable, no accessible name, and trend is colour-only — three a11y failures in one line.',
-        },
-        {
-          id: 'selector-prefix',
-          label: 'The ui- selector prefix is wrong for a shared library',
-          isCorrect: false,
-          feedback: 'A distinct prefix like ui- for shared components is good practice, not a problem.',
-        },
       ],
       hints: [
-        { level: 1, title: 'Direction', content: 'Apply everything this campaign taught: reuse, typing, accessibility.' },
+        {
+          level: 1,
+          title: 'Direction',
+          content:
+            'Apply everything this campaign taught: reuse, typing, accessibility.',
+        },
         {
           level: 2,
           title: 'Concept',
@@ -77,26 +85,39 @@ export const cfMission007ComponentReview: MissionDefinition = {
         {
           level: 3,
           title: 'Specific clue',
-          content: 'Three blockers: the injected service, the any-typed input, and the inaccessible clickable div.',
+          content:
+            'Three blockers: the injected service, the any-typed input, and the inaccessible clickable div.',
         },
         {
           level: 4,
           title: 'Guided solution',
-          content: 'Flag the service dependency, the any value, and the clickable div. The ui- prefix is fine.',
+          content:
+            'Flag the service dependency, the any value, and the clickable div. The ui- prefix is fine.',
         },
       ],
       rewards: [{ type: 'xp', amount: 50, label: 'Merge gated' }],
       consequences: [
-        { type: 'technical-debt', delta: 15, reason: 'A flawed shared component was adopted platform-wide before review caught it.' },
+        {
+          type: 'technical-debt',
+          delta: 15,
+          reason:
+            'A flawed shared component was adopted platform-wide before review caught it.',
+        },
       ],
       helpLinks: [
-        { topicId: 'angular.presentational-vs-container', label: 'Presentational vs container' },
+        {
+          topicId: 'angular.presentational-vs-container',
+          label: 'Presentational vs container',
+        },
         { topicId: 'a11y.semantics', label: 'Accessible markup' },
       ],
-      successFeedback: 'Held at the gate — the shared library stays clean, typed and accessible.',
-      failureFeedback: 'Re-check against reuse (no services), typing (no any) and accessibility (no clickable div).',
+      successFeedback:
+        'Held at the gate — the shared library stays clean, typed and accessible.',
+      failureFeedback:
+        'Re-check against reuse (no services), typing (no any) and accessibility (no clickable div).',
     },
   ],
-  reflectionPrompt: 'Why is the bar for a shared library component higher than for a one-off feature component?',
+  reflectionPrompt:
+    'Why is the bar for a shared library component higher than for a one-off feature component?',
   rewards: [{ type: 'xp', amount: 5, label: 'Reviewer’s eye' }],
 };

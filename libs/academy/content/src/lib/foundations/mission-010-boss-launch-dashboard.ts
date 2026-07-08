@@ -9,7 +9,8 @@ export const mission010BossLaunchDashboard: MissionDefinition = {
   id: 'foundations-010-boss-launch-dashboard',
   campaignId: 'foundations',
   title: 'Boss: Launch the Dashboard',
-  summary: 'Dashboard v2 launches today. Run the full pre-flight and make the release call.',
+  summary:
+    'Dashboard v2 launches today. Run the full pre-flight and make the release call.',
   difficulty: 'boss',
   learningObjectives: [
     'Apply contract, code and test judgement under launch pressure',
@@ -68,30 +69,39 @@ export const mission010BossLaunchDashboard: MissionDefinition = {
           id: 'a',
           label: 'The widgets array is missing its data property',
           isCorrect: false,
-          feedback: 'The widget objects match the interface exactly — id and title, both strings.',
+          feedback:
+            'The widget objects match the interface exactly — id and title, both strings.',
         },
         {
           id: 'b',
-          label: 'refreshSeconds arrives as the string "30" but the contract promises a number',
+          label:
+            'refreshSeconds arrives as the string "30" but the contract promises a number',
           isCorrect: true,
           feedback:
             'Any arithmetic on the refresh interval — setInterval(fn, refreshSeconds * 1000) — will misbehave or the Zod boundary will reject it. Same class of drift as the Broken Card incident.',
         },
         {
           id: 'c',
-          label: 'The payload keys are camelCase but the interface expects snake_case',
+          label:
+            'The payload keys are camelCase but the interface expects snake_case',
           isCorrect: false,
-          feedback: 'Both sides use camelCase — the names line up; one type does not.',
+          feedback:
+            'Both sides use camelCase — the names line up; one type does not.',
         },
         {
           id: 'd',
           label: 'Nothing — the payload matches the contract',
           isCorrect: false,
-          feedback: 'Look at the quotes around 30. One field disagrees with its declared type.',
+          feedback:
+            'Look at the quotes around 30. One field disagrees with its declared type.',
         },
       ],
       hints: [
-        { level: 1, title: 'Direction', content: 'Compare every field: same name, same type?' },
+        {
+          level: 1,
+          title: 'Direction',
+          content: 'Compare every field: same name, same type?',
+        },
         {
           level: 2,
           title: 'Concept',
@@ -101,7 +111,8 @@ export const mission010BossLaunchDashboard: MissionDefinition = {
         {
           level: 3,
           title: 'Specific clue',
-          content: 'You saw this exact pattern in the Broken Card incident. Check refreshSeconds.',
+          content:
+            'You saw this exact pattern in the Broken Card incident. Check refreshSeconds.',
         },
         {
           level: 4,
@@ -122,8 +133,10 @@ export const mission010BossLaunchDashboard: MissionDefinition = {
         { topicId: 'api.contract-drift', label: 'Contract drift' },
         { topicId: 'zod.runtime-validation', label: 'Runtime validation' },
       ],
-      successFeedback: 'Caught before launch — a Zod boundary with z.coerce.number() ships with v2.',
-      failureFeedback: 'Field by field: names first, then types. One of them lies.',
+      successFeedback:
+        'Caught before launch — a Zod boundary with z.coerce.number() ships with v2.',
+      failureFeedback:
+        'Field by field: names first, then types. One of them lies.',
     },
     {
       id: 'foundations-010-c2',
@@ -131,7 +144,8 @@ export const mission010BossLaunchDashboard: MissionDefinition = {
       title: 'Stage 2 — Final Component Review',
       difficulty: 'hard',
       tags: ['angular', 'typescript'],
-      storyContext: 'Last review before the merge freeze. Two real defects hide in this component.',
+      storyContext:
+        'Last review before the merge freeze. Two real defects hide in this component.',
       artefacts: [
         {
           id: 'dashboard-component',
@@ -153,30 +167,34 @@ export const mission010BossLaunchDashboard: MissionDefinition = {
         },
         {
           id: 'required-input',
-          label: '@Input({ required: true }) with the ! assertion on customerId',
+          label:
+            '@Input({ required: true }) with the ! assertion on customerId',
           isCorrect: false,
           feedback:
             'This is the standard pattern: required inputs are enforced by the compiler at every call site, so the ! is honest.',
         },
         {
-          id: 'implements-oninit',
-          label: 'Implementing OnInit for startup work is an anti-pattern',
-          isCorrect: false,
-          feedback: 'ngOnInit is exactly where post-construction startup logic belongs.',
-        },
-        {
           id: 'poller-assertion',
-          label: 'ngOnInit calls this.poller!.start() but poller is optional and never assigned',
+          label:
+            'ngOnInit calls this.poller!.start() but poller is optional and never assigned',
           isCorrect: true,
           feedback:
             'poller? is undefined at init — the ! assertion turns a compile-time warning into a guaranteed runtime crash on the first render.',
+        },
+        {
+          id: 'implements-oninit',
+          label: 'Implementing OnInit for startup work is an anti-pattern',
+          isCorrect: false,
+          feedback:
+            'ngOnInit is exactly where post-construction startup logic belongs.',
         },
       ],
       hints: [
         {
           level: 1,
           title: 'Direction',
-          content: 'Hunt for the compiler escape hatches you flagged on Type Safety Patrol.',
+          content:
+            'Hunt for the compiler escape hatches you flagged on Type Safety Patrol.',
         },
         {
           level: 2,
@@ -187,7 +205,8 @@ export const mission010BossLaunchDashboard: MissionDefinition = {
         {
           level: 3,
           title: 'Specific clue',
-          content: 'One offender is a property type; the other is an assertion on something never assigned.',
+          content:
+            'One offender is a property type; the other is an assertion on something never assigned.',
         },
         {
           level: 4,
@@ -201,14 +220,19 @@ export const mission010BossLaunchDashboard: MissionDefinition = {
         {
           type: 'stability',
           delta: -10,
-          reason: 'The dashboard crashed on first render for early-access users.',
+          reason:
+            'The dashboard crashed on first render for early-access users.',
         },
       ],
       helpLinks: [
-        { topicId: 'typescript.strict-null-checks', label: 'Strict null checks' },
+        {
+          topicId: 'typescript.strict-null-checks',
+          label: 'Strict null checks',
+        },
         { topicId: 'angular.components', label: 'Component basics' },
       ],
-      successFeedback: 'Clean review under pressure — the merge freeze can begin.',
+      successFeedback:
+        'Clean review under pressure — the merge freeze can begin.',
       failureFeedback:
         'Compare the two ! assertions: one is backed by a framework guarantee, one by hope.',
     },
@@ -224,21 +248,24 @@ export const mission010BossLaunchDashboard: MissionDefinition = {
       options: [
         {
           id: 'a',
-          label: 'Delete the test — it is clearly more trouble than it is worth',
+          label:
+            'Delete the test — it is clearly more trouble than it is worth',
           isCorrect: false,
           feedback:
             'The behaviour it covers is real; deleting it trades a flake for a blind spot.',
         },
         {
           id: 'b',
-          label: 'Re-run the pipeline until it goes green and merge quickly before midnight',
+          label:
+            'Re-run the pipeline until it goes green and merge quickly before midnight',
           isCorrect: false,
           feedback:
             'Re-rolling the dice normalises red builds — the flake will fire again at the worst moment.',
         },
         {
           id: 'c',
-          label: 'Fix the test now: inject a fixed clock so the assertion is deterministic',
+          label:
+            'Fix the test now: inject a fixed clock so the assertion is deterministic',
           isCorrect: true,
           feedback:
             'The test is wrong, not the code. A controlled clock makes it deterministic and CI trustworthy again — exactly what you flagged in First Test Run.',
@@ -255,7 +282,8 @@ export const mission010BossLaunchDashboard: MissionDefinition = {
         {
           level: 1,
           title: 'Direction',
-          content: 'Is the code broken, or is the test broken? The answer decides everything.',
+          content:
+            'Is the code broken, or is the test broken? The answer decides everything.',
         },
         {
           level: 2,
@@ -266,12 +294,14 @@ export const mission010BossLaunchDashboard: MissionDefinition = {
         {
           level: 3,
           title: 'Specific clue',
-          content: 'new Date() inside a test is the same defect you flagged in the spec audit.',
+          content:
+            'new Date() inside a test is the same defect you flagged in the spec audit.',
         },
         {
           level: 4,
           title: 'Guided solution',
-          content: 'Choose the fixed-clock fix — deterministic input, honest green build, launch stays on.',
+          content:
+            'Choose the fixed-clock fix — deterministic input, honest green build, launch stays on.',
         },
       ],
       rewards: [{ type: 'xp', amount: 50, label: 'CI trustworthy' }],
@@ -279,14 +309,16 @@ export const mission010BossLaunchDashboard: MissionDefinition = {
         {
           type: 'technical-debt',
           delta: 10,
-          reason: 'A silenced test suite let a regression board the release train.',
+          reason:
+            'A silenced test suite let a regression board the release train.',
         },
       ],
       helpLinks: [
         { topicId: 'testing.flaky-tests', label: 'Flaky tests' },
         { topicId: 'testing.unit-tests', label: 'Unit tests' },
       ],
-      successFeedback: 'Green because it is right, not because it was re-rolled.',
+      successFeedback:
+        'Green because it is right, not because it was re-rolled.',
       failureFeedback:
         'Neither deleting the signal nor gambling on re-runs fixes the actual defect in the test.',
     },
@@ -302,22 +334,16 @@ export const mission010BossLaunchDashboard: MissionDefinition = {
       options: [
         {
           id: 'a',
-          label: 'Hold the launch a week — something could still be wrong somewhere',
+          label:
+            'Hold the launch a week — something could still be wrong somewhere',
           isCorrect: false,
           feedback:
             'Every pre-flight check passed. Indefinite caution has costs too: the mitigations exist precisely so you can ship.',
         },
         {
-          id: 'b',
-          label:
-            'Launch behind the feature flag at 10% of customers, watch the dashboards, then ramp up',
-          isCorrect: true,
-          feedback:
-            'A staged rollout turns a potential all-customer incident into a contained observation with an instant kill switch. This is what responsible shipping looks like.',
-        },
-        {
           id: 'c',
-          label: 'Flip it on for 100% of customers at once — everything is green, go big',
+          label:
+            'Flip it on for 100% of customers at once — everything is green, go big',
           isCorrect: false,
           feedback:
             'Green checks reduce risk; they do not eliminate it. Going big-bang throws away the flag’s entire value.',
@@ -329,12 +355,21 @@ export const mission010BossLaunchDashboard: MissionDefinition = {
           feedback:
             'Unwatched launches turn small anomalies into overnight incidents. Observation is part of the release.',
         },
+        {
+          id: 'b',
+          label:
+            'Launch behind the feature flag at 10% of customers, watch the dashboards, then ramp up',
+          isCorrect: true,
+          feedback:
+            'A staged rollout turns a potential all-customer incident into a contained observation with an instant kill switch. This is what responsible shipping looks like.',
+        },
       ],
       hints: [
         {
           level: 1,
           title: 'Direction',
-          content: 'The ticket lists your mitigations. The best call uses them.',
+          content:
+            'The ticket lists your mitigations. The best call uses them.',
         },
         {
           level: 2,
@@ -345,12 +380,14 @@ export const mission010BossLaunchDashboard: MissionDefinition = {
         {
           level: 3,
           title: 'Specific clue',
-          content: 'One option uses the flag, the rollout, and the monitoring — the other three each discard something.',
+          content:
+            'One option uses the flag, the rollout, and the monitoring — the other three each discard something.',
         },
         {
           level: 4,
           title: 'Guided solution',
-          content: 'Launch at 10% behind the flag with eyes on the dashboards, then ramp. Ship it.',
+          content:
+            'Launch at 10% behind the flag with eyes on the dashboards, then ramp. Ship it.',
         },
       ],
       rewards: [{ type: 'xp', amount: 100, label: 'Dashboard launched' }],
@@ -358,7 +395,8 @@ export const mission010BossLaunchDashboard: MissionDefinition = {
         {
           type: 'severity',
           delta: 1,
-          reason: 'The launch call increased customer exposure without a safety net.',
+          reason:
+            'The launch call increased customer exposure without a safety net.',
         },
         {
           type: 'team-confidence',

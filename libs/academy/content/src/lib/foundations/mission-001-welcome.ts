@@ -5,7 +5,8 @@ export const mission001Welcome: MissionDefinition = {
   id: 'foundations-001-welcome',
   campaignId: 'foundations',
   title: 'Welcome to the Academy',
-  summary: 'Inspect your first platform component and confirm it displays safe, typed data.',
+  summary:
+    'Inspect your first platform component and confirm it displays safe, typed data.',
   difficulty: 'intro',
   learningObjectives: [
     'Understand the mission format',
@@ -38,33 +39,38 @@ export const mission001Welcome: MissionDefinition = {
       title: 'Choose the Interface',
       difficulty: 'intro',
       tags: ['typescript'],
-      storyContext: 'The dashboard card needs a typed customer model before it can ship.',
+      storyContext:
+        'The dashboard card needs a typed customer model before it can ship.',
       prompt: 'Which TypeScript interface best describes the customer data?',
       options: [
-        {
-          id: 'a',
-          label: 'interface Customer {\n  name: string;\n  score: number;\n}',
-          isCorrect: true,
-          feedback: 'The shape matches the data exactly, so the compiler can protect the card.',
-        },
         {
           id: 'b',
           label: 'interface Customer {\n  name: number;\n  score: string;\n}',
           isCorrect: false,
-          feedback: 'The property types are reversed — Avery is text and 720 is a number.',
+          feedback:
+            'The property types are reversed — Avery is text and 720 is a number.',
+        },
+        {
+          id: 'a',
+          label: 'interface Customer {\n  name: string;\n  score: number;\n}',
+          isCorrect: true,
+          feedback:
+            'The shape matches the data exactly, so the compiler can protect the card.',
         },
         {
           id: 'c',
           label: 'interface Customer {\n  id: string;\n}',
           isCorrect: false,
-          feedback: 'This describes a different shape entirely; the card would lose its data.',
+          feedback:
+            'This describes a different shape entirely; the card would lose its data.',
         },
       ],
       hints: [
         {
           level: 1,
           title: 'Direction',
-          content: 'Look at the value of each property in the artefact and ask what kind of data it is.',
+          content:
+            'Look at the value of each property in the artefact and ask what kind of data it is.',
         },
         {
           level: 2,
@@ -75,7 +81,8 @@ export const mission001Welcome: MissionDefinition = {
         {
           level: 3,
           title: 'Specific clue',
-          content: "'Avery' is a string and 720 is a number — find the interface that says exactly that.",
+          content:
+            "'Avery' is a string and 720 is a number — find the interface that says exactly that.",
         },
         {
           level: 4,
@@ -89,10 +96,13 @@ export const mission001Welcome: MissionDefinition = {
         {
           type: 'stability',
           delta: -5,
-          reason: 'A mistyped model let a rendering defect reach the dashboard.',
+          reason:
+            'A mistyped model let a rendering defect reach the dashboard.',
         },
       ],
-      helpLinks: [{ topicId: 'typescript.interfaces', label: 'TypeScript interfaces' }],
+      helpLinks: [
+        { topicId: 'typescript.interfaces', label: 'TypeScript interfaces' },
+      ],
       successFeedback:
         'The interface matches the expected shape and gives the component compile-time safety.',
       failureFeedback:

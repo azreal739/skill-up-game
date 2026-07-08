@@ -41,15 +41,9 @@ export const mission002FirstComponent: MissionDefinition = {
       tags: ['angular', 'typescript'],
       storyContext:
         "The parent dashboard component has a property `serviceStatus: 'online' | 'degraded' | 'offline'` and must hand it to the card.",
-      prompt: 'Which parent template usage correctly passes the status into the component?',
+      prompt:
+        'Which parent template usage correctly passes the status into the component?',
       options: [
-        {
-          id: 'a',
-          label: '<app-status-card [status]="serviceStatus"></app-status-card>',
-          isCorrect: true,
-          feedback:
-            'Square brackets create a property binding, so the typed value flows from parent to child and the compiler checks it.',
-        },
         {
           id: 'b',
           label: '<app-status-card status="serviceStatus"></app-status-card>',
@@ -65,6 +59,13 @@ export const mission002FirstComponent: MissionDefinition = {
             'Parentheses bind to an @Output event. status is an @Input, so there is no event to listen to.',
         },
         {
+          id: 'a',
+          label: '<app-status-card [status]="serviceStatus"></app-status-card>',
+          isCorrect: true,
+          feedback:
+            'Square brackets create a property binding, so the typed value flows from parent to child and the compiler checks it.',
+        },
+        {
           id: 'd',
           label: '<app-status-card>{{ serviceStatus }}</app-status-card>',
           isCorrect: false,
@@ -76,7 +77,8 @@ export const mission002FirstComponent: MissionDefinition = {
         {
           level: 1,
           title: 'Direction',
-          content: 'Think about which binding syntax sends data *into* a component.',
+          content:
+            'Think about which binding syntax sends data *into* a component.',
         },
         {
           level: 2,
@@ -102,7 +104,8 @@ export const mission002FirstComponent: MissionDefinition = {
         {
           type: 'stability',
           delta: -5,
-          reason: 'The status card rendered without live data on the operations dashboard.',
+          reason:
+            'The status card rendered without live data on the operations dashboard.',
         },
       ],
       helpLinks: [
@@ -136,17 +139,11 @@ export const mission002FirstComponent: MissionDefinition = {
       findings: [
         {
           id: 'onclick',
-          label: 'Uses the DOM onclick attribute instead of the Angular (click) event binding',
+          label:
+            'Uses the DOM onclick attribute instead of the Angular (click) event binding',
           isCorrect: true,
           feedback:
             'onclick bypasses Angular entirely and refresh() would be looked up on the global scope — use (click)="refresh()".',
-        },
-        {
-          id: 'missing-title',
-          label: 'Binds {{ title }} but the component class declares no title property',
-          isCorrect: true,
-          feedback:
-            'strictTemplates fails the build for unknown members. The class only declares status.',
         },
         {
           id: 'badge-span',
@@ -155,17 +152,27 @@ export const mission002FirstComponent: MissionDefinition = {
           feedback: 'A span is perfectly valid here — this is not an issue.',
         },
         {
+          id: 'missing-title',
+          label:
+            'Binds {{ title }} but the component class declares no title property',
+          isCorrect: true,
+          feedback:
+            'strictTemplates fails the build for unknown members. The class only declares status.',
+        },
+        {
           id: 'interpolation',
           label: 'Interpolating {{ status }} in the template is unsafe',
           isCorrect: false,
-          feedback: 'Interpolation is the normal, safe way to render component state as text.',
+          feedback:
+            'Interpolation is the normal, safe way to render component state as text.',
         },
       ],
       hints: [
         {
           level: 1,
           title: 'Direction',
-          content: 'Compare the template against the component class, and look at how the click is handled.',
+          content:
+            'Compare the template against the component class, and look at how the click is handled.',
         },
         {
           level: 2,
@@ -191,7 +198,8 @@ export const mission002FirstComponent: MissionDefinition = {
         {
           type: 'technical-debt',
           delta: 10,
-          reason: 'Unreviewed template issues were merged into the component library.',
+          reason:
+            'Unreviewed template issues were merged into the component library.',
         },
       ],
       helpLinks: [

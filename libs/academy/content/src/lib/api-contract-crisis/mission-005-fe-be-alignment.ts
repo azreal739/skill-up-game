@@ -5,7 +5,8 @@ export const apiMission005Alignment: MissionDefinition = {
   id: 'api-contract-crisis-005-fe-be-alignment',
   campaignId: 'api-contract-crisis',
   title: 'FE/BE Alignment',
-  summary: 'The drift is understood. Decide where the fix belongs and how the two teams agree on it.',
+  summary:
+    'The drift is understood. Decide where the fix belongs and how the two teams agree on it.',
   difficulty: 'medium',
   learningObjectives: [
     'Decide whether to fix drift client-side or renegotiate the contract',
@@ -34,7 +35,8 @@ export const apiMission005Alignment: MissionDefinition = {
       title: 'Where Does the Fix Belong?',
       difficulty: 'medium',
       tags: ['api'],
-      storyContext: 'The back-end contract is fixed for good reasons. The front end must present clean data to its components regardless.',
+      storyContext:
+        'The back-end contract is fixed for good reasons. The front end must present clean data to its components regardless.',
       prompt: 'What is the right way to align, given the DTO cannot change?',
       options: [
         {
@@ -47,38 +49,67 @@ export const apiMission005Alignment: MissionDefinition = {
         },
         {
           id: 'b',
-          label: 'Sprinkle Number(amount) and new Date(+createdAt) at every call site that uses the data',
+          label:
+            'Sprinkle Number(amount) and new Date(+createdAt) at every call site that uses the data',
           isCorrect: false,
-          feedback: 'Scattering coercions everywhere means every new consumer re-learns the quirks and one will forget. Normalise once at the boundary.',
+          feedback:
+            'Scattering coercions everywhere means every new consumer re-learns the quirks and one will forget. Normalise once at the boundary.',
         },
         {
           id: 'c',
-          label: 'Insist the Payments team add a second endpoint that returns the shape you want',
+          label:
+            'Insist the Payments team add a second endpoint that returns the shape you want',
           isCorrect: false,
-          feedback: 'A bespoke endpoint per consumer multiplies back-end surface area. Adapting at your own boundary is cheaper and within your control.',
+          feedback:
+            'A bespoke endpoint per consumer multiplies back-end surface area. Adapting at your own boundary is cheaper and within your control.',
         },
       ],
       hints: [
-        { level: 1, title: 'Direction', content: 'Where can you fix the shape exactly once, so nothing downstream repeats it?' },
+        {
+          level: 1,
+          title: 'Direction',
+          content:
+            'Where can you fix the shape exactly once, so nothing downstream repeats it?',
+        },
         {
           level: 2,
           title: 'Concept',
           content:
             'Validate-and-transform at the boundary: one adapter turns the wire DTO into a clean internal model. The app depends on your model; the adapter absorbs the drift.',
         },
-        { level: 3, title: 'Specific clue', content: 'One place, not every call site, and not a new back-end endpoint.' },
-        { level: 4, title: 'Guided solution', content: 'A single boundary adapter that validates and normalises the DTO.' },
+        {
+          level: 3,
+          title: 'Specific clue',
+          content:
+            'One place, not every call site, and not a new back-end endpoint.',
+        },
+        {
+          level: 4,
+          title: 'Guided solution',
+          content:
+            'A single boundary adapter that validates and normalises the DTO.',
+        },
       ],
       rewards: [{ type: 'xp', amount: 25, label: 'Boundary aligned' }],
-      consequences: [{ type: 'team-confidence', delta: -10, reason: 'Scattered fixes and cross-team blame eroded trust on both sides.' }],
+      consequences: [
+        {
+          type: 'team-confidence',
+          delta: -10,
+          reason:
+            'Scattered fixes and cross-team blame eroded trust on both sides.',
+        },
+      ],
       helpLinks: [
         { topicId: 'api.contract-drift', label: 'API contract drift' },
         { topicId: 'zod.transform', label: 'Transforming with Zod' },
       ],
-      successFeedback: 'One boundary adapter absorbs the drift; the app sees a clean model and the two teams share a documented seam.',
-      failureFeedback: 'Adapt once at the boundary — not at every call site, and not by demanding a new endpoint per consumer.',
+      successFeedback:
+        'One boundary adapter absorbs the drift; the app sees a clean model and the two teams share a documented seam.',
+      failureFeedback:
+        'Adapt once at the boundary — not at every call site, and not by demanding a new endpoint per consumer.',
     },
   ],
-  reflectionPrompt: 'When two teams share a contract neither will change, whose job is it to absorb the mismatch?',
+  reflectionPrompt:
+    'When two teams share a contract neither will change, whose job is it to absorb the mismatch?',
   rewards: [{ type: 'xp', amount: 5, label: 'Alignment reached' }],
 };

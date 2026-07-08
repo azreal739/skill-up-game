@@ -5,7 +5,8 @@ export const cfMission006SharedLibrary: MissionDefinition = {
   id: 'component-forge-006-shared-library-decision',
   campaignId: 'component-forge',
   title: 'Shared Library Decision',
-  summary: 'Two teams want the tile. Decide where it should live in the monorepo.',
+  summary:
+    'Two teams want the tile. Decide where it should live in the monorepo.',
   difficulty: 'medium',
   learningObjectives: [
     'Place shared UI in a ui library, not inside a feature',
@@ -34,7 +35,8 @@ export const cfMission006SharedLibrary: MissionDefinition = {
       title: 'Choose Its Home',
       difficulty: 'medium',
       tags: ['nx', 'angular'],
-      storyContext: 'Nx boundary rules forbid one feature library importing from another.',
+      storyContext:
+        'Nx boundary rules forbid one feature library importing from another.',
       prompt: 'Where should the reusable tile live?',
       options: [
         {
@@ -47,20 +49,27 @@ export const cfMission006SharedLibrary: MissionDefinition = {
         },
         {
           id: 'b',
-          label: 'Let search import CustomerTile directly from the ops-dashboard feature library',
+          label:
+            'Let search import CustomerTile directly from the ops-dashboard feature library',
           isCorrect: false,
           feedback:
             'Feature-to-feature imports are exactly what Nx boundaries forbid — it tangles ownership and the dependency graph.',
         },
         {
           id: 'c',
-          label: 'Copy the tile into the search feature so each team owns its own version',
+          label:
+            'Copy the tile into the search feature so each team owns its own version',
           isCorrect: false,
-          feedback: 'Two copies drift apart and double every future fix — the reuse you wanted is lost.',
+          feedback:
+            'Two copies drift apart and double every future fix — the reuse you wanted is lost.',
         },
       ],
       hints: [
-        { level: 1, title: 'Direction', content: 'Shared things belong somewhere both teams may depend on.' },
+        {
+          level: 1,
+          title: 'Direction',
+          content: 'Shared things belong somewhere both teams may depend on.',
+        },
         {
           level: 2,
           title: 'Concept',
@@ -70,7 +79,8 @@ export const cfMission006SharedLibrary: MissionDefinition = {
         {
           level: 3,
           title: 'Specific clue',
-          content: 'Only one option creates a library that both features can legally import.',
+          content:
+            'Only one option creates a library that both features can legally import.',
         },
         {
           level: 4,
@@ -80,13 +90,25 @@ export const cfMission006SharedLibrary: MissionDefinition = {
       ],
       rewards: [{ type: 'xp', amount: 25, label: 'Home chosen' }],
       consequences: [
-        { type: 'technical-debt', delta: 15, reason: 'A feature-to-feature import tangled the dependency graph.' },
+        {
+          type: 'technical-debt',
+          delta: 15,
+          reason: 'A feature-to-feature import tangled the dependency graph.',
+        },
       ],
-      helpLinks: [{ topicId: 'nx.libraries-boundaries', label: 'Nx libraries and boundaries' }],
-      successFeedback: 'Shared UI in a ui library — both features depend inward, no tangle.',
-      failureFeedback: 'Cross-feature imports and copies both fail. Promote shared UI into a ui library.',
+      helpLinks: [
+        {
+          topicId: 'nx.libraries-boundaries',
+          label: 'Nx libraries and boundaries',
+        },
+      ],
+      successFeedback:
+        'Shared UI in a ui library — both features depend inward, no tangle.',
+      failureFeedback:
+        'Cross-feature imports and copies both fail. Promote shared UI into a ui library.',
     },
   ],
-  reflectionPrompt: 'Why do feature libraries importing each other cause problems as a codebase grows?',
+  reflectionPrompt:
+    'Why do feature libraries importing each other cause problems as a codebase grows?',
   rewards: [{ type: 'xp', amount: 5, label: 'Library placed' }],
 };

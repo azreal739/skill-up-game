@@ -34,8 +34,10 @@ export const nxMission006Graph: MissionDefinition = {
       title: 'Diagnose the Blast Radius',
       difficulty: 'medium',
       tags: ['nx'],
-      storyContext: 'One util library exports unrelated things and is imported almost everywhere.',
-      prompt: 'Why does a one-line change here rebuild 20 projects, and what fixes it?',
+      storyContext:
+        'One util library exports unrelated things and is imported almost everywhere.',
+      prompt:
+        'Why does a one-line change here rebuild 20 projects, and what fixes it?',
       options: [
         {
           id: 'a',
@@ -49,33 +51,63 @@ export const nxMission006Graph: MissionDefinition = {
           id: 'b',
           label: 'Nx is miscalculating affected; disable the affected check',
           isCorrect: false,
-          feedback: 'The graph is correct — 20 projects really do import this library. Disabling the check hides real risk.',
+          feedback:
+            'The graph is correct — 20 projects really do import this library. Disabling the check hides real risk.',
         },
         {
           id: 'c',
-          label: 'Add more exports to util/shared so fewer libraries are needed',
+          label:
+            'Add more exports to util/shared so fewer libraries are needed',
           isCorrect: false,
-          feedback: 'Making the god library bigger deepens the problem — more consumers, larger blast radius.',
+          feedback:
+            'Making the god library bigger deepens the problem — more consumers, larger blast radius.',
         },
       ],
       hints: [
-        { level: 1, title: 'Direction', content: 'Ask why so many projects depend on one library.' },
+        {
+          level: 1,
+          title: 'Direction',
+          content: 'Ask why so many projects depend on one library.',
+        },
         {
           level: 2,
           title: 'Concept',
           content:
             'A library that exports many unrelated things becomes a dependency for everyone, so every change ripples widely. Splitting it by concern lets consumers depend only on what they need.',
         },
-        { level: 3, title: 'Specific clue', content: 'The fix reduces how many projects depend on the changed code.' },
-        { level: 4, title: 'Guided solution', content: 'Split the god util library into focused libraries.' },
+        {
+          level: 3,
+          title: 'Specific clue',
+          content:
+            'The fix reduces how many projects depend on the changed code.',
+        },
+        {
+          level: 4,
+          title: 'Guided solution',
+          content: 'Split the god util library into focused libraries.',
+        },
       ],
       rewards: [{ type: 'xp', amount: 25, label: 'Blast radius understood' }],
-      consequences: [{ type: 'technical-debt', delta: 10, reason: 'A god library kept every change expensive and risky.' }],
-      helpLinks: [{ topicId: 'nx.affected-graph', label: 'Affected builds and the graph' }],
-      successFeedback: 'Split by concern, each change now touches only its real dependents.',
-      failureFeedback: 'The graph is right — the god library is the problem. Split it, don’t hide it.',
+      consequences: [
+        {
+          type: 'technical-debt',
+          delta: 10,
+          reason: 'A god library kept every change expensive and risky.',
+        },
+      ],
+      helpLinks: [
+        {
+          topicId: 'nx.affected-graph',
+          label: 'Affected builds and the graph',
+        },
+      ],
+      successFeedback:
+        'Split by concern, each change now touches only its real dependents.',
+      failureFeedback:
+        'The graph is right — the god library is the problem. Split it, don’t hide it.',
     },
   ],
-  reflectionPrompt: 'What does the shape of your dependency graph tell you about how changes will ripple?',
+  reflectionPrompt:
+    'What does the shape of your dependency graph tell you about how changes will ripple?',
   rewards: [{ type: 'xp', amount: 5, label: 'Graph read' }],
 };

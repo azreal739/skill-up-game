@@ -5,7 +5,8 @@ export const cfMission002Presentational: MissionDefinition = {
   id: 'component-forge-002-presentational-components',
   campaignId: 'component-forge',
   title: 'Presentational Components',
-  summary: 'A teammate’s "reusable" tile secretly fetches data. Make it truly presentational.',
+  summary:
+    'A teammate’s "reusable" tile secretly fetches data. Make it truly presentational.',
   difficulty: 'easy',
   learningObjectives: [
     'Spot hidden dependencies that break reusability',
@@ -35,19 +36,23 @@ export const cfMission002Presentational: MissionDefinition = {
       title: 'Find What Breaks Reuse',
       difficulty: 'easy',
       tags: ['angular'],
-      storyContext: 'Two things stop this from being a reusable presentational tile; one line is fine.',
-      prompt: 'Select every genuine problem with this "presentational" component.',
+      storyContext:
+        'Two things stop this from being a reusable presentational tile; one line is fine.',
+      prompt:
+        'Select every genuine problem with this "presentational" component.',
       findings: [
         {
           id: 'injects-service',
-          label: 'It injects CustomerService, coupling the tile to one data source',
+          label:
+            'It injects CustomerService, coupling the tile to one data source',
           isCorrect: true,
           feedback:
             'A presentational component must not fetch data. Take the customer as an @Input and let containers supply it.',
         },
         {
           id: 'id-input',
-          label: 'It takes a customerId input and fetches, instead of taking the customer object',
+          label:
+            'It takes a customerId input and fetches, instead of taking the customer object',
           isCorrect: true,
           feedback:
             'Passing an id forces the tile to load the data itself. Pass the resolved Customer so the tile just renders.',
@@ -61,7 +66,11 @@ export const cfMission002Presentational: MissionDefinition = {
         },
       ],
       hints: [
-        { level: 1, title: 'Direction', content: 'A presentational component only renders — it never loads.' },
+        {
+          level: 1,
+          title: 'Direction',
+          content: 'A presentational component only renders — it never loads.',
+        },
         {
           level: 2,
           title: 'Concept',
@@ -71,26 +80,41 @@ export const cfMission002Presentational: MissionDefinition = {
         {
           level: 3,
           title: 'Specific clue',
-          content: 'The constructor injection and the customerId-plus-fetch are the two coupling points.',
+          content:
+            'The constructor injection and the customerId-plus-fetch are the two coupling points.',
         },
         {
           level: 4,
           title: 'Guided solution',
-          content: 'Flag the injected service and the id-input+fetch. OnPush is correct — leave it unselected.',
+          content:
+            'Flag the injected service and the id-input+fetch. OnPush is correct — leave it unselected.',
         },
       ],
       rewards: [{ type: 'xp', amount: 10, label: 'Tile purified' }],
       consequences: [
-        { type: 'technical-debt', delta: 10, reason: 'A data-coupled tile blocked reuse across screens.' },
+        {
+          type: 'technical-debt',
+          delta: 10,
+          reason: 'A data-coupled tile blocked reuse across screens.',
+        },
       ],
       helpLinks: [
-        { topicId: 'angular.presentational-vs-container', label: 'Presentational vs container' },
-        { topicId: 'angular.change-detection', label: 'OnPush change detection' },
+        {
+          topicId: 'angular.presentational-vs-container',
+          label: 'Presentational vs container',
+        },
+        {
+          topicId: 'angular.change-detection',
+          label: 'OnPush change detection',
+        },
       ],
-      successFeedback: 'Now it just renders a customer it is given — reusable anywhere.',
-      failureFeedback: 'Look for the two ways this component loads its own data instead of receiving it.',
+      successFeedback:
+        'Now it just renders a customer it is given — reusable anywhere.',
+      failureFeedback:
+        'Look for the two ways this component loads its own data instead of receiving it.',
     },
   ],
-  reflectionPrompt: 'Why does taking a resolved object beat taking an id and fetching inside a reusable component?',
+  reflectionPrompt:
+    'Why does taking a resolved object beat taking an id and fetching inside a reusable component?',
   rewards: [{ type: 'xp', amount: 5, label: 'Presentational mastered' }],
 };

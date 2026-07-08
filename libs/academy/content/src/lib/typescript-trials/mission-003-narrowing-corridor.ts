@@ -5,7 +5,8 @@ export const ttMission003Narrowing: MissionDefinition = {
   id: 'typescript-trials-003-narrowing-corridor',
   campaignId: 'typescript-trials',
   title: 'Narrowing Corridor',
-  summary: 'A union is handled with casts. Walk it through proper narrowing instead.',
+  summary:
+    'A union is handled with casts. Walk it through proper narrowing instead.',
   difficulty: 'medium',
   learningObjectives: [
     'Narrow a union before using member-specific fields',
@@ -35,7 +36,8 @@ export const ttMission003Narrowing: MissionDefinition = {
       title: 'Narrow the Union',
       difficulty: 'medium',
       tags: ['typescript'],
-      storyContext: 'The two variants share no fields except the discriminant kind.',
+      storyContext:
+        'The two variants share no fields except the discriminant kind.',
       prompt: 'How should render handle both variants safely?',
       options: [
         {
@@ -50,33 +52,57 @@ export const ttMission003Narrowing: MissionDefinition = {
           id: 'b',
           label: 'return (n as { address: string }).address;',
           isCorrect: false,
-          feedback: 'The cast asserts a field that the sms variant lacks — it compiles but crashes at runtime.',
+          feedback:
+            'The cast asserts a field that the sms variant lacks — it compiles but crashes at runtime.',
         },
         {
           id: 'c',
-          label: "return n.address ?? n.phone;",
+          label: 'return n.address ?? n.phone;',
           isCorrect: false,
-          feedback: 'Neither field exists on both variants, so this does not type-check without narrowing first.',
+          feedback:
+            'Neither field exists on both variants, so this does not type-check without narrowing first.',
         },
       ],
       hints: [
-        { level: 1, title: 'Direction', content: 'Check what kind of notification it is before reading its fields.' },
+        {
+          level: 1,
+          title: 'Direction',
+          content:
+            'Check what kind of notification it is before reading its fields.',
+        },
         {
           level: 2,
           title: 'Concept',
           content:
             'A discriminated union carries a common tag (kind). Testing that tag narrows the type in each branch so member fields become safely accessible.',
         },
-        { level: 3, title: 'Specific clue', content: "The safe option branches on n.kind === 'email'." },
-        { level: 4, title: 'Guided solution', content: 'Branch on n.kind and return the field for that variant.' },
+        {
+          level: 3,
+          title: 'Specific clue',
+          content: "The safe option branches on n.kind === 'email'.",
+        },
+        {
+          level: 4,
+          title: 'Guided solution',
+          content: 'Branch on n.kind and return the field for that variant.',
+        },
       ],
       rewards: [{ type: 'xp', amount: 25, label: 'Union narrowed' }],
-      consequences: [{ type: 'stability', delta: -5, reason: 'A cast crashed the renderer on SMS notifications.' }],
+      consequences: [
+        {
+          type: 'stability',
+          delta: -5,
+          reason: 'A cast crashed the renderer on SMS notifications.',
+        },
+      ],
       helpLinks: [{ topicId: 'typescript.narrowing', label: 'Narrowing' }],
-      successFeedback: 'Discriminant checked, each branch typed — no casts, no crashes.',
-      failureFeedback: 'Casts skip the check and the ?? does not type-check. Branch on the discriminant.',
+      successFeedback:
+        'Discriminant checked, each branch typed — no casts, no crashes.',
+      failureFeedback:
+        'Casts skip the check and the ?? does not type-check. Branch on the discriminant.',
     },
   ],
-  reflectionPrompt: 'Why is a discriminated union safer than a bag of optional fields?',
+  reflectionPrompt:
+    'Why is a discriminated union safer than a bag of optional fields?',
   rewards: [{ type: 'xp', amount: 5, label: 'Corridor cleared' }],
 };
