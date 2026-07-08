@@ -144,3 +144,22 @@
     letter-spacing: 0.14em;
   }
 }
+
+.mission:not(.mission--locked) {
+  transition: transform 0.16s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: rgba(34, 211, 238, 0.35);
+    box-shadow:
+      0 16px 36px rgba(2, 6, 18, 0.45),
+      0 0 24px rgba(34, 211, 238, 0.07);
+  }
+}
+
+.mission--boss:not(.mission--locked):hover {
+  border-color: rgba(251, 146, 60, 0.6);
+  box-shadow:
+    0 16px 36px rgba(2, 6, 18, 0.45),
+    0 0 30px rgba(251, 146, 60, 0.16);
+}
