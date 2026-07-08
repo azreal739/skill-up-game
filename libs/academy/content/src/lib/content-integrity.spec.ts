@@ -1,8 +1,11 @@
 import {
   ChallengeDefinition,
+  LEVELS,
+  RANKS,
   badgeById,
   campaignPackSchema,
   helpTopicSchema,
+  missionScore,
 } from '@academy/content-model';
 import { foundationsPack } from './foundations/campaign';
 import { componentForgePack } from './component-forge/campaign';
@@ -220,5 +223,49 @@ describe('content integrity', () => {
       const levels = challenge.hints.map((hint) => hint.level).sort();
       expect(levels).withContext(challenge.id).toEqual([1, 2, 3, 4]);
     }
+  });
+
+  it('never gets easier along the unlock chain', () => {
+    const order = ['beginner', 'intermediate', 'advanced', 'expert'];
+    const byId = new Map(packs.map((pack) => [pack.campaign.id, pack.campaign]));
+    for (const pack of packs) {
+      const required = pack.campaign.requiredCampaignId;
+      if (!required) {
+        continue;
+      }
+      const prerequisite = byId.get(required);
+      expect(order.indexOf(pack.campaign.difficulty))
+        .withContext(`${pack.campaign.id} (${pack.campaign.difficulty}) after ${required}`)
+        .toBeGreaterThanOrEqual(order.indexOf(prerequisite?.difficulty ?? 'beginner'));
+    }
+  });
+
+  it('anchors the progression curve to the maximum earnable XP', () => {
+    // A perfect, hint-free playthrough of every mission defines the XP
+    // ceiling. The final rank tier must be demanding (>80% of the ceiling)
+    // but reachable (<95%), and the level ladder must stay within it, so
+    // adding or rebalancing content forces a deliberate curve check here.
+    let maxXp = 0;
+    for (const pack of packs) {
+      for (const mission of pack.missions) {
+        const score = missionScore({
+          perfect: true,
+          challenges: mission.challenges.map((challenge) => ({
+            difficulty: challenge.difficulty,
+            scoreRatio: 1,
+            hintsUsed: [],
+          })),
+        });
+        const missionBonus = mission.rewards
+          .filter((reward) => reward.type === 'xp')
+          .reduce((sum, reward) => sum + (reward.amount ?? 0), 0);
+        maxXp += score.totalXp + missionBonus;
+      }
+    }
+    const topRank = RANKS[RANKS.length - 1].minXp;
+    const topLevel = LEVELS[LEVELS.length - 1].minXp;
+    expect(topRank).withContext(`max earnable XP is ${maxXp}`).toBeGreaterThan(maxXp * 0.8);
+    expect(topRank).withContext(`max earnable XP is ${maxXp}`).toBeLessThan(maxXp * 0.95);
+    expect(topLevel).withContext(`max earnable XP is ${maxXp}`).toBeLessThan(maxXp);
   });
 });

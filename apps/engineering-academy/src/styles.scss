@@ -183,3 +183,29 @@ body.ea-high-contrast {
   --ea-text: #ffffff;
   --ea-muted: #cbd5e1;
 }
+
+/* Campaign difficulty chips (hub cards + campaign detail). */
+.ea-chip[data-difficulty] {
+  text-transform: capitalize;
+  font-weight: 600;
+}
+
+.ea-chip[data-difficulty='beginner'] {
+  color: var(--ea-success);
+  border-color: rgba(52, 211, 153, 0.5);
+}
+
+.ea-chip[data-difficulty='intermediate'] {
+  color: var(--ea-accent);
+  border-color: rgba(34, 211, 238, 0.5);
+}
+
+.ea-chip[data-difficulty='advanced'] {
+  color: var(--ea-orange);
+  border-color: rgba(251, 146, 60, 0.5);
+}
+
+.ea-chip[data-difficulty='expert'] {
+  color: var(--ea-danger);
+  border-color: rgba(248, 113, 113, 0.5);
+}

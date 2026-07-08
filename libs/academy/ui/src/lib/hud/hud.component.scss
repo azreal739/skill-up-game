@@ -103,3 +103,12 @@
     display: none;
   }
 }
+
+.hud__level {
+  display: block;
+  font-family: var(--ea-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ea-accent);
+}

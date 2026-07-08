@@ -9,6 +9,8 @@ import {
   applyConsequence,
   createPlayerState,
   initialMeters,
+  levelForXp,
+  levelProgress,
   nextRank,
   playerStateSchema,
   rankForXp,
@@ -49,6 +51,8 @@ export class GameStateService {
   readonly rank = computed(() => rankForXp(this.xp()));
   readonly nextRank = computed(() => nextRank(this.xp()));
   readonly rankProgress = computed(() => rankProgress(this.xp()));
+  readonly level = computed(() => levelForXp(this.xp()));
+  readonly levelProgress = computed(() => levelProgress(this.xp()));
   readonly badges = computed(() => this.stateSignal()?.badges ?? []);
   readonly meters = computed(() => this.stateSignal()?.meters ?? initialMeters());
   readonly settings = computed(

@@ -21,6 +21,7 @@ export const typescriptTrialsPack: CampaignPack = {
     subtitle: 'Strengthen the codebase',
     description:
       'Weak typing has let defects into the platform. Trade loose strings for unions, any for unknown and generics, and assertions for narrowing — then stabilise the whole model layer.',
+    difficulty: 'intermediate',
     requiredCampaignId: 'component-forge',
     tags: ['typescript'],
     missions: [

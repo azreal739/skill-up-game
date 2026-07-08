@@ -20,10 +20,11 @@ describe('GameStateService', () => {
     expect(service.xp()).toBe(0);
   });
 
-  it('creates a Graduate Engineer profile and persists it', () => {
+  it('creates a Junior Engineer I profile and persists it', () => {
     service.createProfile('Avery');
     expect(service.hasProfile()).toBeTrue();
-    expect(service.rank().id).toBe('graduate-engineer');
+    expect(service.rank().id).toBe('junior-1');
+    expect(service.level().level).toBe(1);
     expect(localStorage.getItem('engineering-academy:save')).toContain('Avery');
   });
 
@@ -35,7 +36,7 @@ describe('GameStateService', () => {
     );
     expect(outcome.xpAwarded).toBe(120);
     expect(outcome.newBadges).toEqual(['type-guardian']);
-    expect(outcome.rankAfter.id).toBe('junior-engineer');
+    expect(outcome.rankAfter.id).toBe('junior-2');
     expect(service.isMissionCompleted('m1')).toBeTrue();
   });
 

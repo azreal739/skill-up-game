@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
 import {
   PlatformMeters,
+  PlayerLevel,
   Rank,
   debtHealth,
   severityLabel,
@@ -21,9 +22,12 @@ import { MeterComponent } from '../meter/meter.component';
   template: `
     <div class="hud">
       <div class="hud__identity">
+        @if (level) {
+          <span class="hud__level">LV {{ level.level }} · {{ level.codename }}</span>
+        }
         <span class="hud__rank">{{ rank.title }}</span>
         <span class="hud__xp">{{ xp }} XP</span>
-        <div class="hud__xpbar" role="progressbar" aria-label="Progress to next rank"
+        <div class="hud__xpbar" role="progressbar" [attr.aria-label]="progressLabel"
           [attr.aria-valuenow]="xpProgressPercent" aria-valuemin="0" aria-valuemax="100">
           <div class="hud__xpfill" [style.width.%]="xpProgressPercent"></div>
         </div>
@@ -63,11 +67,19 @@ export class HudComponent {
   @Input({ required: true }) xp!: number;
   @Input({ required: true }) rankProgress = 0;
   @Input({ required: true }) meters!: PlatformMeters;
+  /** Game level track; when present the XP bar tracks level progress. */
+  @Input() level: PlayerLevel | null = null;
+  @Input() levelProgress: number | null = null;
   @Input() missionTitle: string | null = null;
   @Input() hintsUsed: number | null = null;
 
   get xpProgressPercent(): number {
-    return Math.round(this.rankProgress * 100);
+    const progress = this.level && this.levelProgress !== null ? this.levelProgress : this.rankProgress;
+    return Math.round(progress * 100);
+  }
+
+  get progressLabel(): string {
+    return this.level ? 'Progress to next level' : 'Progress to next rank';
   }
 
   get stabilityHealth() {

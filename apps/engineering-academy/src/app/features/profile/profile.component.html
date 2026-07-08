@@ -9,6 +9,9 @@
             <span class="identity__callsign">“{{ state.profile.callsign }}”</span>
           }
         </h1>
+        <p class="identity__level">
+          LV {{ gameState.level().level }} · {{ gameState.level().codename }}
+        </p>
         <p class="identity__rank">{{ gameState.rank().title }}</p>
         <div class="identity__xp">
           <div
