@@ -5,7 +5,8 @@ export const cfMission001UiBlueprint: MissionDefinition = {
   id: 'component-forge-001-ui-blueprint',
   campaignId: 'component-forge',
   title: 'The UI Blueprint',
-  summary: 'Before building, decide how a customer tile splits into reusable parts.',
+  summary:
+    'Before building, decide how a customer tile splits into reusable parts.',
   difficulty: 'easy',
   learningObjectives: [
     'Separate what a component renders from where its data comes from',
@@ -38,8 +39,10 @@ export const cfMission001UiBlueprint: MissionDefinition = {
       title: 'Draw the Boundary',
       difficulty: 'easy',
       tags: ['angular'],
-      storyContext: 'The tile must render the same everywhere but get its data from three different owners.',
-      prompt: 'How should the tile be designed so all three screens can reuse it?',
+      storyContext:
+        'The tile must render the same everywhere but get its data from three different owners.',
+      prompt:
+        'How should the tile be designed so all three screens can reuse it?',
       options: [
         {
           id: 'a',
@@ -51,21 +54,28 @@ export const cfMission001UiBlueprint: MissionDefinition = {
         },
         {
           id: 'b',
-          label: 'A CustomerTile that injects CustomerService and fetches its own customer by id',
+          label:
+            'A CustomerTile that injects CustomerService and fetches its own customer by id',
           isCorrect: false,
           feedback:
             'Baking the fetch into the tile ties it to one data source — the search and account screens load customers differently, so it would not reuse.',
         },
         {
           id: 'c',
-          label: 'Three separate tile components, one per screen, copied and adjusted',
+          label:
+            'Three separate tile components, one per screen, copied and adjusted',
           isCorrect: false,
           feedback:
             'Three copies means three places to fix every future change — the opposite of a reusable component.',
         },
       ],
       hints: [
-        { level: 1, title: 'Direction', content: 'Separate what the tile shows from where the data comes from.' },
+        {
+          level: 1,
+          title: 'Direction',
+          content:
+            'Separate what the tile shows from where the data comes from.',
+        },
         {
           level: 2,
           title: 'Concept',
@@ -75,7 +85,8 @@ export const cfMission001UiBlueprint: MissionDefinition = {
         {
           level: 3,
           title: 'Specific clue',
-          content: 'The three screens load data differently — so the tile must NOT do the loading itself.',
+          content:
+            'The three screens load data differently — so the tile must NOT do the loading itself.',
         },
         {
           level: 4,
@@ -86,16 +97,26 @@ export const cfMission001UiBlueprint: MissionDefinition = {
       ],
       rewards: [{ type: 'xp', amount: 10, label: 'Blueprint drawn' }],
       consequences: [
-        { type: 'technical-debt', delta: 10, reason: 'A tile coupled to one data source blocked reuse.' },
+        {
+          type: 'technical-debt',
+          delta: 10,
+          reason: 'A tile coupled to one data source blocked reuse.',
+        },
       ],
       helpLinks: [
-        { topicId: 'angular.presentational-vs-container', label: 'Presentational vs container' },
+        {
+          topicId: 'angular.presentational-vs-container',
+          label: 'Presentational vs container',
+        },
         { topicId: 'angular.inputs-outputs', label: 'Inputs and outputs' },
       ],
-      successFeedback: 'A presentational tile plus per-screen containers — reusable by design.',
-      failureFeedback: 'The reusable part is the one that takes data in and does not fetch it itself.',
+      successFeedback:
+        'A presentational tile plus per-screen containers — reusable by design.',
+      failureFeedback:
+        'The reusable part is the one that takes data in and does not fetch it itself.',
     },
   ],
-  reflectionPrompt: 'Which parts of your current UI are hard to reuse because they fetch their own data?',
+  reflectionPrompt:
+    'Which parts of your current UI are hard to reuse because they fetch their own data?',
   rewards: [{ type: 'xp', amount: 5, label: 'Forge lit' }],
 };

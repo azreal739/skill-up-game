@@ -5,7 +5,8 @@ export const mission003TypeSafety: MissionDefinition = {
   id: 'foundations-003-type-safety',
   campaignId: 'foundations',
   title: 'Type Safety Patrol',
-  summary: 'Patrol a service file for weak typing before defects escape into production.',
+  summary:
+    'Patrol a service file for weak typing before defects escape into production.',
   difficulty: 'medium',
   learningObjectives: [
     'Spot any-typed values that disable the compiler',
@@ -51,38 +52,43 @@ export const mission003TypeSafety: MissionDefinition = {
             'any switches the compiler off for everything that flows out of the cache. A Record<string, AccountCacheEntry> keeps reads honest.',
         },
         {
-          id: 'non-null-assertion',
-          label: 'account!.firstName uses non-null assertions on an optional parameter',
-          isCorrect: true,
-          feedback:
-            'The ! operator tells the compiler to trust you — but account is genuinely optional, so this throws at runtime when it is undefined. Narrow with an if check instead.',
-        },
-        {
-          id: 'as-cast',
-          label: 'entry.balance as number asserts a type instead of validating it',
-          isCorrect: true,
-          feedback:
-            'A cast changes what the compiler believes, not what the value is. If the cache entry is missing or malformed, this still explodes.',
-        },
-        {
           id: 'string-concat',
-          label: 'Building the display name with + string concatenation is a type error',
+          label:
+            'Building the display name with + string concatenation is a type error',
           isCorrect: false,
           feedback:
             'Concatenating two strings is stylistically debatable but perfectly type-safe.',
         },
         {
+          id: 'as-cast',
+          label:
+            'entry.balance as number asserts a type instead of validating it',
+          isCorrect: true,
+          feedback:
+            'A cast changes what the compiler believes, not what the value is. If the cache entry is missing or malformed, this still explodes.',
+        },
+        {
+          id: 'non-null-assertion',
+          label:
+            'account!.firstName uses non-null assertions on an optional parameter',
+          isCorrect: true,
+          feedback:
+            'The ! operator tells the compiler to trust you — but account is genuinely optional, so this throws at runtime when it is undefined. Narrow with an if check instead.',
+        },
+        {
           id: 'private-cache',
           label: 'The cache field should not be private',
           isCorrect: false,
-          feedback: 'Keeping the cache private is good encapsulation, not a defect.',
+          feedback:
+            'Keeping the cache private is good encapsulation, not a defect.',
         },
       ],
       hints: [
         {
           level: 1,
           title: 'Direction',
-          content: 'Look for places where the code tells the compiler to stop checking.',
+          content:
+            'Look for places where the code tells the compiler to stop checking.',
         },
         {
           level: 2,
@@ -108,7 +114,8 @@ export const mission003TypeSafety: MissionDefinition = {
         {
           type: 'stability',
           delta: -10,
-          reason: 'Unchecked values reached the account page and crashed it for some customers.',
+          reason:
+            'Unchecked values reached the account page and crashed it for some customers.',
         },
         {
           type: 'technical-debt',
@@ -117,7 +124,10 @@ export const mission003TypeSafety: MissionDefinition = {
         },
       ],
       helpLinks: [
-        { topicId: 'typescript.strict-null-checks', label: 'Strict null checks' },
+        {
+          topicId: 'typescript.strict-null-checks',
+          label: 'Strict null checks',
+        },
         { topicId: 'typescript.narrowing', label: 'Narrowing' },
       ],
       successFeedback:
@@ -131,8 +141,10 @@ export const mission003TypeSafety: MissionDefinition = {
       title: 'Choose the Safe Fix',
       difficulty: 'medium',
       tags: ['typescript'],
-      storyContext: 'getDisplayName must never throw, even when no account is passed.',
-      prompt: 'Which rewrite of getDisplayName is the safest under strict mode?',
+      storyContext:
+        'getDisplayName must never throw, even when no account is passed.',
+      prompt:
+        'Which rewrite of getDisplayName is the safest under strict mode?',
       options: [
         {
           id: 'a',
@@ -147,7 +159,8 @@ export const mission003TypeSafety: MissionDefinition = {
           label:
             "getDisplayName(account?: Account): string {\n  return account!.firstName + ' ' + account!.lastName;\n}",
           isCorrect: false,
-          feedback: 'The assertions remain — this still throws the moment account is undefined.',
+          feedback:
+            'The assertions remain — this still throws the moment account is undefined.',
         },
         {
           id: 'c',
@@ -173,7 +186,8 @@ export const mission003TypeSafety: MissionDefinition = {
         {
           level: 3,
           title: 'Specific clue',
-          content: 'Only one option contains an if statement that handles undefined before any property access.',
+          content:
+            'Only one option contains an if statement that handles undefined before any property access.',
         },
         {
           level: 4,
@@ -191,7 +205,8 @@ export const mission003TypeSafety: MissionDefinition = {
         },
       ],
       helpLinks: [{ topicId: 'typescript.narrowing', label: 'Narrowing' }],
-      successFeedback: 'Explicit narrowing gives defined behaviour for every input.',
+      successFeedback:
+        'Explicit narrowing gives defined behaviour for every input.',
       failureFeedback:
         'Assertions and any only hide the problem — look for the option that checks before it accesses.',
     },

@@ -5,7 +5,8 @@ export const zodMission004FallbackUi: MissionDefinition = {
   id: 'zod-gate-004-fallback-ui',
   campaignId: 'zod-gate',
   title: 'Fallback UI',
-  summary: 'Validation caught the bad data. Now design what the customer actually sees.',
+  summary:
+    'Validation caught the bad data. Now design what the customer actually sees.',
   difficulty: 'medium',
   learningObjectives: [
     'Turn a validation failure into a designed UI state',
@@ -29,7 +30,7 @@ export const zodMission004FallbackUi: MissionDefinition = {
       title: 'dashboard.component.ts (current)',
       language: 'ts',
       content:
-        "load(id: string) {\n  this.service.getCustomer(id).subscribe(result => {\n    const parsed = CustomerSchema.safeParse(result);\n    if (parsed.success) {\n      this.customer = parsed.data;\n    }\n    // else: nothing happens\n  });\n}",
+        'load(id: string) {\n  this.service.getCustomer(id).subscribe(result => {\n    const parsed = CustomerSchema.safeParse(result);\n    if (parsed.success) {\n      this.customer = parsed.data;\n    }\n    // else: nothing happens\n  });\n}',
     },
   ],
   challenges: [
@@ -39,9 +40,26 @@ export const zodMission004FallbackUi: MissionDefinition = {
       title: 'Design the Failure State',
       difficulty: 'medium',
       tags: ['zod', 'angular'],
-      storyContext: 'A rejected payload should neither crash nor silently vanish.',
+      storyContext:
+        'A rejected payload should neither crash nor silently vanish.',
       prompt: 'What should happen when safeParse fails?',
       options: [
+        {
+          id: 'b',
+          label:
+            'Leave it as is — showing nothing is better than showing an error',
+          isCorrect: false,
+          feedback:
+            'A blank screen reads as “broken” and generates the exact support tickets you are trying to prevent.',
+        },
+        {
+          id: 'c',
+          label:
+            'Fall back to an empty customer object ({ id: "", name: "", score: 0 })',
+          isCorrect: false,
+          feedback:
+            'Fabricating data is worse than none — the customer sees a score of 0 as if it were real, and the failure is hidden from engineers too.',
+        },
         {
           id: 'a',
           label:
@@ -49,20 +67,6 @@ export const zodMission004FallbackUi: MissionDefinition = {
           isCorrect: true,
           feedback:
             'A visible, honest error state plus a developer-facing log: the customer is informed and the diagnostic trail survives.',
-        },
-        {
-          id: 'b',
-          label: 'Leave it as is — showing nothing is better than showing an error',
-          isCorrect: false,
-          feedback:
-            'A blank screen reads as “broken” and generates the exact support tickets you are trying to prevent.',
-        },
-        {
-          id: 'c',
-          label: 'Fall back to an empty customer object ({ id: "", name: "", score: 0 })',
-          isCorrect: false,
-          feedback:
-            'Fabricating data is worse than none — the customer sees a score of 0 as if it were real, and the failure is hidden from engineers too.',
         },
         {
           id: 'd',
@@ -73,7 +77,12 @@ export const zodMission004FallbackUi: MissionDefinition = {
         },
       ],
       hints: [
-        { level: 1, title: 'Direction', content: 'Two audiences need to learn about this failure: the customer and the engineer.' },
+        {
+          level: 1,
+          title: 'Direction',
+          content:
+            'Two audiences need to learn about this failure: the customer and the engineer.',
+        },
         {
           level: 2,
           title: 'Concept',
@@ -83,12 +92,14 @@ export const zodMission004FallbackUi: MissionDefinition = {
         {
           level: 3,
           title: 'Specific clue',
-          content: 'Only one option both renders a message and logs the ZodError.',
+          content:
+            'Only one option both renders a message and logs the ZodError.',
         },
         {
           level: 4,
           title: 'Guided solution',
-          content: 'Show an error state to the customer and console.error the ZodError for engineers. Choose that.',
+          content:
+            'Show an error state to the customer and console.error the ZodError for engineers. Choose that.',
         },
       ],
       rewards: [{ type: 'xp', amount: 25, label: 'Fallback designed' }],
@@ -103,7 +114,8 @@ export const zodMission004FallbackUi: MissionDefinition = {
         { topicId: 'zod.error-handling', label: 'Handling validation errors' },
         { topicId: 'zod.safe-parse', label: 'Using safeParse' },
       ],
-      successFeedback: 'Honest to the user, diagnostic for the engineer — the failure state does real work.',
+      successFeedback:
+        'Honest to the user, diagnostic for the engineer — the failure state does real work.',
       failureFeedback:
         'Blank screens, fake data and endless retries each hide the problem from someone who needs to know.',
     },

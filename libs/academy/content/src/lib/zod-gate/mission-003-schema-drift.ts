@@ -5,7 +5,8 @@ export const zodMission003SchemaDrift: MissionDefinition = {
   id: 'zod-gate-003-schema-drift',
   campaignId: 'zod-gate',
   title: 'Schema Drift',
-  summary: 'The API added a field and renamed another. Reconcile the schema with reality.',
+  summary:
+    'The API added a field and renamed another. Reconcile the schema with reality.',
   difficulty: 'medium',
   learningObjectives: [
     'Diagnose drift between a payload and a schema',
@@ -47,19 +48,22 @@ export const zodMission003SchemaDrift: MissionDefinition = {
       title: 'Diagnose the Drift',
       difficulty: 'medium',
       tags: ['zod', 'api', 'java'],
-      storyContext: 'Every field the schema requires must be present with the right type.',
+      storyContext:
+        'Every field the schema requires must be present with the right type.',
       prompt: 'Why is validation failing for every customer?',
       options: [
         {
           id: 'a',
-          label: 'The payload renamed "name" to "fullName", so the required name field is now missing',
+          label:
+            'The payload renamed "name" to "fullName", so the required name field is now missing',
           isCorrect: true,
           feedback:
             'The schema requires name; the payload no longer has it. Every parse fails on the missing required field.',
         },
         {
           id: 'b',
-          label: 'The new "tier" field is not in the schema, and Zod rejects unknown keys',
+          label:
+            'The new "tier" field is not in the schema, and Zod rejects unknown keys',
           isCorrect: false,
           feedback:
             'By default z.object ignores unknown keys — an extra "tier" is harmless. The failure is a missing required field, not an extra one.',
@@ -68,11 +72,16 @@ export const zodMission003SchemaDrift: MissionDefinition = {
           id: 'c',
           label: 'score changed from a string to a number',
           isCorrect: false,
-          feedback: 'score is 720 (a number) and the schema expects a number — that field agrees.',
+          feedback:
+            'score is 720 (a number) and the schema expects a number — that field agrees.',
         },
       ],
       hints: [
-        { level: 1, title: 'Direction', content: 'Check each required schema field against the payload keys.' },
+        {
+          level: 1,
+          title: 'Direction',
+          content: 'Check each required schema field against the payload keys.',
+        },
         {
           level: 2,
           title: 'Concept',
@@ -87,7 +96,8 @@ export const zodMission003SchemaDrift: MissionDefinition = {
         {
           level: 4,
           title: 'Guided solution',
-          content: 'name was renamed to fullName, so the required field is absent. Select that.',
+          content:
+            'name was renamed to fullName, so the required field is absent. Select that.',
         },
       ],
       rewards: [{ type: 'xp', amount: 25, label: 'Drift diagnosed' }],
@@ -95,15 +105,18 @@ export const zodMission003SchemaDrift: MissionDefinition = {
         {
           type: 'stability',
           delta: -10,
-          reason: 'The fallback showed for all customers while the drift went unfixed.',
+          reason:
+            'The fallback showed for all customers while the drift went unfixed.',
         },
       ],
       helpLinks: [
         { topicId: 'api.contract-drift', label: 'Contract drift' },
         { topicId: 'zod.runtime-validation', label: 'Runtime validation' },
       ],
-      successFeedback: 'A renamed required field — the schema and payload no longer agree on name.',
-      failureFeedback: 'One required field is missing under a new name; the extra field is a red herring.',
+      successFeedback:
+        'A renamed required field — the schema and payload no longer agree on name.',
+      failureFeedback:
+        'One required field is missing under a new name; the extra field is a red herring.',
     },
     {
       id: 'zod-gate-003-c2',
@@ -113,7 +126,8 @@ export const zodMission003SchemaDrift: MissionDefinition = {
       tags: ['zod'],
       storyContext:
         'You use the customer name and score. You do not use tier today, but product might tomorrow.',
-      prompt: 'Which schema change fixes validation without creating future breakage?',
+      prompt:
+        'Which schema change fixes validation without creating future breakage?',
       options: [
         {
           id: 'a',
@@ -141,7 +155,11 @@ export const zodMission003SchemaDrift: MissionDefinition = {
         },
       ],
       hints: [
-        { level: 1, title: 'Direction', content: 'Fix what you consume; ignore what you do not.' },
+        {
+          level: 1,
+          title: 'Direction',
+          content: 'Fix what you consume; ignore what you do not.',
+        },
         {
           level: 2,
           title: 'Concept',
@@ -151,7 +169,8 @@ export const zodMission003SchemaDrift: MissionDefinition = {
         {
           level: 3,
           title: 'Specific clue',
-          content: 'The right answer reads fullName into name and says nothing about tier.',
+          content:
+            'The right answer reads fullName into name and says nothing about tier.',
         },
         {
           level: 4,
@@ -165,12 +184,16 @@ export const zodMission003SchemaDrift: MissionDefinition = {
         {
           type: 'technical-debt',
           delta: 10,
-          reason: 'An over-strict schema was merged and broke on the next API addition.',
+          reason:
+            'An over-strict schema was merged and broke on the next API addition.',
         },
       ],
       helpLinks: [
         { topicId: 'zod.transform', label: 'Transforming with Zod' },
-        { topicId: 'zod.default-values', label: 'Defaults and optional fields' },
+        {
+          topicId: 'zod.default-values',
+          label: 'Defaults and optional fields',
+        },
       ],
       successFeedback:
         'Mapped what you use, ignored what you do not — resilient to the next release.',
@@ -178,7 +201,8 @@ export const zodMission003SchemaDrift: MissionDefinition = {
         'Waiting on the back end or locking the schema with .strict() both trade this outage for the next one.',
     },
   ],
-  reflectionPrompt: 'Why is .strict() sometimes a trap even though it sounds safer?',
+  reflectionPrompt:
+    'Why is .strict() sometimes a trap even though it sounds safer?',
   rewards: [
     { type: 'xp', amount: 5, label: 'Drift contained' },
     { type: 'badge', id: 'refactor-ranger', label: 'Refactor Ranger' },

@@ -5,7 +5,8 @@ export const mission008GitCheckpoint: MissionDefinition = {
   id: 'foundations-008-git-checkpoint',
   campaignId: 'foundations',
   title: 'Git Checkpoint',
-  summary: 'Get your feature into main safely — and recover when a bad commit slips through.',
+  summary:
+    'Get your feature into main safely — and recover when a bad commit slips through.',
   difficulty: 'medium',
   learningObjectives: [
     'Use branches and pull requests to integrate work',
@@ -38,7 +39,8 @@ export const mission008GitCheckpoint: MissionDefinition = {
       title: 'Land the Feature',
       difficulty: 'medium',
       tags: ['git'],
-      storyContext: 'Your feature branch is ready and main has moved ahead by a few commits.',
+      storyContext:
+        'Your feature branch is ready and main has moved ahead by a few commits.',
       prompt: 'What is the right way to get your feature into main?',
       options: [
         {
@@ -49,6 +51,14 @@ export const mission008GitCheckpoint: MissionDefinition = {
             'That skips review and CI gating — the two things keeping main releasable.',
         },
         {
+          id: 'c',
+          label:
+            'Commit the changes straight onto main — it is faster and the code works locally',
+          isCorrect: false,
+          feedback:
+            '“Works locally” is exactly what review and CI exist to verify. Direct commits also block clean rollback.',
+        },
+        {
           id: 'b',
           label:
             'Push the feature branch, open a pull request, let CI and review pass, then merge',
@@ -57,21 +67,19 @@ export const mission008GitCheckpoint: MissionDefinition = {
             'The pull request is the checkpoint: automated checks, a second pair of eyes, and a clean audit trail.',
         },
         {
-          id: 'c',
-          label: 'Commit the changes straight onto main — it is faster and the code works locally',
-          isCorrect: false,
-          feedback:
-            '“Works locally” is exactly what review and CI exist to verify. Direct commits also block clean rollback.',
-        },
-        {
           id: 'd',
           label: 'Email the diff to a senior engineer to apply for you',
           isCorrect: false,
-          feedback: 'That loses authorship, review tooling and CI — git already solves this.',
+          feedback:
+            'That loses authorship, review tooling and CI — git already solves this.',
         },
       ],
       hints: [
-        { level: 1, title: 'Direction', content: 'Think about what keeps main always releasable.' },
+        {
+          level: 1,
+          title: 'Direction',
+          content: 'Think about what keeps main always releasable.',
+        },
         {
           level: 2,
           title: 'Concept',
@@ -81,12 +89,14 @@ export const mission008GitCheckpoint: MissionDefinition = {
         {
           level: 3,
           title: 'Specific clue',
-          content: 'Only one option involves anyone other than you seeing the code before it lands.',
+          content:
+            'Only one option involves anyone other than you seeing the code before it lands.',
         },
         {
           level: 4,
           title: 'Guided solution',
-          content: 'Push the branch and open a pull request — merge only after checks and review pass.',
+          content:
+            'Push the branch and open a pull request — merge only after checks and review pass.',
         },
       ],
       rewards: [{ type: 'xp', amount: 25, label: 'Feature landed cleanly' }],
@@ -94,12 +104,16 @@ export const mission008GitCheckpoint: MissionDefinition = {
         {
           type: 'team-confidence',
           delta: -10,
-          reason: 'Unreviewed changes appeared on main and the team lost trust in the branch.',
+          reason:
+            'Unreviewed changes appeared on main and the team lost trust in the branch.',
         },
       ],
-      helpLinks: [{ topicId: 'git.branches-prs', label: 'Branches and pull requests' }],
+      helpLinks: [
+        { topicId: 'git.branches-prs', label: 'Branches and pull requests' },
+      ],
       successFeedback: 'The checkpoint held: reviewed, verified, merged.',
-      failureFeedback: 'Ask which option lets CI and a reviewer see the change before main does.',
+      failureFeedback:
+        'Ask which option lets CI and a reviewer see the change before main does.',
     },
     {
       id: 'foundations-008-c2',
@@ -112,13 +126,6 @@ export const mission008GitCheckpoint: MissionDefinition = {
       prompt: 'How do you remove the breakage safely?',
       options: [
         {
-          id: 'a',
-          label: 'git revert 8ab34d0 — create a new commit that reverses the bad one, and push it',
-          isCorrect: true,
-          feedback:
-            'Revert moves history forward: teammates just pull one more commit, and the record of what happened survives for the retro.',
-        },
-        {
           id: 'b',
           label: 'git reset --hard 41c9a17 and force-push main',
           isCorrect: false,
@@ -129,20 +136,32 @@ export const mission008GitCheckpoint: MissionDefinition = {
           id: 'c',
           label: 'Delete the repository and re-clone from the last release',
           isCorrect: false,
-          feedback: 'That destroys everything since release 2.4.1 to fix one commit.',
+          feedback:
+            'That destroys everything since release 2.4.1 to fix one commit.',
         },
         {
           id: 'd',
-          label: 'Tell everyone to avoid the dashboard until the next feature rewrites that code',
+          label:
+            'Tell everyone to avoid the dashboard until the next feature rewrites that code',
           isCorrect: false,
-          feedback: 'Leaving main broken blocks every release and normalises a red build.',
+          feedback:
+            'Leaving main broken blocks every release and normalises a red build.',
+        },
+        {
+          id: 'a',
+          label:
+            'git revert 8ab34d0 — create a new commit that reverses the bad one, and push it',
+          isCorrect: true,
+          feedback:
+            'Revert moves history forward: teammates just pull one more commit, and the record of what happened survives for the retro.',
         },
       ],
       hints: [
         {
           level: 1,
           title: 'Direction',
-          content: 'Three people already have this history — choose the fix that does not invalidate their copies.',
+          content:
+            'Three people already have this history — choose the fix that does not invalidate their copies.',
         },
         {
           level: 2,
@@ -153,12 +172,14 @@ export const mission008GitCheckpoint: MissionDefinition = {
         {
           level: 3,
           title: 'Specific clue',
-          content: 'One option requires a force push — that is the red flag on a shared branch.',
+          content:
+            'One option requires a force push — that is the red flag on a shared branch.',
         },
         {
           level: 4,
           title: 'Guided solution',
-          content: 'git revert 8ab34d0, push, and main is green again with the full story preserved.',
+          content:
+            'git revert 8ab34d0, push, and main is green again with the full story preserved.',
         },
       ],
       rewards: [{ type: 'xp', amount: 25, label: 'Main restored' }],
@@ -166,7 +187,8 @@ export const mission008GitCheckpoint: MissionDefinition = {
         {
           type: 'stability',
           delta: -10,
-          reason: 'The shared branch stayed broken while the team debated history surgery.',
+          reason:
+            'The shared branch stayed broken while the team debated history surgery.',
         },
         {
           type: 'team-confidence',
@@ -178,7 +200,8 @@ export const mission008GitCheckpoint: MissionDefinition = {
         { topicId: 'git.undoing-changes', label: 'revert vs reset' },
         { topicId: 'git.branches-prs', label: 'Branches and pull requests' },
       ],
-      successFeedback: 'History moved forward, the build is green, and nothing was lost.',
+      successFeedback:
+        'History moved forward, the build is green, and nothing was lost.',
       failureFeedback:
         'Anything involving force-pushing shared history trades one broken build for several.',
     },

@@ -5,7 +5,8 @@ export const nxMission007TagRules: MissionDefinition = {
   id: 'nx-monorepo-maze-007-tag-rules',
   campaignId: 'nx-monorepo-maze',
   title: 'Tag Rules',
-  summary: 'Review the boundary lint config so architecture is enforced, not just hoped for.',
+  summary:
+    'Review the boundary lint config so architecture is enforced, not just hoped for.',
   difficulty: 'hard',
   learningObjectives: [
     'Read enforce-module-boundaries depConstraints',
@@ -35,15 +36,23 @@ export const nxMission007TagRules: MissionDefinition = {
       title: 'Review the Boundaries',
       difficulty: 'hard',
       tags: ['nx'],
-      storyContext: 'The rules should point dependencies downward: feature → ui/data-access/util → util.',
+      storyContext:
+        'The rules should point dependencies downward: feature → ui/data-access/util → util.',
       prompt: 'Select every genuine problem with these depConstraints.',
       findings: [
         {
-          id: 'util-feature',
-          label: 'type:util is allowed to depend on type:feature',
-          isCorrect: true,
+          id: 'ui-util',
+          label: 'type:ui may depend on type:util',
+          isCorrect: false,
           feedback:
-            'That inverts the layering — a low-level util depending on a feature creates upward dependencies and cycles. util should depend only on util.',
+            'UI depending on util (pure helpers) is correct and expected — not a problem.',
+        },
+        {
+          id: 'no-scope',
+          label: 'The rules use type tags instead of colour-coding',
+          isCorrect: false,
+          feedback:
+            'Type tags are exactly the right mechanism; colour has nothing to do with it.',
         },
         {
           id: 'feature-to-feature',
@@ -53,39 +62,61 @@ export const nxMission007TagRules: MissionDefinition = {
             'Allowing feature → feature is the tangle this whole campaign fixed. Features should not depend on each other; drop type:feature from that list.',
         },
         {
-          id: 'ui-util',
-          label: 'type:ui may depend on type:util',
-          isCorrect: false,
-          feedback: 'UI depending on util (pure helpers) is correct and expected — not a problem.',
-        },
-        {
-          id: 'no-scope',
-          label: 'The rules use type tags instead of colour-coding',
-          isCorrect: false,
-          feedback: 'Type tags are exactly the right mechanism; colour has nothing to do with it.',
+          id: 'util-feature',
+          label: 'type:util is allowed to depend on type:feature',
+          isCorrect: true,
+          feedback:
+            'That inverts the layering — a low-level util depending on a feature creates upward dependencies and cycles. util should depend only on util.',
         },
       ],
       hints: [
-        { level: 1, title: 'Direction', content: 'Dependencies should point downward. Which rule points up?' },
+        {
+          level: 1,
+          title: 'Direction',
+          content: 'Dependencies should point downward. Which rule points up?',
+        },
         {
           level: 2,
           title: 'Concept',
           content:
             'enforce-module-boundaries allows a source tag to depend only on the listed target tags. Good layering points down: feature → ui/data-access/util, ui → util, util → util. Anything pointing up or sideways (feature→feature) invites cycles.',
         },
-        { level: 3, title: 'Specific clue', content: 'Two rules are wrong: util→feature (upward) and feature→feature (sideways).' },
-        { level: 4, title: 'Guided solution', content: 'Flag util→feature and feature→feature. The ui→util rule is correct.' },
+        {
+          level: 3,
+          title: 'Specific clue',
+          content:
+            'Two rules are wrong: util→feature (upward) and feature→feature (sideways).',
+        },
+        {
+          level: 4,
+          title: 'Guided solution',
+          content:
+            'Flag util→feature and feature→feature. The ui→util rule is correct.',
+        },
       ],
       rewards: [{ type: 'xp', amount: 50, label: 'Rules encoded' }],
-      consequences: [{ type: 'technical-debt', delta: 15, reason: 'Loose boundary rules let forbidden dependencies keep landing.' }],
+      consequences: [
+        {
+          type: 'technical-debt',
+          delta: 15,
+          reason:
+            'Loose boundary rules let forbidden dependencies keep landing.',
+        },
+      ],
       helpLinks: [
         { topicId: 'nx.tag-rules', label: 'Tags and boundary rules' },
-        { topicId: 'nx.libraries-boundaries', label: 'Nx libraries and boundaries' },
+        {
+          topicId: 'nx.libraries-boundaries',
+          label: 'Nx libraries and boundaries',
+        },
       ],
-      successFeedback: 'Boundaries now point strictly downward — lint enforces the architecture automatically.',
-      failureFeedback: 'Find the rules that point upward (util→feature) or sideways (feature→feature).',
+      successFeedback:
+        'Boundaries now point strictly downward — lint enforces the architecture automatically.',
+      failureFeedback:
+        'Find the rules that point upward (util→feature) or sideways (feature→feature).',
     },
   ],
-  reflectionPrompt: 'Why is a lint rule a better place for architecture decisions than a code-review convention?',
+  reflectionPrompt:
+    'Why is a lint rule a better place for architecture decisions than a code-review convention?',
   rewards: [{ type: 'xp', amount: 5, label: 'Boundaries enforced' }],
 };

@@ -9,7 +9,8 @@ export const zodMission008BossBrokenDashboard: MissionDefinition = {
   id: 'zod-gate-008-boss-broken-dashboard',
   campaignId: 'zod-gate',
   title: 'Boss: Stop the Broken Dashboard',
-  summary: 'A dawn API release broke the dashboard for everyone. Diagnose, fix, harden, prevent.',
+  summary:
+    'A dawn API release broke the dashboard for everyone. Diagnose, fix, harden, prevent.',
   difficulty: 'boss',
   learningObjectives: [
     'Diagnose a live runtime contract failure from logs',
@@ -32,7 +33,7 @@ export const zodMission008BossBrokenDashboard: MissionDefinition = {
       type: 'log',
       title: 'Production logs since 05:00',
       content:
-        "[05:03] ZodError: customers/*: Expected number, received string at \"balance\"\n[05:03] ZodError: customers/*: Required field \"name\" missing\n[05:04] TypeError: Cannot read properties of undefined (reading 'text')  ← error handler\n[05:06] Dashboard fallback shown for 100% of sessions",
+        '[05:03] ZodError: customers/*: Expected number, received string at "balance"\n[05:03] ZodError: customers/*: Required field "name" missing\n[05:04] TypeError: Cannot read properties of undefined (reading \'text\')  ← error handler\n[05:06] Dashboard fallback shown for 100% of sessions',
     },
     {
       id: 'new-payload',
@@ -58,27 +59,31 @@ export const zodMission008BossBrokenDashboard: MissionDefinition = {
       title: 'Stage 1 — Diagnose from the Logs',
       difficulty: 'hard',
       tags: ['zod', 'api', 'java'],
-      storyContext: 'The logs name two schema failures. Confirm both against the payload.',
+      storyContext:
+        'The logs name two schema failures. Confirm both against the payload.',
       prompt: 'What changed in the payload to break validation?',
       options: [
-        {
-          id: 'a',
-          label: '"name" was renamed to "displayName", and "balance" is now a string ("1240.50") not a number',
-          isCorrect: true,
-          feedback:
-            'Both ZodErrors line up: the required name is missing under a new key, and balance arrives as a numeric string. Two drifts in one release.',
-        },
         {
           id: 'b',
           label: 'The "id" field changed from a number to a string',
           isCorrect: false,
-          feedback: 'id is a string in both the payload and the schema — no drift there.',
+          feedback:
+            'id is a string in both the payload and the schema — no drift there.',
         },
         {
           id: 'c',
           label: 'The response is missing the customers array wrapper',
           isCorrect: false,
-          feedback: 'This endpoint returns a single customer object; there is no array to miss.',
+          feedback:
+            'This endpoint returns a single customer object; there is no array to miss.',
+        },
+        {
+          id: 'a',
+          label:
+            '"name" was renamed to "displayName", and "balance" is now a string ("1240.50") not a number',
+          isCorrect: true,
+          feedback:
+            'Both ZodErrors line up: the required name is missing under a new key, and balance arrives as a numeric string. Two drifts in one release.',
         },
         {
           id: 'd',
@@ -89,7 +94,12 @@ export const zodMission008BossBrokenDashboard: MissionDefinition = {
         },
       ],
       hints: [
-        { level: 1, title: 'Direction', content: 'The two ZodError lines name the exact fields — check each against the payload.' },
+        {
+          level: 1,
+          title: 'Direction',
+          content:
+            'The two ZodError lines name the exact fields — check each against the payload.',
+        },
         {
           level: 2,
           title: 'Concept',
@@ -99,24 +109,32 @@ export const zodMission008BossBrokenDashboard: MissionDefinition = {
         {
           level: 3,
           title: 'Specific clue',
-          content: 'One error is a missing required field; the other is a string where a number was expected.',
+          content:
+            'One error is a missing required field; the other is a string where a number was expected.',
         },
         {
           level: 4,
           title: 'Guided solution',
-          content: 'name → displayName (missing required field) and balance became a string. Select that.',
+          content:
+            'name → displayName (missing required field) and balance became a string. Select that.',
         },
       ],
       rewards: [{ type: 'xp', amount: 50, label: 'Diagnosed' }],
       consequences: [
-        { type: 'severity', delta: 1, reason: 'Misreading the logs delayed the fix during a P1.' },
+        {
+          type: 'severity',
+          delta: 1,
+          reason: 'Misreading the logs delayed the fix during a P1.',
+        },
       ],
       helpLinks: [
         { topicId: 'zod.error-handling', label: 'Handling validation errors' },
         { topicId: 'api.contract-drift', label: 'Contract drift' },
       ],
-      successFeedback: 'Two drifts, both confirmed from the logs. Now fix the boundary.',
-      failureFeedback: 'Read each ZodError path and match it to the payload — two fields changed.',
+      successFeedback:
+        'Two drifts, both confirmed from the logs. Now fix the boundary.',
+      failureFeedback:
+        'Read each ZodError path and match it to the payload — two fields changed.',
     },
     {
       id: 'zod-gate-008-c2',
@@ -124,9 +142,18 @@ export const zodMission008BossBrokenDashboard: MissionDefinition = {
       title: 'Stage 2 — Fix the Boundary',
       difficulty: 'hard',
       tags: ['zod'],
-      storyContext: 'You consume name and balance. Fix the schema to accept today’s payload cleanly.',
+      storyContext:
+        'You consume name and balance. Fix the schema to accept today’s payload cleanly.',
       prompt: 'Which schema restores the dashboard?',
       options: [
+        {
+          id: 'b',
+          label:
+            'z.object({ id: z.string(), name: z.string(), balance: z.number() }).strict()',
+          isCorrect: false,
+          feedback:
+            'This is the pre-incident schema plus .strict() — it still fails on both drifted fields.',
+        },
         {
           id: 'a',
           label:
@@ -136,20 +163,19 @@ export const zodMission008BossBrokenDashboard: MissionDefinition = {
             'Reads displayName, coerces the string balance to a number, and maps back to your internal { name } shape — components need no changes.',
         },
         {
-          id: 'b',
-          label: 'z.object({ id: z.string(), name: z.string(), balance: z.number() }).strict()',
-          isCorrect: false,
-          feedback: 'This is the pre-incident schema plus .strict() — it still fails on both drifted fields.',
-        },
-        {
           id: 'c',
           label: 'Cast the payload: const c = data as Customer; and move on',
           isCorrect: false,
-          feedback: 'A cast validates nothing and leaves balance as a string — the crash returns downstream.',
+          feedback:
+            'A cast validates nothing and leaves balance as a string — the crash returns downstream.',
         },
       ],
       hints: [
-        { level: 1, title: 'Direction', content: 'Fix both drifts: the rename and the string number.' },
+        {
+          level: 1,
+          title: 'Direction',
+          content: 'Fix both drifts: the rename and the string number.',
+        },
         {
           level: 2,
           title: 'Concept',
@@ -159,24 +185,32 @@ export const zodMission008BossBrokenDashboard: MissionDefinition = {
         {
           level: 3,
           title: 'Specific clue',
-          content: 'The right schema uses z.coerce.number() on balance and a transform mapping displayName → name.',
+          content:
+            'The right schema uses z.coerce.number() on balance and a transform mapping displayName → name.',
         },
         {
           level: 4,
           title: 'Guided solution',
-          content: 'Choose the schema that reads displayName, coerces balance, and transforms back to { name }.',
+          content:
+            'Choose the schema that reads displayName, coerces balance, and transforms back to { name }.',
         },
       ],
       rewards: [{ type: 'xp', amount: 50, label: 'Boundary fixed' }],
       consequences: [
-        { type: 'stability', delta: -10, reason: 'The dashboard stayed down while a non-fix was tried.' },
+        {
+          type: 'stability',
+          delta: -10,
+          reason: 'The dashboard stayed down while a non-fix was tried.',
+        },
       ],
       helpLinks: [
         { topicId: 'zod.transform', label: 'Transforming with Zod' },
         { topicId: 'zod.runtime-validation', label: 'Runtime validation' },
       ],
-      successFeedback: 'Dashboard restored — the boundary absorbs the drift and components are untouched.',
-      failureFeedback: 'Only one option fixes both the rename and the string balance without a cast.',
+      successFeedback:
+        'Dashboard restored — the boundary absorbs the drift and components are untouched.',
+      failureFeedback:
+        'Only one option fixes both the rename and the string balance without a cast.',
     },
     {
       id: 'zod-gate-008-c3',
@@ -184,7 +218,8 @@ export const zodMission008BossBrokenDashboard: MissionDefinition = {
       title: 'Stage 3 — Harden the Error Path',
       difficulty: 'hard',
       tags: ['api', 'zod'],
-      storyContext: 'The log also showed the error handler crashing. Fix it before you close the incident.',
+      storyContext:
+        'The log also showed the error handler crashing. Fix it before you close the incident.',
       artefacts: [
         {
           id: 'boss-error-handler',
@@ -198,18 +233,27 @@ export const zodMission008BossBrokenDashboard: MissionDefinition = {
       prompt: 'Select every genuine problem with this error handler.',
       findings: [
         {
-          id: 'wrong-shape',
-          label: 'Reads err.error.detail.text without validating the error body’s shape',
-          isCorrect: true,
-          feedback:
-            'This is the 05:04 TypeError — an assumed error shape that does not exist. Validate the error body with a schema first.',
-        },
-        {
           id: 'fabricated-customer',
-          label: 'Fabricates an empty customer ({ id: "", name: "", balance: 0 }) on error',
+          label:
+            'Fabricates an empty customer ({ id: "", name: "", balance: 0 }) on error',
           isCorrect: true,
           feedback:
             'Fake data shows a real customer a balance of 0 and hides the failure — render an explicit error state instead.',
+        },
+        {
+          id: 'sets-message',
+          label: 'Setting this.message at all',
+          isCorrect: false,
+          feedback:
+            'Surfacing a message is good — the problem is where the message comes from, not that it exists.',
+        },
+        {
+          id: 'wrong-shape',
+          label:
+            'Reads err.error.detail.text without validating the error body’s shape',
+          isCorrect: true,
+          feedback:
+            'This is the 05:04 TypeError — an assumed error shape that does not exist. Validate the error body with a schema first.',
         },
         {
           id: 'http-error-type',
@@ -217,15 +261,14 @@ export const zodMission008BossBrokenDashboard: MissionDefinition = {
           isCorrect: false,
           feedback: 'That is the correct type for an HttpClient error.',
         },
-        {
-          id: 'sets-message',
-          label: 'Setting this.message at all',
-          isCorrect: false,
-          feedback: 'Surfacing a message is good — the problem is where the message comes from, not that it exists.',
-        },
       ],
       hints: [
-        { level: 1, title: 'Direction', content: 'The log points at line one; the Fallback UI lesson points at line two.' },
+        {
+          level: 1,
+          title: 'Direction',
+          content:
+            'The log points at line one; the Fallback UI lesson points at line two.',
+        },
         {
           level: 2,
           title: 'Concept',
@@ -235,24 +278,32 @@ export const zodMission008BossBrokenDashboard: MissionDefinition = {
         {
           level: 3,
           title: 'Specific clue',
-          content: 'Two defects: an unvalidated wrong-shape read, and a fake empty customer.',
+          content:
+            'Two defects: an unvalidated wrong-shape read, and a fake empty customer.',
         },
         {
           level: 4,
           title: 'Guided solution',
-          content: 'Flag the unvalidated err.error.detail.text and the fabricated empty customer. The type and the message assignment are fine.',
+          content:
+            'Flag the unvalidated err.error.detail.text and the fabricated empty customer. The type and the message assignment are fine.',
         },
       ],
       rewards: [{ type: 'xp', amount: 50, label: 'Error path hardened' }],
       consequences: [
-        { type: 'severity', delta: 1, reason: 'The error-path crash kept masking the root cause.' },
+        {
+          type: 'severity',
+          delta: 1,
+          reason: 'The error-path crash kept masking the root cause.',
+        },
       ],
       helpLinks: [
         { topicId: 'api.error-payloads', label: 'Error payloads' },
         { topicId: 'zod.error-handling', label: 'Handling validation errors' },
       ],
-      successFeedback: 'The error path no longer crashes or lies — the incident can be closed cleanly.',
-      failureFeedback: 'Look for the assumed error shape and the fabricated customer object.',
+      successFeedback:
+        'The error path no longer crashes or lies — the incident can be closed cleanly.',
+      failureFeedback:
+        'Look for the assumed error shape and the fabricated customer object.',
     },
     {
       id: 'zod-gate-008-c4',
@@ -274,25 +325,35 @@ export const zodMission008BossBrokenDashboard: MissionDefinition = {
         },
         {
           id: 'b',
-          label: 'Add a comment to the schema asking the API team not to change the payload',
+          label:
+            'Add a comment to the schema asking the API team not to change the payload',
           isCorrect: false,
-          feedback: 'A comment enforces nothing and will not be seen by the service that drifts.',
+          feedback:
+            'A comment enforces nothing and will not be seen by the service that drifts.',
         },
         {
           id: 'c',
-          label: 'Wrap every component in a try/catch so future crashes are swallowed',
+          label:
+            'Wrap every component in a try/catch so future crashes are swallowed',
           isCorrect: false,
-          feedback: 'Swallowing crashes hides drift instead of catching it — the opposite of prevention.',
+          feedback:
+            'Swallowing crashes hides drift instead of catching it — the opposite of prevention.',
         },
         {
           id: 'd',
-          label: 'Increase the on-call rotation so someone is always ready to fix it faster',
+          label:
+            'Increase the on-call rotation so someone is always ready to fix it faster',
           isCorrect: false,
-          feedback: 'Faster reaction is still reaction. The goal is to catch drift before customers do.',
+          feedback:
+            'Faster reaction is still reaction. The goal is to catch drift before customers do.',
         },
       ],
       hints: [
-        { level: 1, title: 'Direction', content: 'Prevention means finding drift earlier than production.' },
+        {
+          level: 1,
+          title: 'Direction',
+          content: 'Prevention means finding drift earlier than production.',
+        },
         {
           level: 2,
           title: 'Concept',
@@ -307,12 +368,18 @@ export const zodMission008BossBrokenDashboard: MissionDefinition = {
         {
           level: 4,
           title: 'Guided solution',
-          content: 'Add the CI contract test validating the recorded staging payload against CustomerSchema.',
+          content:
+            'Add the CI contract test validating the recorded staging payload against CustomerSchema.',
         },
       ],
       rewards: [{ type: 'xp', amount: 100, label: 'Recurrence prevented' }],
       consequences: [
-        { type: 'stability', delta: -5, reason: 'Without a contract test, the next drift will page on-call again.' },
+        {
+          type: 'stability',
+          delta: -5,
+          reason:
+            'Without a contract test, the next drift will page on-call again.',
+        },
       ],
       helpLinks: [
         { topicId: 'testing.contract-tests', label: 'Contract test thinking' },

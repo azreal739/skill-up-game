@@ -5,7 +5,8 @@ export const mission006InputOutputRelay: MissionDefinition = {
   id: 'foundations-006-input-output-relay',
   campaignId: 'foundations',
   title: 'The Input/Output Relay',
-  summary: 'Wire two-way communication between a settings panel and its parent page.',
+  summary:
+    'Wire two-way communication between a settings panel and its parent page.',
   difficulty: 'easy',
   learningObjectives: [
     'Send events from a child to its parent with @Output',
@@ -39,36 +40,40 @@ export const mission006InputOutputRelay: MissionDefinition = {
       title: 'Send the Event Up',
       difficulty: 'easy',
       tags: ['angular'],
-      storyContext: 'The child must tell the parent that the user toggled notifications.',
+      storyContext:
+        'The child must tell the parent that the user toggled notifications.',
       prompt: 'How should the child notify its parent?',
       options: [
         {
           id: 'a',
           label: 'Have the parent poll the child every second with setInterval',
           isCorrect: false,
-          feedback: 'Polling wastes cycles and still misses the moment of change — events exist for this.',
+          feedback:
+            'Polling wastes cycles and still misses the moment of change — events exist for this.',
         },
         {
           id: 'b',
-          label: 'Store the value on window.notificationState so the parent can read it',
+          label:
+            'Store the value on window.notificationState so the parent can read it',
           isCorrect: false,
           feedback:
             'Global mutable state couples every component to a hidden channel and breaks change detection.',
         },
         {
-          id: 'c',
-          label:
-            "@Output() enabledChange = new EventEmitter<boolean>();\n// on toggle:\nthis.enabledChange.emit(next);",
-          isCorrect: true,
-          feedback:
-            'An @Output event is the Angular contract for child-to-parent communication — the parent listens with (enabledChange)="…".',
-        },
-        {
           id: 'd',
-          label: 'Inject the parent component into the child and call parent.onToggled()',
+          label:
+            'Inject the parent component into the child and call parent.onToggled()',
           isCorrect: false,
           feedback:
             'Injecting the parent hard-couples the child to one host — it can never be reused elsewhere.',
+        },
+        {
+          id: 'c',
+          label:
+            '@Output() enabledChange = new EventEmitter<boolean>();\n// on toggle:\nthis.enabledChange.emit(next);',
+          isCorrect: true,
+          feedback:
+            'An @Output event is the Angular contract for child-to-parent communication — the parent listens with (enabledChange)="…".',
         },
       ],
       hints: [
@@ -100,10 +105,13 @@ export const mission006InputOutputRelay: MissionDefinition = {
         {
           type: 'technical-debt',
           delta: 10,
-          reason: 'A tightly-coupled communication hack was merged into the settings page.',
+          reason:
+            'A tightly-coupled communication hack was merged into the settings page.',
         },
       ],
-      helpLinks: [{ topicId: 'angular.inputs-outputs', label: 'Inputs and outputs' }],
+      helpLinks: [
+        { topicId: 'angular.inputs-outputs', label: 'Inputs and outputs' },
+      ],
       successFeedback:
         'The relay is clean: the child announces changes without knowing who is listening.',
       failureFeedback:
@@ -117,7 +125,8 @@ export const mission006InputOutputRelay: MissionDefinition = {
       tags: ['angular'],
       storyContext:
         'The page template wants the terse two-way form: <app-notification-settings [(enabled)]="notificationsOn" />.',
-      prompt: 'Which input/output pair makes the two-way binding [(enabled)] work?',
+      prompt:
+        'Which input/output pair makes the two-way binding [(enabled)] work?',
       options: [
         {
           id: 'a',
@@ -127,17 +136,18 @@ export const mission006InputOutputRelay: MissionDefinition = {
             'The output name must be the input name plus the exact suffix "Change" — onEnabled does not match the convention.',
         },
         {
+          id: 'c',
+          label: '@Output() enabled + @Input() enabledChange',
+          isCorrect: false,
+          feedback:
+            'Reversed: data in through @Input, events out through @Output.',
+        },
+        {
           id: 'b',
           label: '@Input() enabled + @Output() enabledChange',
           isCorrect: true,
           feedback:
             'Banana-in-a-box [(enabled)] is sugar for [enabled]="…" plus (enabledChange)="… = $event" — the names must pair exactly.',
-        },
-        {
-          id: 'c',
-          label: '@Output() enabled + @Input() enabledChange',
-          isCorrect: false,
-          feedback: 'Reversed: data in through @Input, events out through @Output.',
         },
       ],
       hints: [
@@ -155,12 +165,14 @@ export const mission006InputOutputRelay: MissionDefinition = {
         {
           level: 3,
           title: 'Specific clue',
-          content: 'The event name must be the input name with the suffix Change.',
+          content:
+            'The event name must be the input name with the suffix Change.',
         },
         {
           level: 4,
           title: 'Guided solution',
-          content: 'Pick @Input() enabled paired with @Output() enabledChange — the only pair the sugar recognises.',
+          content:
+            'Pick @Input() enabled paired with @Output() enabledChange — the only pair the sugar recognises.',
         },
       ],
       rewards: [{ type: 'xp', amount: 10, label: 'Two-way loop closed' }],
@@ -168,14 +180,16 @@ export const mission006InputOutputRelay: MissionDefinition = {
         {
           type: 'stability',
           delta: -5,
-          reason: 'The settings page and panel drifted out of sync for some users.',
+          reason:
+            'The settings page and panel drifted out of sync for some users.',
         },
       ],
       helpLinks: [
         { topicId: 'angular.inputs-outputs', label: 'Inputs and outputs' },
         { topicId: 'angular.templates', label: 'Template syntax' },
       ],
-      successFeedback: 'Input plus matching Change output — the relay now runs in both directions.',
+      successFeedback:
+        'Input plus matching Change output — the relay now runs in both directions.',
       failureFeedback:
         'Remember what [(x)] expands to, and which direction each decorator handles.',
     },

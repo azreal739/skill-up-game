@@ -5,7 +5,8 @@ export const zodMission006TransformingResponses: MissionDefinition = {
   id: 'zod-gate-006-transforming-responses',
   campaignId: 'zod-gate',
   title: 'Transforming Responses',
-  summary: 'Stop patching payload quirks in components. Normalise them once, at the gate.',
+  summary:
+    'Stop patching payload quirks in components. Normalise them once, at the gate.',
   difficulty: 'hard',
   learningObjectives: [
     'Coerce and reshape data inside the schema',
@@ -37,7 +38,7 @@ export const zodMission006TransformingResponses: MissionDefinition = {
       title: 'Scattered component workarounds (what we want to delete)',
       language: 'ts',
       content:
-        "const score = Number(customer.score);\nconst created = new Date(customer.createdAt);\nconst discount = customer.discount ?? 0;",
+        'const score = Number(customer.score);\nconst created = new Date(customer.createdAt);\nconst discount = customer.discount ?? 0;',
     },
   ],
   challenges: [
@@ -52,20 +53,20 @@ export const zodMission006TransformingResponses: MissionDefinition = {
       prompt: 'Which schema does all the normalisation at the boundary?',
       options: [
         {
-          id: 'a',
-          label:
-            'z.object({\n  id: z.string(),\n  name: z.string(),\n  score: z.coerce.number(),\n  createdAt: z.coerce.date(),\n  discount: z.number().default(0),\n})',
-          isCorrect: true,
-          feedback:
-            'z.coerce.number() fixes the string score, z.coerce.date() parses the timestamp, and .default(0) fills the missing discount — components get clean data with zero inline fixups.',
-        },
-        {
           id: 'b',
           label:
             'z.object({\n  id: z.string(),\n  name: z.string(),\n  score: z.number(),\n  createdAt: z.string(),\n  discount: z.number().optional(),\n})',
           isCorrect: false,
           feedback:
             'This rejects the string score, leaves createdAt as a string, and pushes the discount ?? 0 fixup back into components — nothing is normalised.',
+        },
+        {
+          id: 'a',
+          label:
+            'z.object({\n  id: z.string(),\n  name: z.string(),\n  score: z.coerce.number(),\n  createdAt: z.coerce.date(),\n  discount: z.number().default(0),\n})',
+          isCorrect: true,
+          feedback:
+            'z.coerce.number() fixes the string score, z.coerce.date() parses the timestamp, and .default(0) fills the missing discount — components get clean data with zero inline fixups.',
         },
         {
           id: 'c',
@@ -77,7 +78,12 @@ export const zodMission006TransformingResponses: MissionDefinition = {
         },
       ],
       hints: [
-        { level: 1, title: 'Direction', content: 'Each quirk has a matching Zod tool: coercion, date parsing, defaults.' },
+        {
+          level: 1,
+          title: 'Direction',
+          content:
+            'Each quirk has a matching Zod tool: coercion, date parsing, defaults.',
+        },
         {
           level: 2,
           title: 'Concept',
@@ -87,12 +93,14 @@ export const zodMission006TransformingResponses: MissionDefinition = {
         {
           level: 3,
           title: 'Specific clue',
-          content: 'Look for the schema using coerce on score and createdAt and default on discount.',
+          content:
+            'Look for the schema using coerce on score and createdAt and default on discount.',
         },
         {
           level: 4,
           title: 'Guided solution',
-          content: 'Choose the schema with z.coerce.number(), z.coerce.date() and .default(0).',
+          content:
+            'Choose the schema with z.coerce.number(), z.coerce.date() and .default(0).',
         },
       ],
       rewards: [{ type: 'xp', amount: 50, label: 'Responses normalised' }],
@@ -100,12 +108,16 @@ export const zodMission006TransformingResponses: MissionDefinition = {
         {
           type: 'technical-debt',
           delta: 15,
-          reason: 'Payload fixups stayed scattered across components and drifted apart.',
+          reason:
+            'Payload fixups stayed scattered across components and drifted apart.',
         },
       ],
       helpLinks: [
         { topicId: 'zod.transform', label: 'Transforming with Zod' },
-        { topicId: 'zod.default-values', label: 'Defaults and optional fields' },
+        {
+          topicId: 'zod.default-values',
+          label: 'Defaults and optional fields',
+        },
       ],
       successFeedback:
         'One schema normalises everything — the component fixups can be deleted for good.',
