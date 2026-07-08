@@ -137,3 +137,17 @@
   font-size: 0.8rem;
   color: var(--ea-muted);
 }
+
+/* Interactive card lift — transform/box-shadow only, GPU-friendly. */
+.campaign:not(.campaign--locked) {
+  transition: transform 0.18s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    border-color: rgba(34, 211, 238, 0.4);
+    box-shadow:
+      0 22px 48px rgba(2, 6, 18, 0.5),
+      0 0 32px rgba(34, 211, 238, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+}

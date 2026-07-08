@@ -50,6 +50,9 @@ export class AppComponent {
       const settings = this.gameState.settings();
       document.body.classList.toggle('ea-reduced-motion', settings.reducedMotion);
       document.body.classList.toggle('ea-high-contrast', settings.highContrast);
+      // Mirror on <html> so root-level effects (view transitions, fixed
+      // overlays outside <body> stacking) also respect the setting.
+      document.documentElement.classList.toggle('ea-reduced-motion', settings.reducedMotion);
       // Text scale must land on the root element: rem-based sizes (which is
       // most of the UI) resolve against <html>, not <body>.
       document.documentElement.style.fontSize = `${settings.textScale * 100}%`;

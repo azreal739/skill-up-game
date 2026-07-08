@@ -1,4 +1,12 @@
-import { Component, HostListener, computed, effect, inject, signal } from '@angular/core';
+import {
+  Component,
+  HostListener,
+  OnDestroy,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
@@ -34,7 +42,7 @@ import { WaveStateService } from '../../shared/wave-background/wave-state.servic
   templateUrl: './mission-player.component.html',
   styleUrls: ['./mission-player.component.scss'],
 })
-export class MissionPlayerComponent {
+export class MissionPlayerComponent implements OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly content = inject(ContentService);
@@ -87,6 +95,15 @@ export class MissionPlayerComponent {
         this.attemptEvaluation.set(null);
       }
     });
+
+    // Boss engagements push the ambient environment into alert mode.
+    effect(() => {
+      this.waves.setAlert(this.isBoss() && this.session.phase() === 'challenge');
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.waves.setAlert(false);
   }
 
   protected readonly totalHintsUsed = computed(() =>
@@ -206,6 +223,7 @@ export class MissionPlayerComponent {
     this.session.advance();
     if (this.session.phase() === 'results') {
       const result = this.session.result();
+      this.waves.pulse('complete');
       this.audio.play('mission-complete');
       if (result && result.completion.rankAfter.id !== result.completion.rankBefore.id) {
         this.audio.play('rank-up');

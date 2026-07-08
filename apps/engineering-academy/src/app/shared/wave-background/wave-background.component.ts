@@ -20,31 +20,64 @@ interface WaveSpec {
   speed: number;
   /** Phase seed so the waves never move in lockstep. */
   seed: number;
-  color: string;
+  /** Calm palette [r,g,b] and the alert palette it blends toward. */
+  calm: [number, number, number];
+  hot: [number, number, number];
 }
 
+const CYAN: [number, number, number] = [34, 211, 238];
+const VIOLET: [number, number, number] = [167, 139, 250];
+const ORANGE: [number, number, number] = [251, 146, 60];
+const RED: [number, number, number] = [248, 113, 113];
+
 const WAVES: WaveSpec[] = [
-  { baseY: 0.42, amplitude: 26, wavelength: 780, speed: 0.00022, seed: 0.0, color: '34, 211, 238' },
-  { baseY: 0.58, amplitude: 34, wavelength: 620, speed: 0.0003, seed: 2.1, color: '167, 139, 250' },
-  { baseY: 0.72, amplitude: 22, wavelength: 900, speed: 0.00026, seed: 4.4, color: '34, 211, 238' },
-  { baseY: 0.86, amplitude: 30, wavelength: 540, speed: 0.00034, seed: 5.9, color: '167, 139, 250' },
+  { baseY: 0.42, amplitude: 26, wavelength: 780, speed: 0.00022, seed: 0.0, calm: CYAN, hot: ORANGE },
+  { baseY: 0.58, amplitude: 34, wavelength: 620, speed: 0.0003, seed: 2.1, calm: VIOLET, hot: RED },
+  { baseY: 0.72, amplitude: 22, wavelength: 900, speed: 0.00026, seed: 4.4, calm: CYAN, hot: ORANGE },
+  { baseY: 0.86, amplitude: 30, wavelength: 540, speed: 0.00034, seed: 5.9, calm: VIOLET, hot: RED },
 ];
+
+interface Particle {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  radius: number;
+  color: WaveSpec['calm'];
+  /** Base opacity; twinkles around this value. */
+  alpha: number;
+  twinkle: number;
+}
+
+interface NodePulse {
+  x: number;
+  y: number;
+  born: number;
+}
 
 /** Horizontal sampling step in CSS pixels — small enough to look smooth. */
 const SEGMENT_PX = 14;
+const PARTICLE_COUNT = 26;
+const NODE_LIFETIME = 2400;
+const NODE_INTERVAL = 3400;
 
 /**
- * Neon telemetry waves behind the whole app. Sine lines whose speed, jitter
- * and brightness follow the platform mood from WaveStateService, smoothed
- * per-frame so every transition eases rather than snaps. Runs its rAF loop
- * outside Angular, pauses when the tab is hidden, and renders one static
- * frame under reduced motion.
+ * The ambient mission-control environment behind the app: flowing telemetry
+ * waves, drifting signal particles and occasional pulsing network nodes on a
+ * canvas, plus CSS grid and scan-line overlays. Mood (speed, jitter,
+ * brightness, warning palette) comes from WaveStateService and is smoothed
+ * per-frame. The rAF loop runs outside Angular, pauses when the tab is
+ * hidden, and reduced motion renders a single static frame.
  */
 @Component({
   selector: 'ea-wave-background',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `<canvas #canvas class="waves" aria-hidden="true"></canvas>`,
+  template: `
+    <canvas #canvas class="waves" aria-hidden="true"></canvas>
+    <div class="grid" aria-hidden="true"></div>
+    <div class="scanlines" aria-hidden="true"></div>
+  `,
   styles: [
     `
       :host {
@@ -56,9 +89,63 @@ const SEGMENT_PX = 14;
       }
 
       .waves {
+        position: absolute;
+        inset: 0;
         width: 100%;
         height: 100%;
         display: block;
+      }
+
+      /* Faint engineering grid, fading out toward the top of the screen. */
+      .grid {
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(148, 163, 255, 0.05) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(148, 163, 255, 0.05) 1px, transparent 1px);
+        background-size: 56px 56px;
+        mask-image: linear-gradient(180deg, transparent 12%, rgba(0, 0, 0, 0.5) 55%, black 100%);
+        -webkit-mask-image: linear-gradient(
+          180deg,
+          transparent 12%,
+          rgba(0, 0, 0, 0.5) 55%,
+          black 100%
+        );
+        animation: grid-drift 60s linear infinite;
+      }
+
+      /* CRT-style scan lines, barely visible, slowly drifting. */
+      .scanlines {
+        position: absolute;
+        inset: -8px 0;
+        background: repeating-linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.022) 0,
+          rgba(255, 255, 255, 0.022) 1px,
+          transparent 1px,
+          transparent 4px
+        );
+        animation: scan-drift 9s linear infinite;
+      }
+
+      @keyframes grid-drift {
+        from {
+          background-position: 0 0;
+        }
+
+        to {
+          background-position: 56px 56px;
+        }
+      }
+
+      @keyframes scan-drift {
+        from {
+          transform: translateY(0);
+        }
+
+        to {
+          transform: translateY(8px);
+        }
       }
     `,
   ],
@@ -82,6 +169,11 @@ export class WaveBackgroundComponent implements AfterViewInit, OnDestroy {
   private energy = 0.35;
   private turbulence = 0;
   private brightness = 0.5;
+  private alert = 0;
+
+  private particles: Particle[] = [];
+  private nodes: NodePulse[] = [];
+  private nextNodeAt = 0;
 
   private readonly onResize = () => this.resize();
   private readonly onVisibility = () => {
@@ -118,6 +210,7 @@ export class WaveBackgroundComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     this.ctx = this.canvasRef.nativeElement.getContext('2d');
     this.resize();
+    this.seedParticles();
 
     this.zone.runOutsideAngular(() => {
       window.addEventListener('resize', this.onResize, { passive: true });
@@ -138,16 +231,33 @@ export class WaveBackgroundComponent implements AfterViewInit, OnDestroy {
     document.removeEventListener('pointerdown', this.onPointerDown);
   }
 
+  private seedParticles(): void {
+    this.particles = Array.from({ length: PARTICLE_COUNT }, (_, i) => ({
+      x: Math.random() * this.width,
+      y: Math.random() * this.height,
+      vx: -(6 + Math.random() * 14),
+      vy: -(2 + Math.random() * 6),
+      radius: 0.8 + Math.random() * 1.4,
+      color: i % 2 === 0 ? CYAN : VIOLET,
+      alpha: 0.16 + Math.random() * 0.2,
+      twinkle: Math.random() * Math.PI * 2,
+    }));
+  }
+
   private startIfAllowed(): void {
     if (this.running || !this.ctx || this.gameState.settings().reducedMotion) {
       return;
     }
     this.running = true;
     this.zone.runOutsideAngular(() => {
+      let last = performance.now();
       const loop = (now: number) => {
         if (!this.running) {
           return;
         }
+        const dt = Math.min(64, now - last);
+        last = now;
+        this.step(now, dt);
         this.drawFrame(now, false);
         this.frame = requestAnimationFrame(loop);
       };
@@ -173,6 +283,34 @@ export class WaveBackgroundComponent implements AfterViewInit, OnDestroy {
     }
   }
 
+  /** Advance particles and node pulses; dt in ms. */
+  private step(now: number, dt: number): void {
+    const speedScale = (0.5 + this.energy) * (dt / 1000);
+    for (const particle of this.particles) {
+      particle.x += particle.vx * speedScale;
+      particle.y += particle.vy * speedScale;
+      particle.twinkle += dt * 0.002;
+      if (particle.x < -4) {
+        particle.x = this.width + 4;
+        particle.y = Math.random() * this.height;
+      }
+      if (particle.y < -4) {
+        particle.y = this.height + 4;
+      }
+    }
+
+    if (now >= this.nextNodeAt) {
+      const wave = WAVES[Math.floor(Math.random() * WAVES.length)];
+      this.nodes.push({
+        x: Math.random() * this.width,
+        y: wave.baseY * this.height + (Math.random() - 0.5) * wave.amplitude * 2,
+        born: now,
+      });
+      this.nextNodeAt = now + NODE_INTERVAL * (0.6 + Math.random() * 0.8) * (1 - this.alert * 0.5);
+    }
+    this.nodes = this.nodes.filter((node) => now - node.born < NODE_LIFETIME);
+  }
+
   private drawFrame(now: number, still: boolean): void {
     const ctx = this.ctx;
     if (!ctx) {
@@ -184,11 +322,13 @@ export class WaveBackgroundComponent implements AfterViewInit, OnDestroy {
       this.energy = 0;
       this.turbulence = 0;
       this.brightness = 0.4;
+      this.alert = 0;
     } else {
       // Ease towards the target — the source of the "smooth" feel.
       this.energy += (target.energy - this.energy) * 0.045;
       this.turbulence += (target.turbulence - this.turbulence) * 0.06;
       this.brightness += (target.brightness - this.brightness) * 0.05;
+      this.alert += (target.alert - this.alert) * 0.03;
     }
 
     ctx.clearRect(0, 0, this.width, this.height);
@@ -197,6 +337,19 @@ export class WaveBackgroundComponent implements AfterViewInit, OnDestroy {
     for (const wave of WAVES) {
       this.drawWave(ctx, wave, now);
     }
+
+    if (!still) {
+      this.drawParticles(ctx);
+      this.drawNodes(ctx, now);
+    }
+  }
+
+  private blend(calm: [number, number, number], hot: [number, number, number]): string {
+    const a = this.alert;
+    const r = Math.round(calm[0] + (hot[0] - calm[0]) * a);
+    const g = Math.round(calm[1] + (hot[1] - calm[1]) * a);
+    const b = Math.round(calm[2] + (hot[2] - calm[2]) * a);
+    return `${r}, ${g}, ${b}`;
   }
 
   private drawWave(ctx: CanvasRenderingContext2D, wave: WaveSpec, now: number): void {
@@ -207,6 +360,7 @@ export class WaveBackgroundComponent implements AfterViewInit, OnDestroy {
     const rippleAmp = wave.amplitude * 0.55 * this.turbulence;
     const kRipple = k * 3.7;
 
+    const color = this.blend(wave.calm, wave.hot);
     const alpha = 0.05 + this.brightness * 0.1;
 
     // Two passes: a wide faint stroke as glow, a thin brighter core.
@@ -226,9 +380,39 @@ export class WaveBackgroundComponent implements AfterViewInit, OnDestroy {
           ctx.lineTo(x, y);
         }
       }
-      ctx.strokeStyle = `rgba(${wave.color}, ${pass.alpha})`;
+      ctx.strokeStyle = `rgba(${color}, ${pass.alpha})`;
       ctx.lineWidth = pass.width;
       ctx.stroke();
+    }
+  }
+
+  private drawParticles(ctx: CanvasRenderingContext2D): void {
+    for (const particle of this.particles) {
+      const twinkle = 0.7 + 0.3 * Math.sin(particle.twinkle);
+      const alpha = particle.alpha * twinkle * (0.7 + this.brightness * 0.6);
+      ctx.beginPath();
+      ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${this.blend(particle.color, ORANGE)}, ${alpha})`;
+      ctx.fill();
+    }
+  }
+
+  private drawNodes(ctx: CanvasRenderingContext2D, now: number): void {
+    for (const node of this.nodes) {
+      const life = (now - node.born) / NODE_LIFETIME;
+      const radius = 3 + life * 26;
+      const alpha = 0.28 * (1 - life);
+      const color = this.blend(CYAN, RED);
+      // Expanding ring + a small core dot: a network node lighting up.
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, radius, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(${color}, ${alpha})`;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, 1.6, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${color}, ${alpha * 2})`;
+      ctx.fill();
     }
   }
 }
