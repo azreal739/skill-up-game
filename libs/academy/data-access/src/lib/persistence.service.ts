@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { PlayerState, playerStateSchema } from '@academy/content-model';
+import { PlayerState, migrateSave, playerStateSchema } from '@academy/content-model';
 
 const SAVE_KEY = 'engineering-academy:save';
 
@@ -15,7 +15,9 @@ export class PersistenceService {
       if (raw === null) {
         return null;
       }
-      const result = playerStateSchema.safeParse(JSON.parse(raw));
+      // Older saves are migrated forward before validation so progress
+      // survives a schema bump; genuinely corrupt saves still fail and reset.
+      const result = playerStateSchema.safeParse(migrateSave(JSON.parse(raw)));
       if (!result.success) {
         console.error('[persistence] discarding invalid save state', result.error.issues);
         return null;

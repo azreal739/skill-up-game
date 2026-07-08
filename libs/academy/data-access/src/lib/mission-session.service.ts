@@ -5,6 +5,8 @@ import {
   HintDefinition,
   MissionDefinition,
   MissionScore,
+  TechnicalDebtItem,
+  XP_BY_DIFFICULTY,
   evaluateChallenge,
   missionScore,
 } from '@academy/content-model';
@@ -24,6 +26,8 @@ export interface ChallengeRun {
   firstTryCorrect: boolean;
   finalScoreRatio: number;
   lastEvaluation: EvaluationResult | null;
+  /** Technical Debt item filed when this challenge was missed, if any. */
+  debtItem: TechnicalDebtItem | null;
 }
 
 export interface MissionResult {
@@ -34,12 +38,12 @@ export interface MissionResult {
   completion: MissionCompletionOutcome;
 }
 
-/** Attempts after which the player may accept a partial result and move on. */
-const PARTIAL_ACCEPT_ATTEMPTS = 2;
-
 /**
  * Runtime state machine for playing one mission:
- * briefing → challenges (submit / hint / retry) → results.
+ * briefing → challenges (submit / hint) → results. The first answer to each
+ * challenge is locked in — a miss is recorded as Technical Debt and the
+ * mission continues rather than allowing an immediate retry (Review Loop
+ * spec 02).
  */
 @Injectable({ providedIn: 'root' })
 export class MissionSessionService {
@@ -80,16 +84,6 @@ export class MissionSessionService {
     return sortedHints(run.challenge)[run.hintsRevealed] ?? null;
   });
 
-  readonly canAcceptPartial = computed(() => {
-    const run = this.currentRun();
-    return (
-      !!run &&
-      !run.completed &&
-      run.attempts >= PARTIAL_ACCEPT_ATTEMPTS &&
-      run.lastEvaluation !== null
-    );
-  });
-
   start(mission: MissionDefinition): void {
     this.missionSignal.set(mission);
     this.phaseSignal.set('briefing');
@@ -104,6 +98,7 @@ export class MissionSessionService {
         firstTryCorrect: false,
         finalScoreRatio: 0,
         lastEvaluation: null,
+        debtItem: null,
       }))
     );
   }
@@ -121,42 +116,49 @@ export class MissionSessionService {
     return hint;
   }
 
+  /**
+   * Submit the answer for the current challenge. The first submission is
+   * final: a correct answer scores full credit, a miss scores nothing, files
+   * Technical Debt and applies its consequence once. A locked challenge
+   * ignores further submissions (no brute-force retry).
+   */
   submit(selectedIds: string[]): EvaluationResult | null {
+    const mission = this.missionSignal();
     const run = this.currentRun();
-    if (!run || run.completed) {
+    if (!mission || !run || run.completed) {
       return null;
     }
 
     const evaluation = evaluateChallenge(run.challenge, { selectedIds });
-    const attempts = run.attempts + 1;
+    const { challenge } = run;
+
+    const outcome = this.gameState.recordMissionOutcome({
+      challengeId: challenge.id,
+      missionId: mission.id,
+      campaignId: mission.campaignId,
+      challengeTitle: challenge.title,
+      conceptTags: challenge.tags,
+      selectedAnswerIds: selectedIds,
+      correctAnswerIds: correctAnswerIds(challenge),
+      isCorrect: evaluation.correct,
+      xpAwarded: evaluation.correct ? XP_BY_DIFFICULTY[challenge.difficulty] : 0,
+      consequences: challenge.consequences,
+      explanation: challenge.failureFeedback,
+      whyItMatters: whyItMatters(challenge),
+      relatedHelpTopicIds: challenge.helpLinks.map((link) => link.topicId),
+    });
 
     this.updateCurrentRun((current) => ({
       ...current,
-      attempts,
+      attempts: current.attempts + 1,
       lastEvaluation: evaluation,
-      completed: evaluation.correct,
-      firstTryCorrect: evaluation.correct && attempts === 1,
-      finalScoreRatio: evaluation.correct ? 1 : current.finalScoreRatio,
+      completed: true,
+      firstTryCorrect: evaluation.correct,
+      finalScoreRatio: evaluation.correct ? 1 : 0,
+      debtItem: outcome.debtItem,
     }));
-
-    if (!evaluation.correct) {
-      this.gameState.applyConsequences(run.challenge.consequences);
-    }
 
     return evaluation;
-  }
-
-  /** Accept a partial result after repeated attempts and move on. */
-  acceptPartial(): void {
-    const run = this.currentRun();
-    if (!run || !this.canAcceptPartial()) {
-      return;
-    }
-    this.updateCurrentRun((current) => ({
-      ...current,
-      completed: true,
-      finalScoreRatio: current.lastEvaluation?.scoreRatio ?? 0,
-    }));
   }
 
   /** Advance to the next challenge, or finish the mission on the last one. */
@@ -255,6 +257,21 @@ export class MissionSessionService {
 
 function sortedHints(challenge: ChallengeDefinition): HintDefinition[] {
   return [...challenge.hints].sort((a, b) => a.level - b.level);
+}
+
+/** The ids of every correct option/finding for a challenge. */
+function correctAnswerIds(challenge: ChallengeDefinition): string[] {
+  const options = challenge.type === 'code-review' ? challenge.findings : challenge.options;
+  return options.filter((option) => option.isCorrect).map((option) => option.id);
+}
+
+/**
+ * Why a miss matters: the authored consequence reasons (phrased as the
+ * failure's real-world cost) fall back to the challenge's failure feedback.
+ */
+function whyItMatters(challenge: ChallengeDefinition): string {
+  const reasons = challenge.consequences.map((c) => c.reason).filter(Boolean);
+  return reasons.length > 0 ? reasons.join(' ') : challenge.failureFeedback;
 }
 
 function average(values: number[]): number {

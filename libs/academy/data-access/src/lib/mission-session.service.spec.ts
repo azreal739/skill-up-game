@@ -44,20 +44,45 @@ describe('MissionSessionService', () => {
     expect(gameState.isMissionCompleted(mission.id)).toBeTrue();
   });
 
-  it('applies consequences on a wrong answer and downgrades the outcome', () => {
+  it('locks the first attempt: a wrong answer files debt and cannot be retried', () => {
     session.start(mission);
     session.beginChallenges();
 
     const wrong = session.submit(['b']);
     expect(wrong?.correct).toBeFalse();
+    // Consequence applied once; the challenge is now locked.
     expect(gameState.meters().stability).toBeLessThan(100);
+    const stabilityAfterMiss = gameState.meters().stability;
+    expect(session.currentRun()?.completed).toBeTrue();
 
-    const right = session.submit(['a']);
-    expect(right?.correct).toBeTrue();
+    // A second submission is a no-op — no brute-force retry, no double penalty.
+    const retry = session.submit(['a']);
+    expect(retry).toBeNull();
+    expect(gameState.meters().stability).toBe(stabilityAfterMiss);
+
+    // Exactly one open Technical Debt item was filed for this challenge.
+    const debt = gameState.technicalDebtItems();
+    expect(debt.length).toBe(1);
+    expect(debt[0].challengeId).toBe(mission.challenges[0].id);
+    expect(debt[0].status).toBe('open');
+    expect(gameState.openDebtCount()).toBe(1);
 
     session.advance();
-    expect(session.result()?.outcome).toBe('stable');
+    expect(session.result()?.outcome).toBe('partial');
     expect(session.result()?.score.perfectBonus).toBe(0);
+    // The miss earns no challenge XP (consequence-only).
+    expect(session.result()?.score.challengeXp).toBe(0);
+  });
+
+  it('records a first-attempt-correct challenge without filing debt', () => {
+    session.start(mission);
+    session.beginChallenges();
+
+    session.submit(['a']);
+    expect(gameState.technicalDebtItems().length).toBe(0);
+    const progress = gameState.progressForChallenge(mission.challenges[0].id);
+    expect(progress?.firstAttemptCorrect).toBeTrue();
+    expect(progress?.totalAttempts).toBe(1);
   });
 
   it('charges for hints through the score', () => {
@@ -73,21 +98,6 @@ describe('MissionSessionService', () => {
     expect(result?.score.noHintBonus).toBe(0);
     // 10 - 0 - 5 = 5 challenge XP + 50 perfect (first try) + 5 mission bonus.
     expect(result?.score.challengeXp).toBe(5);
-  });
-
-  it('offers partial acceptance after repeated failures', () => {
-    session.start(mission);
-    session.beginChallenges();
-
-    session.submit(['b']);
-    expect(session.canAcceptPartial()).toBeFalse();
-    session.submit(['c']);
-    expect(session.canAcceptPartial()).toBeTrue();
-
-    session.acceptPartial();
-    session.advance();
-    expect(session.phase()).toBe('results');
-    expect(session.result()?.outcome).toBe('partial');
   });
 
   it('reveals hints in ladder order and stops at the last one', () => {

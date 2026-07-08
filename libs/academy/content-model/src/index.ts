@@ -5,4 +5,5 @@ export * from './lib/scoring';
 export * from './lib/ranks';
 export * from './lib/badges';
 export * from './lib/meters';
+export * from './lib/progress';
 export * from './lib/player-state';

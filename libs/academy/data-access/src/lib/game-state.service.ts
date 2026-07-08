@@ -1,22 +1,27 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import {
   CampaignDefinition,
+  ChallengeAttempt,
+  ChallengeProgress,
   ConsequenceDefinition,
   MissionRecord,
   PlayerSettings,
   PlayerState,
   Rank,
+  TechnicalDebtItem,
   applyConsequence,
   createPlayerState,
   initialMeters,
   levelForXp,
   levelProgress,
+  migrateSave,
   nextRank,
   playerStateSchema,
   rankForXp,
   rankProgress,
 } from '@academy/content-model';
 import { PersistenceService } from './persistence.service';
+import { createId } from './id';
 
 export interface MissionCompletionInput {
   missionId: string;
@@ -32,6 +37,35 @@ export interface MissionCompletionOutcome {
   newBadges: string[];
   rankBefore: Rank;
   rankAfter: Rank;
+}
+
+/**
+ * A single challenge decision to record: the answer, whether it was correct,
+ * and the context needed to file a Technical Debt item if it was a first-try
+ * miss during a mission (Review Loop spec 03/04).
+ */
+export interface ChallengeOutcomeInput {
+  challengeId: string;
+  missionId: string;
+  campaignId: string;
+  challengeTitle: string;
+  conceptTags: string[];
+  selectedAnswerIds: string[];
+  correctAnswerIds: string[];
+  isCorrect: boolean;
+  /** Challenge XP this decision earns (0 for a first-try miss — see spec 08). */
+  xpAwarded: number;
+  /** Consequences to apply to the meters (only on a wrong answer). */
+  consequences: ConsequenceDefinition[];
+  explanation: string;
+  whyItMatters: string;
+  relatedHelpTopicIds: string[];
+}
+
+export interface ChallengeOutcomeResult {
+  attempt: ChallengeAttempt;
+  /** The debt item created or reopened by a first-try miss, if any. */
+  debtItem: TechnicalDebtItem | null;
 }
 
 /**
@@ -59,6 +93,34 @@ export class GameStateService {
     () => this.stateSignal()?.settings ?? createPlayerState('').settings
   );
 
+  // Technical Debt Review Loop read surface (Review Loop spec 04/07).
+  readonly technicalDebtItems = computed(() => this.stateSignal()?.technicalDebtItems ?? []);
+  readonly challengeProgress = computed(() => this.stateSignal()?.challengeProgress ?? []);
+  readonly challengeAttempts = computed(() => this.stateSignal()?.challengeAttempts ?? []);
+  readonly notes = computed(() => this.stateSignal()?.notes ?? []);
+  /** Debt still awaiting remediation (open or reopened). */
+  readonly openDebtCount = computed(
+    () =>
+      this.technicalDebtItems().filter(
+        (item) => item.status === 'open' || item.status === 'reopened'
+      ).length
+  );
+
+  debtItemById(id: string): TechnicalDebtItem | undefined {
+    return this.technicalDebtItems().find((item) => item.id === id);
+  }
+
+  /** The open/reopened/in-review debt item for a challenge, if one exists. */
+  activeDebtForChallenge(challengeId: string): TechnicalDebtItem | undefined {
+    return this.technicalDebtItems().find(
+      (item) => item.challengeId === challengeId && item.status !== 'remediated'
+    );
+  }
+
+  progressForChallenge(challengeId: string): ChallengeProgress | undefined {
+    return this.challengeProgress().find((p) => p.challengeId === challengeId);
+  }
+
   createProfile(name: string, callsign = ''): void {
     this.commit(createPlayerState(name, callsign));
   }
@@ -85,7 +147,7 @@ export class GameStateService {
     } catch {
       return false;
     }
-    const result = playerStateSchema.safeParse(parsed);
+    const result = playerStateSchema.safeParse(migrateSave(parsed));
     if (!result.success) {
       return false;
     }
@@ -190,6 +252,108 @@ export class GameStateService {
     return { xpAwarded, newBadges, rankBefore, rankAfter: rankForXp(next.xp) };
   }
 
+  /**
+   * Records one mission-mode challenge decision: appends the attempt, upserts
+   * the challenge's progress, and — on a first-attempt miss — files (or reuses)
+   * a Technical Debt item and applies the wrong-answer consequences. The whole
+   * transition is one commit so the meters, history and backlog never drift.
+   * First attempts are never overwritten by replays (Review Loop spec 05).
+   */
+  recordMissionOutcome(input: ChallengeOutcomeInput): ChallengeOutcomeResult {
+    const state = this.requireState();
+    const now = new Date().toISOString();
+
+    const attempt: ChallengeAttempt = {
+      id: createId('att'),
+      challengeId: input.challengeId,
+      missionId: input.missionId,
+      campaignId: input.campaignId,
+      mode: 'mission',
+      selectedAnswerIds: input.selectedAnswerIds,
+      isCorrect: input.isCorrect,
+      submittedAt: now,
+      xpAwarded: input.xpAwarded,
+    };
+
+    const existing = state.challengeProgress.find((p) => p.challengeId === input.challengeId);
+    const isFirstAttempt = !existing || existing.firstAttemptId === undefined;
+
+    let debtItems = state.technicalDebtItems;
+    let debtItem: TechnicalDebtItem | null = null;
+    if (isFirstAttempt && !input.isCorrect) {
+      // Dedupe: never open a second live item for the same challenge.
+      const active = debtItems.find(
+        (item) => item.challengeId === input.challengeId && item.status !== 'remediated'
+      );
+      if (active) {
+        debtItem = active;
+      } else {
+        debtItem = {
+          id: createId('debt'),
+          campaignId: input.campaignId,
+          missionId: input.missionId,
+          challengeId: input.challengeId,
+          challengeTitle: input.challengeTitle,
+          conceptTags: input.conceptTags,
+          status: 'open',
+          playerAnswerIds: input.selectedAnswerIds,
+          correctAnswerIds: input.correctAnswerIds,
+          explanation: input.explanation,
+          whyItMatters: input.whyItMatters,
+          relatedHelpTopicIds: input.relatedHelpTopicIds,
+          consequenceSummary: summariseConsequences(input.consequences),
+          createdAt: now,
+          updatedAt: now,
+          reviewAttemptIds: [],
+          noteIds: [],
+        };
+        debtItems = [...debtItems, debtItem];
+      }
+    }
+
+    const progress: ChallengeProgress = existing
+      ? {
+          ...existing,
+          latestAttemptId: attempt.id,
+          latestAttemptCorrect: input.isCorrect,
+          totalAttempts: existing.totalAttempts + 1,
+          technicalDebtItemId: existing.technicalDebtItemId ?? debtItem?.id,
+        }
+      : {
+          challengeId: input.challengeId,
+          missionId: input.missionId,
+          campaignId: input.campaignId,
+          firstAttemptId: attempt.id,
+          firstAttemptCorrect: input.isCorrect,
+          firstAttemptSubmittedAt: now,
+          latestAttemptId: attempt.id,
+          latestAttemptCorrect: input.isCorrect,
+          totalAttempts: 1,
+          reviewAttempts: 0,
+          isRemediated: false,
+          technicalDebtItemId: debtItem?.id,
+        };
+
+    const challengeProgress = existing
+      ? state.challengeProgress.map((p) => (p.challengeId === input.challengeId ? progress : p))
+      : [...state.challengeProgress, progress];
+
+    const meters =
+      !input.isCorrect && input.consequences.length > 0
+        ? input.consequences.reduce(applyConsequence, state.meters)
+        : state.meters;
+
+    this.commit({
+      ...state,
+      meters,
+      challengeAttempts: [...state.challengeAttempts, attempt],
+      challengeProgress,
+      technicalDebtItems: debtItems,
+    });
+
+    return { attempt, debtItem };
+  }
+
   private mutate(update: (state: PlayerState) => PlayerState): void {
     this.commit(update(this.requireState()));
   }
@@ -206,4 +370,29 @@ export class GameStateService {
     this.stateSignal.set(state);
     this.persistence.save(state);
   }
+}
+
+const CONSEQUENCE_LABELS: Record<ConsequenceDefinition['type'], string> = {
+  stability: 'Platform Stability',
+  'technical-debt': 'Technical Debt',
+  severity: 'Incident Severity',
+  'team-confidence': 'Team Confidence',
+  time: 'Delivery Time',
+};
+
+/**
+ * Human-readable one-liner for a debt item's meter impact, e.g.
+ * "Platform Stability −5 · Technical Debt +8". Signs are explicit so the
+ * cost of the decision reads clearly on the backlog.
+ */
+function summariseConsequences(consequences: ConsequenceDefinition[]): string {
+  if (consequences.length === 0) {
+    return 'No lasting platform impact — but the concept still needs review.';
+  }
+  return consequences
+    .map((c) => {
+      const sign = c.delta > 0 ? '+' : '−';
+      return `${CONSEQUENCE_LABELS[c.type]} ${sign}${Math.abs(c.delta)}`;
+    })
+    .join(' · ');
 }
