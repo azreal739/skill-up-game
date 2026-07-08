@@ -9,6 +9,7 @@
       [meters]="gameState.meters()"
       [missionTitle]="mission.title"
       [hintsUsed]="totalHintsUsed()"
+      [animateNumbers]="!gameState.settings().reducedMotion"
     >
       @if (session.phase() !== 'briefing') {
         <button hud-actions type="button" class="ea-btn hud-brief-btn" (click)="briefOpen.set(true)">
@@ -246,8 +247,8 @@
               <div><dt>Perfect bonus</dt><dd>{{ result.score.perfectBonus }}</dd></div>
               <div><dt>No-hint bonus</dt><dd>{{ result.score.noHintBonus }}</dd></div>
               <div><dt>Mission bonus</dt><dd>{{ result.missionXpBonus }}</dd></div>
-              <div class="results__total"><dt>Run total</dt><dd>{{ result.totalXp }} XP</dd></div>
-              <div class="results__awarded"><dt>Credited</dt><dd>+{{ result.completion.xpAwarded }} XP</dd></div>
+              <div class="results__total"><dt>Run total</dt><dd><ea-count-up [value]="result.totalXp" suffix=" XP" [duration]="900" [instant]="gameState.settings().reducedMotion" /></dd></div>
+              <div class="results__awarded"><dt>Credited</dt><dd><ea-count-up [value]="result.completion.xpAwarded" prefix="+" suffix=" XP" [duration]="1100" [instant]="gameState.settings().reducedMotion" /></dd></div>
             </dl>
             @if (result.completion.xpAwarded < result.totalXp) {
               <p class="results__note">
@@ -266,9 +267,11 @@
               <div class="results__badges">
                 <h2>Badges unlocked</h2>
                 <div class="results__badge-row">
-                  @for (badgeId of result.completion.newBadges; track badgeId) {
+                  @for (badgeId of result.completion.newBadges; track badgeId; let i = $index) {
                     @if (badgeFor(badgeId); as badge) {
-                      <ea-badge-chip [badge]="badge" />
+                      <span class="results__badge-pop" [style.animation-delay]="200 + i * 160 + 'ms'">
+                        <ea-badge-chip [badge]="badge" />
+                      </span>
                     }
                   }
                 </div>

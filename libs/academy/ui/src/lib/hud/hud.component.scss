@@ -112,3 +112,30 @@
   text-transform: uppercase;
   color: var(--ea-accent);
 }
+
+/* Slow light sweep across the XP bar. */
+.hud__xpbar {
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 26px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: hud-bar-sheen 3.6s ease-in-out infinite;
+  }
+}
+
+@keyframes hud-bar-sheen {
+  0% {
+    left: -26px;
+  }
+
+  55%,
+  100% {
+    left: 100%;
+  }
+}

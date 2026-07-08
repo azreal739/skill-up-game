@@ -31,9 +31,10 @@
   }
 
   <section class="campaigns">
-    @for (campaign of campaigns; track campaign.id) {
+    @for (campaign of campaigns; track campaign.id; let i = $index) {
       <article
         class="campaign ea-panel"
+        [style.animation-delay]="i * 55 + 'ms'"
         [class.campaign--complete]="isCompleted(campaign.id)"
         [class.campaign--locked]="isLocked(campaign.id)"
         [attr.aria-disabled]="isLocked(campaign.id) ? 'true' : null"

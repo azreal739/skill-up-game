@@ -30,9 +30,10 @@
       </div>
     } @else {
     <ol class="missions">
-      @for (node of nodes(); track node.mission.id) {
+      @for (node of nodes(); track node.mission.id; let i = $index) {
         <li
           class="mission ea-panel"
+          [style.animation-delay]="i * 45 + 'ms'"
           [class.mission--locked]="!node.unlocked"
           [class.mission--complete]="node.completed"
           [class.mission--boss]="node.mission.difficulty === 'boss'"

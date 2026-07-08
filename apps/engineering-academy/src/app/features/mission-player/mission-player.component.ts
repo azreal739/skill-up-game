@@ -22,7 +22,13 @@ import {
   GameStateService,
   MissionSessionService,
 } from '@academy/data-access';
-import { CodeViewerComponent, HudComponent, MentorDialogueComponent, BadgeChipComponent } from '@academy/ui';
+import {
+  BadgeChipComponent,
+  CodeViewerComponent,
+  CountUpComponent,
+  HudComponent,
+  MentorDialogueComponent,
+} from '@academy/ui';
 import { ChallengeHostComponent } from '@academy/challenges';
 import { HelpDrawerComponent } from './help-drawer.component';
 import { WaveStateService } from '../../shared/wave-background/wave-state.service';
@@ -33,6 +39,7 @@ import { WaveStateService } from '../../shared/wave-background/wave-state.servic
   imports: [
     RouterLink,
     CodeViewerComponent,
+    CountUpComponent,
     HudComponent,
     MentorDialogueComponent,
     BadgeChipComponent,
