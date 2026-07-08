@@ -20,11 +20,18 @@
     @switch (session.phase()) {
       <!-- ============ BRIEFING ============ -->
       @case ('briefing') {
-        <section class="briefing ea-panel">
-          <p class="ea-eyebrow">Mission Briefing</p>
+        <section class="briefing ea-panel" [attr.data-boss]="isBoss() ? '' : null">
+          @if (isBoss()) {
+            <div class="boss-banner" role="text">
+              <span class="boss-banner__glyph" aria-hidden="true">⚠</span>
+              BOSS MISSION
+              <span class="boss-banner__glyph" aria-hidden="true">⚠</span>
+            </div>
+          }
+          <p class="ea-eyebrow">{{ isBoss() ? 'Critical Engagement' : 'Mission Briefing' }}</p>
           <h1 class="briefing__title">{{ mission.title }}</h1>
           <div class="briefing__meta">
-            <span class="ea-chip">{{ mission.difficulty }}</span>
+            <span class="ea-chip" [class.ea-chip--boss]="isBoss()">{{ mission.difficulty }}</span>
             <span class="ea-chip">{{ mission.challenges.length }} challenge{{ mission.challenges.length === 1 ? '' : 's' }}</span>
           </div>
 
@@ -45,7 +52,7 @@
 
           <div class="briefing__actions">
             <button type="button" class="ea-btn ea-btn--primary" (click)="startMission()">
-              Start Mission
+              {{ isBoss() ? 'Engage' : 'Start Mission' }}
             </button>
             <a class="ea-btn" [routerLink]="['/campaigns', mission.campaignId]">Back to campaign</a>
           </div>
@@ -55,7 +62,7 @@
       <!-- ============ WORKSPACE ============ -->
       @case ('challenge') {
         @if (session.currentRun(); as run) {
-          <div class="workspace">
+          <div class="workspace" [attr.data-boss]="isBoss() ? '' : null">
             <aside class="workspace__context">
               @if (campaign(); as campaign) {
                 <nav class="tracker ea-panel" aria-label="Campaign progress">
@@ -95,6 +102,25 @@
                   {{ campaign.title }} · Mission {{ missionIndex() + 1 }} of
                   {{ campaign.missions.length }}
                 </p>
+              }
+              @if (isBoss()) {
+                <div class="boss-status" role="group" aria-label="Boss status">
+                  <span class="boss-status__label">⚠ BOSS — Stage {{ session.challengeIndex() + 1 }} / {{ session.totalChallenges() }}</span>
+                  <div
+                    class="boss-status__bar"
+                    role="progressbar"
+                    aria-label="System integrity restored"
+                    [attr.aria-valuenow]="stagesCleared()"
+                    aria-valuemin="0"
+                    [attr.aria-valuemax]="session.totalChallenges()"
+                  >
+                    <div
+                      class="boss-status__fill"
+                      [style.width.%]="(stagesCleared() / session.totalChallenges()) * 100"
+                    ></div>
+                  </div>
+                  <span class="boss-status__integrity">SYSTEM INTEGRITY</span>
+                </div>
               }
               <ea-challenge-host
                 [challenge]="run.challenge"
@@ -208,6 +234,9 @@
                 @case ('partial') { Partial resolution — recovery recommended }
               }
             </h1>
+            @if (isBoss()) {
+              <p class="results__boss">⚠ Boss encounter complete — the platform stands.</p>
+            }
             @if (campaignCompleted()) {
               <p class="results__campaign">🎉 Campaign complete — production is safe in your hands.</p>
             }

@@ -609,3 +609,135 @@
     opacity: 1;
   }
 }
+
+/* ---- Boss mission treatment ---- */
+
+.briefing[data-boss] {
+  border-color: rgba(251, 146, 60, 0.45);
+  box-shadow:
+    0 0 0 1px rgba(248, 113, 113, 0.12),
+    0 0 42px rgba(251, 146, 60, 0.14);
+  animation: boss-briefing-pulse 3.2s ease-in-out infinite;
+
+  .ea-eyebrow {
+    color: var(--ea-orange);
+  }
+}
+
+.boss-banner {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 0.9rem;
+  padding: 0.4rem 1rem;
+  border: 1px solid rgba(248, 113, 113, 0.6);
+  border-radius: 8px;
+  background: rgba(248, 113, 113, 0.08);
+  color: var(--ea-danger);
+  font-family: var(--ea-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.32em;
+  animation: boss-banner-in 0.6s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+
+.boss-banner__glyph {
+  color: var(--ea-orange);
+  animation: boss-glyph-blink 1.6s steps(2) infinite;
+}
+
+.ea-chip--boss {
+  color: var(--ea-danger);
+  border-color: rgba(248, 113, 113, 0.6);
+  font-weight: 700;
+}
+
+.workspace[data-boss] .workspace__main {
+  border-color: rgba(251, 146, 60, 0.4);
+  box-shadow: 0 0 34px rgba(251, 146, 60, 0.1);
+}
+
+.boss-status {
+  display: grid;
+  gap: 0.3rem;
+  margin-bottom: 1rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid rgba(251, 146, 60, 0.35);
+  border-radius: 10px;
+  background: rgba(251, 146, 60, 0.05);
+}
+
+.boss-status__label {
+  font-family: var(--ea-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  color: var(--ea-orange);
+}
+
+.boss-status__bar {
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(248, 113, 113, 0.16);
+  overflow: hidden;
+}
+
+.boss-status__fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--ea-orange), var(--ea-success));
+  box-shadow: 0 0 10px rgba(52, 211, 153, 0.4);
+  transition: width 0.5s ease;
+}
+
+.boss-status__integrity {
+  font-family: var(--ea-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.22em;
+  color: var(--ea-muted);
+}
+
+.results__boss {
+  margin: 0.2rem 0 0;
+  font-family: var(--ea-mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  color: var(--ea-orange);
+}
+
+@keyframes boss-briefing-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1px rgba(248, 113, 113, 0.12),
+      0 0 42px rgba(251, 146, 60, 0.14);
+  }
+
+  50% {
+    box-shadow:
+      0 0 0 1px rgba(248, 113, 113, 0.22),
+      0 0 58px rgba(251, 146, 60, 0.24);
+  }
+}
+
+@keyframes boss-banner-in {
+  from {
+    opacity: 0;
+    transform: scale(1.25);
+    filter: blur(2px);
+  }
+
+  60% {
+    opacity: 1;
+    filter: none;
+  }
+
+  to {
+    transform: none;
+  }
+}
+
+@keyframes boss-glyph-blink {
+  50% {
+    opacity: 0.25;
+  }
+}
