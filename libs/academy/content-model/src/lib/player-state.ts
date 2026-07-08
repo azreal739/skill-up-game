@@ -4,6 +4,15 @@
  */
 import { z } from 'zod';
 import { initialMeters } from './meters';
+import {
+  challengeAttemptSchema,
+  challengeProgressSchema,
+  playerNoteSchema,
+  technicalDebtItemSchema,
+} from './progress';
+
+/** Current persisted save version. Bumped when the save shape changes. */
+export const SAVE_VERSION = 2;
 
 export const SETTINGS_DEFAULTS = {
   masterVolume: 0.8,
@@ -43,7 +52,7 @@ export const platformMetersSchema = z.object({
 });
 
 export const playerStateSchema = z.object({
-  version: z.literal(1),
+  version: z.literal(SAVE_VERSION),
   profile: z.object({
     name: z.string().min(1),
     callsign: z.string(),
@@ -54,6 +63,12 @@ export const playerStateSchema = z.object({
   completedMissions: z.record(z.string(), missionRecordSchema),
   settings: settingsSchema,
   meters: platformMetersSchema,
+  // Technical Debt Review Loop collections (Review Loop spec 03/04/06/10).
+  // Older (v1) saves are migrated to add these as empty arrays.
+  challengeAttempts: z.array(challengeAttemptSchema),
+  challengeProgress: z.array(challengeProgressSchema),
+  technicalDebtItems: z.array(technicalDebtItemSchema),
+  notes: z.array(playerNoteSchema),
 });
 
 export type PlayerSettings = z.infer<typeof settingsSchema>;
@@ -62,12 +77,42 @@ export type PlayerState = z.infer<typeof playerStateSchema>;
 
 export function createPlayerState(name: string, callsign = ''): PlayerState {
   return {
-    version: 1,
+    version: SAVE_VERSION,
     profile: { name, callsign, createdAt: new Date().toISOString() },
     xp: 0,
     badges: [],
     completedMissions: {},
     settings: { ...SETTINGS_DEFAULTS },
     meters: initialMeters(),
+    challengeAttempts: [],
+    challengeProgress: [],
+    technicalDebtItems: [],
+    notes: [],
   };
+}
+
+/**
+ * Bring an older save forward to the current shape before validation.
+ *
+ * v1 saves predate the Technical Debt Review Loop and lack its collections;
+ * we add them as empty arrays and bump the version so no progress is lost.
+ * Anything already at the current version (or unrecognisable) is returned
+ * untouched, leaving the Zod validator to accept or discard it.
+ */
+export function migrateSave(raw: unknown): unknown {
+  if (typeof raw !== 'object' || raw === null) {
+    return raw;
+  }
+  const state = raw as Record<string, unknown>;
+  if (state['version'] === 1) {
+    return {
+      ...state,
+      version: SAVE_VERSION,
+      challengeAttempts: [],
+      challengeProgress: [],
+      technicalDebtItems: [],
+      notes: [],
+    };
+  }
+  return raw;
 }

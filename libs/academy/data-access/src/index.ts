@@ -1,3 +1,4 @@
+export * from './lib/id';
 export * from './lib/content.service';
 export * from './lib/persistence.service';
 export * from './lib/game-state.service';

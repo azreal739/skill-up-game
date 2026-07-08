@@ -211,17 +211,14 @@ export class MissionPlayerComponent implements OnDestroy {
     this.waves.pulse(evaluation.correct ? 'correct' : 'incorrect');
   }
 
-  tryAgain(): void {
+  /** The Technical Debt item filed for the current challenge, if it was missed. */
+  protected readonly currentDebtItem = computed(
+    () => this.session.currentRun()?.debtItem ?? null
+  );
+
+  /** A single Continue that always advances — the first answer is final. */
+  continueAfterDecision(): void {
     this.audio.play('click');
-    this.attemptEvaluation.set(null);
-  }
-
-  continueAfterCorrect(): void {
-    this.advance();
-  }
-
-  acceptPartial(): void {
-    this.session.acceptPartial();
     this.advance();
   }
 

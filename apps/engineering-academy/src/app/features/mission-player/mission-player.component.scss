@@ -157,9 +157,11 @@
     background: rgba(52, 211, 153, 0.06);
   }
 
+  // A miss reads as discovered technical debt, not failure (Review Loop
+  // spec 09): amber/cyan, never harsh red.
   &--failure {
-    border-color: rgba(248, 113, 113, 0.5);
-    background: rgba(248, 113, 113, 0.05);
+    border-color: rgba(251, 191, 36, 0.5);
+    background: rgba(251, 191, 36, 0.06);
   }
 }
 
@@ -183,13 +185,49 @@
   }
 
   .feedback--failure & {
-    color: var(--ea-danger);
+    color: var(--ea-warn);
   }
 }
 
 .feedback__summary {
   color: var(--ea-text);
   line-height: 1.65;
+}
+
+.feedback__outcome {
+  margin: 0.7rem 0 0;
+  font-weight: 600;
+  color: var(--ea-warn);
+}
+
+.feedback__debt {
+  margin: 0.8rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  background: rgba(56, 189, 248, 0.07);
+}
+
+.feedback__debt-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ea-muted);
+}
+
+.feedback__debt-title {
+  font-weight: 700;
+  color: var(--ea-text);
+}
+
+.feedback__reassure {
+  margin: 0.7rem 0 0;
+  font-size: 0.85rem;
+  color: var(--ea-muted);
+  line-height: 1.6;
 }
 
 .feedback__consequences {

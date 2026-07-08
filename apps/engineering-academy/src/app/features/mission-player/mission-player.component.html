@@ -138,30 +138,43 @@
                   role="status"
                 >
                   <p class="feedback__result">
-                    {{ evaluation.correct ? '✓ Decision confirmed' : '✗ Not the right call yet' }}
+                    {{ evaluation.correct ? '✓ Decision confirmed' : 'Decision recorded' }}
                   </p>
                   <p class="feedback__summary">{{ evaluation.summary }}</p>
-                  @if (!evaluation.correct && run.challenge.consequences.length > 0) {
-                    <ul class="feedback__consequences">
-                      @for (consequence of run.challenge.consequences; track consequence.reason) {
-                        <li>⚠ {{ consequence.reason }}</li>
-                      }
-                    </ul>
+
+                  @if (!evaluation.correct) {
+                    <p class="feedback__outcome">This decision introduced Technical Debt.</p>
+                    @if (run.challenge.consequences.length > 0) {
+                      <ul class="feedback__consequences">
+                        @for (consequence of run.challenge.consequences; track consequence.reason) {
+                          <li>⚠ {{ consequence.reason }}</li>
+                        }
+                      </ul>
+                    }
+                    @if (currentDebtItem(); as debt) {
+                      <p class="feedback__debt">
+                        <span class="feedback__debt-label">Technical Debt added</span>
+                        <span class="feedback__debt-title">{{ debt.challengeTitle }}</span>
+                      </p>
+                      <p class="feedback__reassure">
+                        You can continue the mission now and remediate this concept later in
+                        Academy Review.
+                      </p>
+                    }
                   }
+
                   <div class="feedback__actions">
-                    @if (evaluation.correct) {
-                      <button type="button" class="ea-btn ea-btn--primary" (click)="continueAfterCorrect()">
-                        {{ session.challengeIndex() + 1 === session.totalChallenges() ? 'Finish mission' : 'Next challenge' }}
+                    <button type="button" class="ea-btn ea-btn--primary" (click)="continueAfterDecision()">
+                      {{ session.challengeIndex() + 1 === session.totalChallenges() ? 'Finish mission' : 'Continue' }}
+                    </button>
+                    @if (!evaluation.correct && run.challenge.helpLinks.length > 0) {
+                      <button
+                        type="button"
+                        class="ea-btn"
+                        (click)="openHelp(run.challenge.helpLinks[0].topicId)"
+                      >
+                        View Help
                       </button>
-                    } @else {
-                      <button type="button" class="ea-btn ea-btn--primary" (click)="tryAgain()">
-                        Try again
-                      </button>
-                      @if (session.canAcceptPartial()) {
-                        <button type="button" class="ea-btn" (click)="acceptPartial()">
-                          Accept partial result &amp; continue
-                        </button>
-                      }
                     }
                   </div>
                 </div>
