@@ -77,16 +77,30 @@
           [style.animation-delay]="i * 45 + 'ms'"
           [class.mission--locked]="!node.unlocked"
           [class.mission--complete]="node.completed"
+          [class.mission--partial]="node.partial"
           [class.mission--boss]="node.mission.difficulty === 'boss'"
         >
           <div class="mission__index" aria-hidden="true">
-            {{ node.completed ? '✓' : node.unlocked ? node.index + 1 : '🔒' }}
+            @if (node.completed) {
+              {{ node.perfect ? '✓' : '◐' }}
+            } @else if (node.unlocked) {
+              {{ node.index + 1 }}
+            } @else {
+              🔒
+            }
           </div>
           <div class="mission__body">
             <div class="mission__meta">
               <span class="ea-chip">{{ node.mission.difficulty }}</span>
               @if (node.perfect) {
                 <span class="ea-chip mission__perfect">★ perfect</span>
+              } @else if (node.partial) {
+                <span class="ea-chip mission__partial">◐ partial</span>
+              }
+              @if (node.outstandingDebt > 0) {
+                <a class="ea-chip mission__debt" routerLink="/backlog">
+                  {{ node.outstandingDebt }} to review
+                </a>
               }
               @if (node.bestXp !== null) {
                 <span class="ea-chip">best {{ node.bestXp }} XP</span>
