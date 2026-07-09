@@ -11,16 +11,25 @@ import {
 import { MissionDefinition } from '@academy/content-model';
 import { CampaignEmblemComponent } from './campaign-emblem.component';
 
+/** How one challenge (stage) in a mission ended up. */
+type StageResult = 'clean' | 'remediated' | 'open';
+
+/** Completion quality of a finished mission. */
+type MissionStatus = 'perfect' | 'remediated' | 'partial';
+
 interface MissionNode {
   mission: MissionDefinition;
   index: number;
   unlocked: boolean;
   completed: boolean;
-  perfect: boolean;
-  /** Completed, but not every first decision was correct — debt was filed. */
-  partial: boolean;
-  /** Debt from this mission still awaiting remediation (open/reopened/in-review). */
+  /** Null until the mission is completed; otherwise its completion quality. */
+  status: MissionStatus | null;
+  /** Per-stage results, in challenge order. */
+  stages: StageResult[];
+  /** Stages still awaiting remediation (open debt). */
   outstandingDebt: number;
+  /** e.g. "3 stages · 2 first-try · 1 remediated". */
+  stageSummary: string;
   bestXp: number | null;
 }
 
@@ -49,24 +58,56 @@ export class CampaignDetailComponent {
     if (!campaign) {
       return [];
     }
+    const progress = this.gameState.challengeProgress();
     const debt = this.gameState.technicalDebtItems();
     return this.content.missionsForCampaign(campaign.id).map((mission, index) => {
       const record = this.gameState.missionRecord(mission.id);
       const completed = record !== undefined;
-      const perfect = record?.perfect ?? false;
+
+      // Per-stage results come from each challenge's persisted progress. Older
+      // saves completed before the Review Loop have no progress rows, so only
+      // trust the breakdown when every stage is accounted for; otherwise fall
+      // back to the record's perfect flag.
+      const perStage = mission.challenges.map((challenge) => {
+        const p = progress.find((entry) => entry.challengeId === challenge.id);
+        if (!p) {
+          return null;
+        }
+        if (p.firstAttemptCorrect) {
+          return 'clean' as StageResult;
+        }
+        return (p.isRemediated ? 'remediated' : 'open') as StageResult;
+      });
+      const haveAllStages =
+        completed && perStage.every((s): s is StageResult => s !== null);
+      const stages: StageResult[] = haveAllStages ? (perStage as StageResult[]) : [];
+
       const outstandingDebt = debt.filter(
         (item) =>
           item.missionId === mission.id &&
           (item.status === 'open' || item.status === 'reopened' || item.status === 'in-review')
       ).length;
+
+      let status: MissionStatus | null = null;
+      if (completed) {
+        if (haveAllStages) {
+          const open = stages.filter((s) => s === 'open').length;
+          const remediated = stages.filter((s) => s === 'remediated').length;
+          status = open > 0 ? 'partial' : remediated > 0 ? 'remediated' : 'perfect';
+        } else {
+          status = record?.perfect ? 'perfect' : 'partial';
+        }
+      }
+
       return {
         mission,
         index,
         unlocked: this.gameState.isMissionUnlocked(campaign, mission.id),
         completed,
-        perfect,
-        partial: completed && !perfect,
+        status,
+        stages,
         outstandingDebt,
+        stageSummary: summariseStages(stages),
         bestXp: record?.bestXp ?? null,
       };
     });
@@ -97,4 +138,25 @@ export class CampaignDetailComponent {
       ? (this.content.campaignById(campaign.requiredCampaignId)?.title ?? null)
       : null;
   });
+}
+
+/** "3 stages · 2 first-try · 1 remediated · 1 to review" — zero parts dropped. */
+function summariseStages(stages: StageResult[]): string {
+  if (stages.length === 0) {
+    return '';
+  }
+  const clean = stages.filter((s) => s === 'clean').length;
+  const remediated = stages.filter((s) => s === 'remediated').length;
+  const open = stages.filter((s) => s === 'open').length;
+  const parts = [`${stages.length} stage${stages.length === 1 ? '' : 's'}`];
+  if (clean) {
+    parts.push(`${clean} first-try`);
+  }
+  if (remediated) {
+    parts.push(`${remediated} remediated`);
+  }
+  if (open) {
+    parts.push(`${open} to review`);
+  }
+  return parts.join(' · ');
 }

@@ -77,25 +77,30 @@
           [style.animation-delay]="i * 45 + 'ms'"
           [class.mission--locked]="!node.unlocked"
           [class.mission--complete]="node.completed"
-          [class.mission--partial]="node.partial"
+          [attr.data-status]="node.status"
           [class.mission--boss]="node.mission.difficulty === 'boss'"
         >
           <div class="mission__index" aria-hidden="true">
-            @if (node.completed) {
-              {{ node.perfect ? '✓' : '◐' }}
-            } @else if (node.unlocked) {
-              {{ node.index + 1 }}
-            } @else {
-              🔒
+            @switch (node.status) {
+              @case ('perfect') { ✓ }
+              @case ('remediated') { ✓ }
+              @case ('partial') { ◐ }
+              @default { {{ node.unlocked ? node.index + 1 : '🔒' }} }
             }
           </div>
           <div class="mission__body">
             <div class="mission__meta">
               <span class="ea-chip">{{ node.mission.difficulty }}</span>
-              @if (node.perfect) {
-                <span class="ea-chip mission__perfect">★ perfect</span>
-              } @else if (node.partial) {
-                <span class="ea-chip mission__partial">◐ partial</span>
+              @switch (node.status) {
+                @case ('perfect') {
+                  <span class="ea-chip mission__perfect">★ perfect</span>
+                }
+                @case ('remediated') {
+                  <span class="ea-chip mission__remediated">✓ remediated</span>
+                }
+                @case ('partial') {
+                  <span class="ea-chip mission__partial">◐ partial</span>
+                }
               }
               @if (node.outstandingDebt > 0) {
                 <a class="ea-chip mission__debt" routerLink="/backlog">
@@ -108,6 +113,16 @@
             </div>
             <h2 class="mission__title">{{ node.mission.title }}</h2>
             <p class="mission__summary">{{ node.mission.summary }}</p>
+            @if (node.stages.length > 0) {
+              <div class="mission__stages">
+                <div class="mission__stage-pips" [attr.aria-label]="node.stageSummary">
+                  @for (stage of node.stages; track $index) {
+                    <span class="mission__stage" [attr.data-result]="stage" [title]="stage"></span>
+                  }
+                </div>
+                <span class="mission__stage-summary">{{ node.stageSummary }}</span>
+              </div>
+            }
           </div>
           <div class="mission__action">
             @if (node.unlocked) {
