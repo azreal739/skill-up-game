@@ -34,7 +34,7 @@ const COLLAPSE_LINES = 14;
         @if (artefact.language) {
           <span class="artefact__lang">{{ artefact.language }}</span>
         }
-        @if (isLong) {
+        @if (canExpand) {
           <button
             #expandBtn
             type="button"
@@ -140,6 +140,15 @@ export class CodeViewerComponent implements OnChanges {
 
   get isLong(): boolean {
     return this.lineCount > COLLAPSE_LINES;
+  }
+
+  /**
+   * Any multi-line artefact can be opened in the reader modal — not just the
+   * long ones that collapse. A single-line snippet is already fully readable
+   * inline, so it keeps a clean header.
+   */
+  get canExpand(): boolean {
+    return this.lineCount > 1;
   }
 
   get showLineNumbers(): boolean {
