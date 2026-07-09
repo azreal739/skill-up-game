@@ -60,6 +60,13 @@
     @if (challenge(); as challenge) {
       <section class="review__replay ea-panel">
         <h2>Replay the decision</h2>
+        @if (contextArtefacts().length > 0) {
+          <div class="review__context-artefacts">
+            @for (artefact of contextArtefacts(); track artefact.id) {
+              <ea-code-viewer [artefact]="artefact" />
+            }
+          </div>
+        }
         <ea-challenge-host
           [challenge]="challenge"
           [evaluation]="evaluation()"
