@@ -10,6 +10,7 @@ import {
   GameStateService,
 } from '@academy/data-access';
 import { ChallengeHostComponent } from '@academy/challenges';
+import { CodeViewerComponent } from '@academy/ui';
 import { NoteComposerComponent } from '../../shared/note-composer/note-composer.component';
 
 /**
@@ -20,7 +21,7 @@ import { NoteComposerComponent } from '../../shared/note-composer/note-composer.
 @Component({
   selector: 'ea-review',
   standalone: true,
-  imports: [RouterLink, ChallengeHostComponent, NoteComposerComponent],
+  imports: [RouterLink, ChallengeHostComponent, CodeViewerComponent, NoteComposerComponent],
   templateUrl: './review.component.html',
   styleUrls: ['./review.component.scss'],
 })
@@ -48,6 +49,9 @@ export class ReviewComponent {
     const item = this.item();
     return item ? (this.content.missionById(item.missionId) ?? null) : null;
   });
+
+  /** Shared mission context the challenge references — shown so the replay is answerable. */
+  protected readonly contextArtefacts = computed(() => this.mission()?.contextArtefacts ?? []);
 
   protected readonly campaign = computed(() => {
     const item = this.item();
