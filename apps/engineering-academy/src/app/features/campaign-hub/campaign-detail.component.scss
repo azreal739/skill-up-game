@@ -133,13 +133,19 @@
   font-family: var(--ea-mono);
   color: var(--ea-accent);
 
-  .mission--complete & {
+  // Marker colour reflects completion quality.
+  .mission[data-status='perfect'] & {
     color: var(--ea-success);
     border-color: rgba(52, 211, 153, 0.5);
   }
 
+  .mission[data-status='remediated'] & {
+    color: var(--ea-accent);
+    border-color: rgba(34, 211, 238, 0.5);
+  }
+
   // Partial completions read amber, not the "all clear" green.
-  .mission--partial & {
+  .mission[data-status='partial'] & {
     color: var(--ea-warn);
     border-color: rgba(251, 191, 36, 0.5);
   }
@@ -167,6 +173,11 @@
   border-color: rgba(251, 191, 36, 0.5);
 }
 
+.mission__remediated {
+  color: var(--ea-accent);
+  border-color: rgba(34, 211, 238, 0.5);
+}
+
 .mission__debt {
   color: var(--ea-orange);
   border-color: rgba(251, 146, 60, 0.5);
@@ -189,6 +200,46 @@
   color: var(--ea-muted);
   font-size: 0.86rem;
   line-height: 1.55;
+}
+
+.mission__stages {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.mission__stage-pips {
+  display: inline-flex;
+  gap: 0.3rem;
+}
+
+.mission__stage {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  border: 1px solid var(--ea-border);
+
+  &[data-result='clean'] {
+    background: var(--ea-success);
+    border-color: transparent;
+  }
+  &[data-result='remediated'] {
+    background: var(--ea-accent);
+    border-color: transparent;
+  }
+  &[data-result='open'] {
+    background: var(--ea-warn);
+    border-color: transparent;
+  }
+}
+
+.mission__stage-summary {
+  font-family: var(--ea-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--ea-muted);
 }
 
 .mission__action {
