@@ -22,46 +22,98 @@
       }
     </header>
 
-    @if (learning().firstAttempt.total > 0) {
-      <section class="detail__learning ea-panel">
-        <h2>Campaign mastery</h2>
-        <dl class="detail__mastery">
-          <div>
-            <dt>First attempt</dt>
-            <dd>{{ learning().firstAttempt.ratio | percent }}</dd>
+    <section class="detail__status ea-panel">
+      <h2>Campaign status</h2>
+
+      <!-- Campaign progress tracker -->
+      <div class="detail__block">
+        <div class="detail__block-head">
+          <span class="detail__section-label">Campaign progress</span>
+          <strong>{{ progress().done }} / {{ progress().total }} missions</strong>
+        </div>
+        <div
+          class="detail__progress-bar"
+          role="progressbar"
+          aria-label="Campaign progress"
+          [attr.aria-valuenow]="(progress().ratio * 100).toFixed(0)"
+          aria-valuemin="0"
+          aria-valuemax="100"
+        >
+          <div class="detail__progress-fill" [style.width.%]="progress().ratio * 100"></div>
+        </div>
+      </div>
+
+      <!-- Platform meters — the heartbeat of the run -->
+      <div class="detail__block">
+        <div class="detail__block-head">
+          <span class="detail__section-label">Platform health</span>
+          <span class="detail__info" tabindex="0" role="button" aria-label="What the platform meters mean">
+            <span class="detail__info-glyph" aria-hidden="true">i</span>
+            <span class="detail__info-tip" role="tooltip">
+              Stability and Technical Debt are the live state of the platform you are protecting.
+              The ambient background reacts to them — a stable, low-debt platform runs calm; instability
+              and debt make the telemetry churn.
+            </span>
+          </span>
+        </div>
+        <div class="detail__meters">
+          <ea-meter label="Stability" [value]="meters().stability" [health]="stabilityHealth()" />
+          <ea-meter label="Tech Debt" [value]="meters().technicalDebt" [health]="debtHealth()" />
+        </div>
+      </div>
+
+      <!-- Your accuracy, separated from platform state -->
+      @if (hasAttempted()) {
+        <div class="detail__block">
+          <span class="detail__section-label">Your accuracy</span>
+          <div class="detail__stat-grid">
+            <div class="detail__stat">
+              <span class="detail__stat-label">First attempt</span>
+              <span class="detail__stat-value">{{ learning().firstAttempt.ratio | percent }}</span>
+              <span class="detail__stat-sub">
+                {{ learning().firstAttempt.correct }} / {{ learning().firstAttempt.total }} first decisions
+              </span>
+            </div>
+            <div class="detail__stat">
+              <span class="detail__stat-label">After review</span>
+              <span class="detail__stat-value detail__stat-value--after">{{ learning().afterReview.ratio | percent }}</span>
+              <span class="detail__stat-sub">once remediations count</span>
+            </div>
+            <div class="detail__stat">
+              <span class="detail__stat-label">Open debt</span>
+              <span class="detail__stat-value">{{ learning().openDebt }}</span>
+            </div>
+            <div class="detail__stat">
+              <span class="detail__stat-label">Remediated</span>
+              <span class="detail__stat-value">{{ learning().remediatedDebt }}</span>
+            </div>
           </div>
-          <div>
-            <dt>After review</dt>
-            <dd class="detail__mastery--after">{{ learning().afterReview.ratio | percent }}</dd>
-          </div>
-          <div>
-            <dt>Open debt</dt>
-            <dd>{{ learning().openDebt }}</dd>
-          </div>
-          <div>
-            <dt>Remediated</dt>
-            <dd>{{ learning().remediatedDebt }}</dd>
-          </div>
-        </dl>
+        </div>
+
         @if (learning().strongestConcepts.length > 0) {
           <p class="detail__concepts">
-            <span class="detail__concepts-label detail__concepts-label--good">Strongest</span>
+            <span class="detail__concepts-label detail__concepts-label--good">✓ Strengths</span>
             @for (tag of learning().strongestConcepts; track tag) {
               <span class="ea-chip">{{ tag }}</span>
             }
           </p>
         }
+
         @if (learning().weakestConcepts.length > 0) {
-          <p class="detail__concepts">
-            <span class="detail__concepts-label detail__concepts-label--review">Needs review</span>
-            @for (tag of learning().weakestConcepts; track tag) {
-              <span class="ea-chip">{{ tag }}</span>
-            }
-            <a class="detail__review-link" routerLink="/backlog">Open backlog →</a>
-          </p>
+          <div class="detail__focus">
+            <p class="detail__focus-head">
+              <span aria-hidden="true">🎯</span> Focus areas
+              <span class="detail__focus-sub">concepts you slipped on — review them to level up</span>
+            </p>
+            <div class="detail__focus-tags">
+              @for (tag of learning().weakestConcepts; track tag) {
+                <a class="ea-chip detail__focus-tag" routerLink="/backlog">{{ tag }}</a>
+              }
+            </div>
+          </div>
         }
-      </section>
-    }
+      }
+    </section>
 
     @if (locked()) {
       <div class="ea-panel detail__locked">

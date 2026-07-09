@@ -8,7 +8,8 @@ import {
   GameStateService,
   LearningAnalyticsService,
 } from '@academy/data-access';
-import { MissionDefinition } from '@academy/content-model';
+import { MissionDefinition, debtHealth, stabilityHealth } from '@academy/content-model';
+import { MeterComponent } from '@academy/ui';
 import { CampaignEmblemComponent } from './campaign-emblem.component';
 
 /** How one challenge (stage) in a mission ended up. */
@@ -42,7 +43,7 @@ interface MissionNode {
 @Component({
   selector: 'ea-campaign-detail',
   standalone: true,
-  imports: [RouterLink, PercentPipe, CampaignEmblemComponent],
+  imports: [RouterLink, PercentPipe, MeterComponent, CampaignEmblemComponent],
   templateUrl: './campaign-detail.component.html',
   styleUrls: ['./campaign-detail.component.scss'],
 })
@@ -149,6 +150,24 @@ export class CampaignDetailComponent {
 
   /** First-attempt vs after-review learning stats for this campaign (spec 07). */
   protected readonly learning = computed(() => this.analytics.campaignLearning(this.campaignId()));
+
+  /** Whether the player has attempted anything in this campaign yet. */
+  protected readonly hasAttempted = computed(() => this.learning().firstAttempt.total > 0);
+
+  /** Campaign completion: how many of its missions are done, and the ratio. */
+  protected readonly progress = computed(() => {
+    const campaign = this.campaign();
+    if (!campaign) {
+      return { done: 0, total: 0, ratio: 0 };
+    }
+    const done = campaign.missions.filter((id) => this.gameState.isMissionCompleted(id)).length;
+    return { done, total: campaign.missions.length, ratio: this.gameState.campaignProgress(campaign) };
+  });
+
+  // Live platform meters (03_GAMEPLAY_SYSTEMS.md) — the heartbeat of the run.
+  protected readonly meters = computed(() => this.gameState.meters());
+  protected readonly stabilityHealth = computed(() => stabilityHealth(this.meters().stability));
+  protected readonly debtHealth = computed(() => debtHealth(this.meters().technicalDebt));
 
   protected readonly locked = computed(() => {
     const campaign = this.campaign();
