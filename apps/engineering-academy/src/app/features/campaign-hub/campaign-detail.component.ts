@@ -12,23 +12,29 @@ import { MissionDefinition } from '@academy/content-model';
 import { CampaignEmblemComponent } from './campaign-emblem.component';
 
 /** How one challenge (stage) in a mission ended up. */
-type StageResult = 'clean' | 'remediated' | 'open';
+type StageResult = 'clean' | 'remediated' | 'open' | 'not-started';
 
 /** Completion quality of a finished mission. */
 type MissionStatus = 'perfect' | 'remediated' | 'partial';
+
+/** Where the player is with a mission overall. */
+type MissionState = 'completed' | 'in-progress' | 'available' | 'locked';
 
 interface MissionNode {
   mission: MissionDefinition;
   index: number;
   unlocked: boolean;
   completed: boolean;
+  state: MissionState;
+  /** Call-to-action label: Replay / Resume / Start. */
+  actionLabel: string;
   /** Null until the mission is completed; otherwise its completion quality. */
   status: MissionStatus | null;
-  /** Per-stage results, in challenge order. */
+  /** Per-stage results, in challenge order (empty for locked / legacy). */
   stages: StageResult[];
   /** Stages still awaiting remediation (open debt). */
   outstandingDebt: number;
-  /** e.g. "3 stages · 2 first-try · 1 remediated". */
+  /** e.g. "3 stages · 2 first-try · 1 remediated" or "1 / 2 stages". */
   stageSummary: string;
   bestXp: number | null;
 }
@@ -63,24 +69,38 @@ export class CampaignDetailComponent {
     return this.content.missionsForCampaign(campaign.id).map((mission, index) => {
       const record = this.gameState.missionRecord(mission.id);
       const completed = record !== undefined;
+      const unlocked = this.gameState.isMissionUnlocked(campaign, mission.id);
 
-      // Per-stage results come from each challenge's persisted progress. Older
-      // saves completed before the Review Loop have no progress rows, so only
-      // trust the breakdown when every stage is accounted for; otherwise fall
-      // back to the record's perfect flag.
-      const perStage = mission.challenges.map((challenge) => {
+      // Per-stage results from each challenge's persisted progress; a challenge
+      // with no progress row yet is 'not-started' (a grey dot).
+      const perStage: StageResult[] = mission.challenges.map((challenge) => {
         const p = progress.find((entry) => entry.challengeId === challenge.id);
         if (!p) {
-          return null;
+          return 'not-started';
         }
         if (p.firstAttemptCorrect) {
-          return 'clean' as StageResult;
+          return 'clean';
         }
-        return (p.isRemediated ? 'remediated' : 'open') as StageResult;
+        return p.isRemediated ? 'remediated' : 'open';
       });
-      const haveAllStages =
-        completed && perStage.every((s): s is StageResult => s !== null);
-      const stages: StageResult[] = haveAllStages ? (perStage as StageResult[]) : [];
+      const attempted = perStage.filter((s) => s !== 'not-started').length;
+      // Older saves completed before the Review Loop have no progress rows, so
+      // only trust a completed breakdown when every stage is accounted for.
+      const haveAllStages = completed && attempted === mission.challenges.length;
+
+      const state: MissionState = completed
+        ? 'completed'
+        : !unlocked
+          ? 'locked'
+          : attempted > 0
+            ? 'in-progress'
+            : 'available';
+
+      // Stages to render as dots: results for a fully-tracked completion, the
+      // in-progress mix, all grey for an untouched available mission, none for
+      // locked or legacy completions.
+      const stages: StageResult[] =
+        state === 'locked' || (state === 'completed' && !haveAllStages) ? [] : perStage;
 
       const outstandingDebt = debt.filter(
         (item) =>
@@ -91,8 +111,8 @@ export class CampaignDetailComponent {
       let status: MissionStatus | null = null;
       if (completed) {
         if (haveAllStages) {
-          const open = stages.filter((s) => s === 'open').length;
-          const remediated = stages.filter((s) => s === 'remediated').length;
+          const open = perStage.filter((s) => s === 'open').length;
+          const remediated = perStage.filter((s) => s === 'remediated').length;
           status = open > 0 ? 'partial' : remediated > 0 ? 'remediated' : 'perfect';
         } else {
           status = record?.perfect ? 'perfect' : 'partial';
@@ -102,12 +122,21 @@ export class CampaignDetailComponent {
       return {
         mission,
         index,
-        unlocked: this.gameState.isMissionUnlocked(campaign, mission.id),
+        unlocked,
         completed,
+        state,
+        actionLabel: ACTION_LABELS[state],
         status,
         stages,
         outstandingDebt,
-        stageSummary: summariseStages(stages),
+        stageSummary:
+          state === 'completed'
+            ? haveAllStages
+              ? summariseStages(perStage)
+              : ''
+            : state === 'locked'
+              ? ''
+              : `${attempted} / ${mission.challenges.length} stage${mission.challenges.length === 1 ? '' : 's'}`,
         bestXp: record?.bestXp ?? null,
       };
     });
@@ -139,6 +168,13 @@ export class CampaignDetailComponent {
       : null;
   });
 }
+
+const ACTION_LABELS: Record<MissionState, string> = {
+  completed: 'Replay',
+  'in-progress': 'Resume',
+  available: 'Start',
+  locked: 'Start',
+};
 
 /** "3 stages · 2 first-try · 1 remediated · 1 to review" — zero parts dropped. */
 function summariseStages(stages: StageResult[]): string {

@@ -3,6 +3,18 @@
   gap: 1.2rem;
 }
 
+.player__back {
+  justify-self: start;
+  text-decoration: none;
+  font-size: 0.85rem;
+  color: var(--ea-muted);
+
+  &:hover,
+  &:focus-visible {
+    color: var(--ea-accent);
+  }
+}
+
 /* ---- Briefing ---- */
 
 .briefing {
