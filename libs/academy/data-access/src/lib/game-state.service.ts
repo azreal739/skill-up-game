@@ -86,11 +86,21 @@ export interface ReviewOutcomeInput {
 export interface ReviewOutcomeResult {
   attempt: ChallengeAttempt;
   remediated: boolean;
-  /** XP actually credited (0 for a miss or an already-remediated item). */
+  /** Remediation XP credited for this attempt (0 for a miss or a repeat). */
   xpAwarded: number;
+  /** One-time milestone bonus for clearing a mission's / campaign's debt. */
+  bonusXp: number;
+  /** Achievement badges newly unlocked by this review. */
+  newBadges: string[];
   rankBefore: Rank;
   rankAfter: Rank;
 }
+
+/** One-time XP bonuses for clearing all debt in a mission / campaign (spec 08). */
+const MISSION_REMEDIATION_BONUS = 20;
+const CAMPAIGN_REMEDIATION_BONUS = 75;
+/** Remediations needed for the Review Champion achievement. */
+const REVIEW_CHAMPION_THRESHOLD = 10;
 
 /** The fields a player supplies when writing a note (Review Loop spec 06). */
 export interface NoteInput {
@@ -481,17 +491,57 @@ export class GameStateService {
       };
     });
 
+    // Remediation milestones (spec 08): clearing the last open debt for a
+    // mission or campaign earns a one-time bonus + achievement. Gated on the
+    // badge so reopening and re-remediating can't farm the bonus.
+    let bonusXp = 0;
+    const newBadges: string[] = [];
+    const earn = (id: string) => {
+      if (!state.badges.includes(id) && !newBadges.includes(id)) {
+        newBadges.push(id);
+      }
+    };
+    if (input.isCorrect) {
+      const remediatedCount = technicalDebtItems.filter((i) => i.status === 'remediated').length;
+      if (
+        allDebtRemediated(technicalDebtItems, (i) => i.missionId === input.missionId) &&
+        !state.badges.includes('lesson-learned')
+      ) {
+        earn('lesson-learned');
+        bonusXp += MISSION_REMEDIATION_BONUS;
+      }
+      if (
+        allDebtRemediated(technicalDebtItems, (i) => i.campaignId === input.campaignId) &&
+        !state.badges.includes('debt-destroyer')
+      ) {
+        earn('debt-destroyer');
+        bonusXp += CAMPAIGN_REMEDIATION_BONUS;
+      }
+      if (remediatedCount >= REVIEW_CHAMPION_THRESHOLD) {
+        earn('review-champion');
+      }
+    }
+
     const rankBefore = rankForXp(state.xp);
-    const nextXp = state.xp + xpAwarded;
+    const nextXp = state.xp + xpAwarded + bonusXp;
     this.commit({
       ...state,
       xp: nextXp,
+      badges: [...state.badges, ...newBadges],
       challengeAttempts: [...state.challengeAttempts, attempt],
       challengeProgress,
       technicalDebtItems,
     });
 
-    return { attempt, remediated: input.isCorrect, xpAwarded, rankBefore, rankAfter: rankForXp(nextXp) };
+    return {
+      attempt,
+      remediated: input.isCorrect,
+      xpAwarded,
+      bonusXp,
+      newBadges,
+      rankBefore,
+      rankAfter: rankForXp(nextXp),
+    };
   }
 
   /** Notes attached to a given entity, newest first (Review Loop spec 06). */
@@ -583,6 +633,19 @@ export class GameStateService {
     this.stateSignal.set(state);
     this.persistence.save(state);
   }
+}
+
+/**
+ * True when a scope (mission or campaign, chosen by `inScope`) has at least one
+ * debt item and every item in that scope is remediated — i.e. the last one was
+ * just cleared.
+ */
+function allDebtRemediated(
+  items: TechnicalDebtItem[],
+  inScope: (item: TechnicalDebtItem) => boolean
+): boolean {
+  const scoped = items.filter(inScope);
+  return scoped.length > 0 && scoped.every((item) => item.status === 'remediated');
 }
 
 /** Adds a note's id to its linked Technical Debt item, if it links to one. */

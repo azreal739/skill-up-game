@@ -40,7 +40,9 @@ describe('AcademyReviewService', () => {
     expect(first?.remediated).toBeTrue();
     expect(first?.status).toBe('remediated');
     expect(first?.xpAwarded).toBeGreaterThan(0);
-    expect(gameState.xp()).toBe(xpBefore + (first?.xpAwarded ?? 0));
+    // Credited XP is the remediation XP plus any milestone bonus for clearing
+    // the last debt (this is the only item, so both bonuses fire).
+    expect(gameState.xp()).toBe(xpBefore + (first?.xpAwarded ?? 0) + (first?.bonusXp ?? 0));
     expect(gameState.openDebtCount()).toBe(0);
 
     // Progress records the remediation but the first attempt stays incorrect.
@@ -48,10 +50,11 @@ describe('AcademyReviewService', () => {
     expect(progress?.isRemediated).toBeTrue();
     expect(progress?.firstAttemptCorrect).toBeFalse();
 
-    // Reviewing again grants no further XP.
+    // Reviewing again grants no further XP (remediation or bonus).
     const xpAfter = gameState.xp();
     const second = review.review(debtId, ['a']);
     expect(second?.xpAwarded).toBe(0);
+    expect(second?.bonusXp).toBe(0);
     expect(gameState.xp()).toBe(xpAfter);
   });
 
@@ -83,5 +86,31 @@ describe('AcademyReviewService', () => {
     const firstAttempt = attempts.find((a) => a.mode === 'mission');
     expect(firstAttempt?.isCorrect).toBeFalse();
     expect(attempts.some((a) => a.mode === 'review' && a.isCorrect)).toBeTrue();
+  });
+
+  it('awards milestone bonuses and achievements when the last debt is cleared', () => {
+    // This is the only debt in the mission (and campaign), so clearing it
+    // completes both scopes at once (Review Loop spec 08).
+    const debtId = fileDebtByMissing();
+    const xpBefore = gameState.xp();
+
+    const result = review.review(debtId, ['a']); // correct
+    expect(result?.newBadges).toContain('lesson-learned');
+    expect(result?.newBadges).toContain('debt-destroyer');
+    expect(result?.newBadges).not.toContain('review-champion'); // needs 10
+    expect(result?.bonusXp).toBe(20 + 75);
+    expect(gameState.badges()).toContain('lesson-learned');
+    expect(gameState.xp()).toBe(xpBefore + (result?.xpAwarded ?? 0) + (result?.bonusXp ?? 0));
+  });
+
+  it('does not re-award milestone bonuses on a repeat review', () => {
+    const debtId = fileDebtByMissing();
+    review.review(debtId, ['a']); // first remediation → bonuses
+    const xpAfter = gameState.xp();
+
+    const again = review.review(debtId, ['a']); // already remediated
+    expect(again?.bonusXp).toBe(0);
+    expect(again?.newBadges).toEqual([]);
+    expect(gameState.xp()).toBe(xpAfter);
   });
 });

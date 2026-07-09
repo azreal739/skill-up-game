@@ -44,6 +44,25 @@ describe('MissionSessionService', () => {
     expect(gameState.isMissionCompleted(mission.id)).toBeTrue();
   });
 
+  it('awards the First Attempt Hero achievement for a flawless mission', () => {
+    session.start(mission);
+    session.beginChallenges();
+    session.submit(['a']); // correct first try
+    session.advance();
+
+    expect(session.result()?.completion.newBadges).toContain('first-attempt-hero');
+    expect(gameState.badges()).toContain('first-attempt-hero');
+  });
+
+  it('does not award First Attempt Hero when a decision was missed', () => {
+    session.start(mission);
+    session.beginChallenges();
+    session.submit(['b']); // wrong
+    session.advance();
+
+    expect(gameState.badges()).not.toContain('first-attempt-hero');
+  });
+
   it('locks the first attempt: a wrong answer files debt and cannot be retried', () => {
     session.start(mission);
     session.beginChallenges();

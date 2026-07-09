@@ -2,7 +2,7 @@ import { Component, computed, effect, inject, signal, untracked } from '@angular
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
-import { EvaluationResult, HelpTopic } from '@academy/content-model';
+import { EvaluationResult, HelpTopic, badgeById } from '@academy/content-model';
 import {
   AcademyReviewService,
   AudioService,
@@ -67,6 +67,8 @@ export class ReviewComponent {
   protected readonly evaluation = signal<EvaluationResult | null>(null);
   protected readonly remediated = signal(false);
   protected readonly xpAwarded = signal(0);
+  protected readonly bonusXp = signal(0);
+  protected readonly newBadges = signal<string[]>([]);
   protected readonly openHelpTopic = signal<HelpTopic | null>(null);
   protected readonly noteOpen = signal(false);
 
@@ -77,6 +79,10 @@ export class ReviewComponent {
   toggleNote(): void {
     this.audio.play('click');
     this.noteOpen.update((open) => !open);
+  }
+
+  protected badgeFor(id: string) {
+    return badgeById(id);
   }
 
   constructor() {
@@ -114,7 +120,12 @@ export class ReviewComponent {
     this.evaluation.set(result.evaluation);
     this.remediated.set(result.remediated);
     this.xpAwarded.set(result.xpAwarded);
+    this.bonusXp.set(result.bonusXp);
+    this.newBadges.set(result.newBadges);
     this.audio.play(result.remediated ? 'correct' : 'incorrect');
+    if (result.newBadges.length > 0) {
+      this.audio.play('badge');
+    }
   }
 
   tryReviewAgain(): void {

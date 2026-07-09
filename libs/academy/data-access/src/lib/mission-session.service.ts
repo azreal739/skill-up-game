@@ -209,6 +209,12 @@ export class MissionSessionService {
       .filter((reward) => reward.type === 'badge' && reward.id)
       .map((reward) => reward.id as string);
 
+    // Clearing a mission with every first decision correct is a mastery
+    // achievement (Review Loop spec 08).
+    if (outcome === 'perfect') {
+      badgeIds.push('first-attempt-hero');
+    }
+
     const completion = this.gameState.completeMission(
       {
         missionId: mission.id,

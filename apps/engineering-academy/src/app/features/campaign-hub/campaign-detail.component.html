@@ -22,6 +22,47 @@
       }
     </header>
 
+    @if (learning().firstAttempt.total > 0) {
+      <section class="detail__learning ea-panel">
+        <h2>Campaign mastery</h2>
+        <dl class="detail__mastery">
+          <div>
+            <dt>First attempt</dt>
+            <dd>{{ learning().firstAttempt.ratio | percent }}</dd>
+          </div>
+          <div>
+            <dt>After review</dt>
+            <dd class="detail__mastery--after">{{ learning().afterReview.ratio | percent }}</dd>
+          </div>
+          <div>
+            <dt>Open debt</dt>
+            <dd>{{ learning().openDebt }}</dd>
+          </div>
+          <div>
+            <dt>Remediated</dt>
+            <dd>{{ learning().remediatedDebt }}</dd>
+          </div>
+        </dl>
+        @if (learning().strongestConcepts.length > 0) {
+          <p class="detail__concepts">
+            <span class="detail__concepts-label detail__concepts-label--good">Strongest</span>
+            @for (tag of learning().strongestConcepts; track tag) {
+              <span class="ea-chip">{{ tag }}</span>
+            }
+          </p>
+        }
+        @if (learning().weakestConcepts.length > 0) {
+          <p class="detail__concepts">
+            <span class="detail__concepts-label detail__concepts-label--review">Needs review</span>
+            @for (tag of learning().weakestConcepts; track tag) {
+              <span class="ea-chip">{{ tag }}</span>
+            }
+            <a class="detail__review-link" routerLink="/backlog">Open backlog →</a>
+          </p>
+        }
+      </section>
+    }
+
     @if (locked()) {
       <div class="ea-panel detail__locked">
         <h2>🔒 Campaign locked</h2>
