@@ -137,6 +137,12 @@
     color: var(--ea-success);
     border-color: rgba(52, 211, 153, 0.5);
   }
+
+  // Partial completions read amber, not the "all clear" green.
+  .mission--partial & {
+    color: var(--ea-warn);
+    border-color: rgba(251, 191, 36, 0.5);
+  }
 }
 
 .mission__body {
@@ -154,6 +160,25 @@
 .mission__perfect {
   color: var(--ea-warn);
   border-color: rgba(251, 191, 36, 0.5);
+}
+
+.mission__partial {
+  color: var(--ea-warn);
+  border-color: rgba(251, 191, 36, 0.5);
+}
+
+.mission__debt {
+  color: var(--ea-orange);
+  border-color: rgba(251, 146, 60, 0.5);
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--ea-orange);
+    background: rgba(251, 146, 60, 0.1);
+  }
 }
 
 .mission__title {

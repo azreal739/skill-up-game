@@ -17,6 +17,10 @@ interface MissionNode {
   unlocked: boolean;
   completed: boolean;
   perfect: boolean;
+  /** Completed, but not every first decision was correct — debt was filed. */
+  partial: boolean;
+  /** Debt from this mission still awaiting remediation (open/reopened/in-review). */
+  outstandingDebt: number;
   bestXp: number | null;
 }
 
@@ -45,14 +49,24 @@ export class CampaignDetailComponent {
     if (!campaign) {
       return [];
     }
+    const debt = this.gameState.technicalDebtItems();
     return this.content.missionsForCampaign(campaign.id).map((mission, index) => {
       const record = this.gameState.missionRecord(mission.id);
+      const completed = record !== undefined;
+      const perfect = record?.perfect ?? false;
+      const outstandingDebt = debt.filter(
+        (item) =>
+          item.missionId === mission.id &&
+          (item.status === 'open' || item.status === 'reopened' || item.status === 'in-review')
+      ).length;
       return {
         mission,
         index,
         unlocked: this.gameState.isMissionUnlocked(campaign, mission.id),
-        completed: record !== undefined,
-        perfect: record?.perfect ?? false,
+        completed,
+        perfect,
+        partial: completed && !perfect,
+        outstandingDebt,
         bestXp: record?.bestXp ?? null,
       };
     });
