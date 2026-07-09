@@ -86,7 +86,26 @@
                 @if (xpAwarded() > 0) {
                   <div><dt>Remediation XP</dt><dd>+{{ xpAwarded() }}</dd></div>
                 }
+                @if (bonusXp() > 0) {
+                  <div><dt>Milestone bonus</dt><dd>+{{ bonusXp() }}</dd></div>
+                }
               </dl>
+
+              @if (newBadges().length > 0) {
+                <div class="review__achievements">
+                  <p class="review__achievements-label">Achievement unlocked</p>
+                  <div class="review__achievement-row">
+                    @for (id of newBadges(); track id) {
+                      @if (badgeFor(id); as badge) {
+                        <span class="review__achievement">
+                          <span class="review__achievement-icon" aria-hidden="true">{{ badge.icon }}</span>
+                          {{ badge.title }}
+                        </span>
+                      }
+                    }
+                  </div>
+                </div>
+              }
               <div class="review__result-actions">
                 <button type="button" class="ea-btn ea-btn--primary" (click)="backToBacklog()">
                   Back to backlog

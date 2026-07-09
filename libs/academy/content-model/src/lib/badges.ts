@@ -76,6 +76,32 @@ export const BADGES: readonly BadgeDefinition[] = [
     description: 'Kept the pipeline green under pressure.',
     icon: '✅',
   },
+  // Programmatic achievements (Review Loop spec 08) — awarded by
+  // GameStateService from play history, not by content rewards.
+  {
+    id: 'first-attempt-hero',
+    title: 'First Attempt Hero',
+    description: 'Cleared a mission with every first decision correct.',
+    icon: '🎯',
+  },
+  {
+    id: 'lesson-learned',
+    title: 'Lesson Learned',
+    description: 'Remediated every Technical Debt item from a mission in Academy Review.',
+    icon: '📘',
+  },
+  {
+    id: 'debt-destroyer',
+    title: 'Debt Destroyer',
+    description: 'Remediated every Technical Debt item across a whole campaign.',
+    icon: '💥',
+  },
+  {
+    id: 'review-champion',
+    title: 'Review Champion',
+    description: 'Remediated ten Technical Debt items in Academy Review.',
+    icon: '🔁',
+  },
 ] as const;
 
 export function badgeById(id: string): BadgeDefinition | undefined {

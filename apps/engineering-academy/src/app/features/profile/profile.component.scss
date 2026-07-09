@@ -153,3 +153,220 @@
   text-transform: uppercase;
   color: var(--ea-accent);
 }
+
+.identity__meta {
+  margin: 0.35rem 0 0;
+  font-size: 0.85rem;
+  color: var(--ea-muted);
+}
+
+.identity__id {
+  font-family: var(--ea-mono);
+  letter-spacing: 0.06em;
+}
+
+/* ---- Learning progress ---- */
+
+.learning__lede {
+  color: var(--ea-muted);
+  margin-bottom: 1.1rem;
+}
+
+.learning__accuracy {
+  display: grid;
+  gap: 1rem 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+}
+
+.learning__meter-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.35rem;
+
+  strong {
+    font-size: 1.15rem;
+  }
+}
+
+.learning__bar {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(148, 163, 255, 0.14);
+  overflow: hidden;
+}
+
+.learning__fill {
+  height: 100%;
+  border-radius: inherit;
+
+  &--first {
+    background: linear-gradient(90deg, var(--ea-accent), var(--ea-accent-2));
+  }
+  &--after {
+    background: linear-gradient(90deg, var(--ea-success), var(--ea-accent));
+  }
+}
+
+.learning__count {
+  display: inline-block;
+  margin-top: 0.35rem;
+  font-size: 0.78rem;
+  color: var(--ea-muted);
+}
+
+.learning__concepts {
+  display: grid;
+  gap: 1rem 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  margin-top: 1.4rem;
+}
+
+.learning__concept-col h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  margin-bottom: 0.6rem;
+}
+
+.learning__concept-count {
+  font-family: var(--ea-mono);
+  font-size: 0.75rem;
+  color: var(--ea-muted);
+}
+
+.learning__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.learning__chip--mastered {
+  color: var(--ea-success);
+  border-color: rgba(52, 211, 153, 0.4);
+}
+
+.learning__chip--review {
+  color: var(--ea-orange);
+  border-color: rgba(251, 146, 60, 0.4);
+}
+
+.learning__empty {
+  font-size: 0.85rem;
+  color: var(--ea-muted);
+}
+
+/* ---- Technical debt summary ---- */
+
+.debt-summary__head,
+.notes-summary__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.debt-summary__counts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+  gap: 0.75rem;
+}
+
+.debt-summary__count {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.75rem;
+  border-radius: 10px;
+  border: 1px solid var(--ea-border);
+  font-size: 0.78rem;
+  color: var(--ea-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+
+  span {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--ea-text);
+  }
+
+  &[data-status='open'] { border-color: rgba(34, 211, 238, 0.35); }
+  &[data-status='in-review'] { border-color: rgba(167, 139, 250, 0.35); }
+  &[data-status='reopened'] { border-color: rgba(251, 146, 60, 0.35); }
+  &[data-status='remediated'] { border-color: rgba(52, 211, 153, 0.35); }
+}
+
+.debt-summary__risk {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: var(--ea-muted);
+}
+
+.debt-summary__queue {
+  margin-top: 1.1rem;
+
+  h3 {
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  li {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: center;
+  }
+}
+
+.debt-summary__queue-status {
+  font-family: var(--ea-mono);
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ea-muted);
+
+  &[data-status='reopened'] { color: var(--ea-orange); }
+  &[data-status='in-review'] { color: var(--ea-accent-2); }
+}
+
+.debt-summary__clear {
+  margin-top: 1rem;
+  color: var(--ea-muted);
+}
+
+/* ---- Notes summary ---- */
+
+.notes-summary__group {
+  margin-bottom: 1rem;
+
+  h3 {
+    font-size: 0.9rem;
+    margin-bottom: 0.4rem;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.3rem;
+  }
+}
+
+.notes-summary__empty {
+  color: var(--ea-muted);
+}

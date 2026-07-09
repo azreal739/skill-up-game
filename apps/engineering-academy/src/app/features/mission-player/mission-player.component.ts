@@ -20,6 +20,7 @@ import {
   AudioService,
   ContentService,
   GameStateService,
+  LearningAnalyticsService,
   MissionSessionService,
 } from '@academy/data-access';
 import {
@@ -57,6 +58,7 @@ export class MissionPlayerComponent implements OnDestroy {
   private readonly content = inject(ContentService);
   private readonly audio = inject(AudioService);
   private readonly waves = inject(WaveStateService);
+  private readonly analytics = inject(LearningAnalyticsService);
   protected readonly session = inject(MissionSessionService);
   protected readonly gameState = inject(GameStateService);
 
@@ -229,6 +231,48 @@ export class MissionPlayerComponent implements OnDestroy {
   protected readonly currentDebtItem = computed(
     () => this.session.currentRun()?.debtItem ?? null
   );
+
+  /** Learning outcomes for the results screen (Review Loop spec 07). */
+  protected readonly missionLearning = computed(() => {
+    const runs = this.session.runs();
+    const firstCorrect = runs.filter((run) => run.firstTryCorrect).length;
+    const debtAdded = runs.filter((run) => run.debtItem).length;
+    return {
+      challenges: runs.length,
+      firstCorrect,
+      incorrect: runs.length - firstCorrect,
+      debtAdded,
+    };
+  });
+
+  /** Concept mastery scoped to this mission's challenges. */
+  protected readonly missionConcepts = computed(() => {
+    const missionId = this.mission()?.id;
+    const progress = this.gameState
+      .challengeProgress()
+      .filter((p) => p.missionId === missionId);
+    return this.analytics.conceptMastery(progress);
+  });
+
+  /** Open/reopened debt still outstanding for this mission's campaign. */
+  protected readonly campaignOpenDebt = computed(() => {
+    const campaignId = this.mission()?.campaignId;
+    return this.gameState
+      .technicalDebtItems()
+      .filter(
+        (item) =>
+          item.campaignId === campaignId &&
+          (item.status === 'open' || item.status === 'reopened')
+      );
+  });
+
+  /** Boss missions nudge the player to clear campaign debt first (spec 07). */
+  protected readonly showBossDebtNudge = computed(
+    () => this.isBoss() && this.campaignOpenDebt().length > 0
+  );
+
+  /** First outstanding debt item, for a one-click "Review now". */
+  protected readonly firstOpenDebtId = computed(() => this.campaignOpenDebt()[0]?.id ?? null);
 
   /** A single Continue that always advances — the first answer is final. */
   continueAfterDecision(): void {

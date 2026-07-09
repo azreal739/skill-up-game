@@ -18,6 +18,10 @@ export interface ReviewResult {
   evaluation: EvaluationResult;
   remediated: boolean;
   xpAwarded: number;
+  /** One-time milestone bonus for clearing a mission's / campaign's debt. */
+  bonusXp: number;
+  /** Achievement badges newly unlocked by this review. */
+  newBadges: string[];
   status: TechnicalDebtStatus;
   rankBefore: Rank;
   rankAfter: Rank;
@@ -78,6 +82,8 @@ export class AcademyReviewService {
       evaluation,
       remediated: outcome.remediated,
       xpAwarded: outcome.xpAwarded,
+      bonusXp: outcome.bonusXp,
+      newBadges: outcome.newBadges,
       status: this.gameState.debtItemById(debtItemId)?.status ?? item.status,
       rankBefore: outcome.rankBefore,
       rankAfter: outcome.rankAfter,

@@ -12,5 +12,6 @@ import '../../../libs/academy/data-access/src/lib/persistence.service.spec';
 import '../../../libs/academy/data-access/src/lib/game-state.service.spec';
 import '../../../libs/academy/data-access/src/lib/mission-session.service.spec';
 import '../../../libs/academy/data-access/src/lib/academy-review.service.spec';
+import '../../../libs/academy/data-access/src/lib/learning-analytics.service.spec';
 import '../../../libs/academy/challenges/src/lib/challenge-host/challenge-host.component.spec';
 import '../../../libs/academy/ui/src/lib/code-viewer/syntax-highlight.spec';

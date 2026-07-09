@@ -2,7 +2,12 @@ import { Component, computed, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
-import { ContentService, GameStateService } from '@academy/data-access';
+import { PercentPipe } from '@angular/common';
+import {
+  ContentService,
+  GameStateService,
+  LearningAnalyticsService,
+} from '@academy/data-access';
 import { MissionDefinition } from '@academy/content-model';
 import { CampaignEmblemComponent } from './campaign-emblem.component';
 
@@ -18,7 +23,7 @@ interface MissionNode {
 @Component({
   selector: 'ea-campaign-detail',
   standalone: true,
-  imports: [RouterLink, CampaignEmblemComponent],
+  imports: [RouterLink, PercentPipe, CampaignEmblemComponent],
   templateUrl: './campaign-detail.component.html',
   styleUrls: ['./campaign-detail.component.scss'],
 })
@@ -26,6 +31,7 @@ export class CampaignDetailComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly content = inject(ContentService);
   private readonly gameState = inject(GameStateService);
+  private readonly analytics = inject(LearningAnalyticsService);
 
   private readonly campaignId = toSignal(
     this.route.paramMap.pipe(map((params) => params.get('campaignId') ?? '')),
@@ -56,6 +62,9 @@ export class CampaignDetailComponent {
     const campaign = this.campaign();
     return campaign ? this.gameState.isCampaignCompleted(campaign) : false;
   });
+
+  /** First-attempt vs after-review learning stats for this campaign (spec 07). */
+  protected readonly learning = computed(() => this.analytics.campaignLearning(this.campaignId()));
 
   protected readonly locked = computed(() => {
     const campaign = this.campaign();

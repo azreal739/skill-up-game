@@ -51,6 +51,21 @@
             </ul>
           </div>
 
+          @if (showBossDebtNudge()) {
+            <div class="boss-nudge" role="note">
+              <p class="boss-nudge__label">⚠ Mission Control</p>
+              <p class="boss-nudge__body">
+                You have {{ campaignOpenDebt().length }} unresolved Technical Debt
+                item{{ campaignOpenDebt().length === 1 ? '' : 's' }} from this campaign. You can
+                continue into the boss mission, but Academy Review is recommended first.
+              </p>
+              <div class="boss-nudge__actions">
+                <a class="ea-btn" routerLink="/backlog">Review first</a>
+                <button type="button" class="ea-btn" (click)="startMission()">Continue anyway</button>
+              </div>
+            </div>
+          }
+
           <div class="briefing__actions">
             <button type="button" class="ea-btn ea-btn--primary" (click)="startMission()">
               {{ isBoss() ? 'Engage' : 'Start Mission' }}
@@ -309,6 +324,32 @@
               </div>
             }
 
+            <div class="results__outcomes">
+              <h2>Learning outcomes</h2>
+              <dl class="results__outcome-grid">
+                <div><dt>Challenges</dt><dd>{{ missionLearning().challenges }}</dd></div>
+                <div><dt>First-attempt correct</dt><dd>{{ missionLearning().firstCorrect }}</dd></div>
+                <div><dt>Incorrect decisions</dt><dd>{{ missionLearning().incorrect }}</dd></div>
+                <div><dt>Technical Debt added</dt><dd>{{ missionLearning().debtAdded }}</dd></div>
+              </dl>
+              @if (missionConcepts().mastered.length > 0) {
+                <p class="results__concepts">
+                  <span class="results__concepts-label results__concepts-label--good">Mastered</span>
+                  @for (tag of missionConcepts().mastered; track tag) {
+                    <span class="ea-chip">{{ tag }}</span>
+                  }
+                </p>
+              }
+              @if (missionConcepts().needingReview.length > 0) {
+                <p class="results__concepts">
+                  <span class="results__concepts-label results__concepts-label--review">Needs review</span>
+                  @for (tag of missionConcepts().needingReview; track tag) {
+                    <span class="ea-chip">{{ tag }}</span>
+                  }
+                </p>
+              }
+            </div>
+
             <div class="results__lessons">
               <h2>What this mission taught</h2>
               <ul>
@@ -333,8 +374,11 @@
               }
               @if (gameState.openDebtCount() > 0) {
                 <a class="ea-btn" routerLink="/backlog">
-                  Review Technical Debt ({{ gameState.openDebtCount() }})
+                  View Technical Debt ({{ gameState.openDebtCount() }})
                 </a>
+              }
+              @if (firstOpenDebtId(); as debtId) {
+                <a class="ea-btn" [routerLink]="['/review', debtId]">Review now</a>
               }
               <button type="button" class="ea-btn" (click)="replay()">Replay mission</button>
               <a class="ea-btn" [routerLink]="['/campaigns', mission.campaignId]">Back to campaign</a>

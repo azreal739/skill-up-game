@@ -13,6 +13,13 @@
           LV {{ gameState.level().level }} · {{ gameState.level().codename }}
         </p>
         <p class="identity__rank">{{ gameState.rank().title }}</p>
+        <p class="identity__meta">
+          <span class="identity__id">{{ academyId() }}</span>
+          @if (currentCampaign(); as campaign) {
+            · Assignment:
+            <a [routerLink]="['/campaigns', campaign.id]">{{ campaign.title }}</a>
+          }
+        </p>
         <div class="identity__xp">
           <div
             class="identity__xpbar"
@@ -62,6 +69,129 @@
         <div class="campaigns-progress__row">
           <a [routerLink]="['/campaigns', entry.campaign.id]">{{ entry.campaign.title }}</a>
           <span>{{ entry.progress | percent }}</span>
+        </div>
+      }
+    </section>
+
+    <section class="learning ea-panel">
+      <h2>Learning progress</h2>
+      <p class="learning__lede">
+        First attempts are what count. Review recovers understanding — it never rewrites the record.
+      </p>
+      <div class="learning__accuracy">
+        <div class="learning__meter">
+          <div class="learning__meter-head">
+            <span>First attempt</span>
+            <strong>{{ firstAttempt().ratio | percent }}</strong>
+          </div>
+          <div class="learning__bar" role="progressbar" [attr.aria-valuenow]="(firstAttempt().ratio * 100).toFixed(0)" aria-valuemin="0" aria-valuemax="100">
+            <div class="learning__fill learning__fill--first" [style.width.%]="firstAttempt().ratio * 100"></div>
+          </div>
+          <span class="learning__count">{{ firstAttempt().correct }} of {{ firstAttempt().total }} decisions</span>
+        </div>
+        <div class="learning__meter">
+          <div class="learning__meter-head">
+            <span>After review</span>
+            <strong>{{ afterReview().ratio | percent }}</strong>
+          </div>
+          <div class="learning__bar" role="progressbar" [attr.aria-valuenow]="(afterReview().ratio * 100).toFixed(0)" aria-valuemin="0" aria-valuemax="100">
+            <div class="learning__fill learning__fill--after" [style.width.%]="afterReview().ratio * 100"></div>
+          </div>
+          <span class="learning__count">{{ afterReview().correct }} of {{ afterReview().total }} concepts recovered</span>
+        </div>
+      </div>
+
+      <div class="learning__concepts">
+        <div class="learning__concept-col">
+          <h3>Concepts mastered <span class="learning__concept-count">{{ concepts().mastered.length }}</span></h3>
+          @if (concepts().mastered.length > 0) {
+            <div class="learning__chips">
+              @for (tag of concepts().mastered; track tag) {
+                <span class="ea-chip learning__chip--mastered">{{ tag }}</span>
+              }
+            </div>
+          } @else {
+            <p class="learning__empty">Clear a challenge on the first try to master its concept.</p>
+          }
+        </div>
+        <div class="learning__concept-col">
+          <h3>Needs review <span class="learning__concept-count">{{ concepts().needingReview.length }}</span></h3>
+          @if (concepts().needingReview.length > 0) {
+            <div class="learning__chips">
+              @for (tag of concepts().needingReview; track tag) {
+                <span class="ea-chip learning__chip--review">{{ tag }}</span>
+              }
+            </div>
+          } @else {
+            <p class="learning__empty">Nothing outstanding — every attempted concept is solid.</p>
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="debt-summary ea-panel">
+      <div class="debt-summary__head">
+        <h2>Technical debt</h2>
+        <a class="ea-btn" routerLink="/backlog">Open backlog</a>
+      </div>
+      <div class="debt-summary__counts">
+        <div class="debt-summary__count" data-status="open"><span>{{ debt().open }}</span>Open</div>
+        <div class="debt-summary__count" data-status="in-review"><span>{{ debt().inReview }}</span>In review</div>
+        <div class="debt-summary__count" data-status="reopened"><span>{{ debt().reopened }}</span>Reopened</div>
+        <div class="debt-summary__count" data-status="remediated"><span>{{ debt().remediated }}</span>Remediated</div>
+      </div>
+
+      @if (debt().highestRiskConcepts.length > 0) {
+        <p class="debt-summary__risk">
+          Highest-risk concepts:
+          @for (tag of debt().highestRiskConcepts; track tag) {
+            <span class="ea-chip learning__chip--review">{{ tag }}</span>
+          }
+        </p>
+      }
+
+      @if (debt().reviewQueue.length > 0) {
+        <div class="debt-summary__queue">
+          <h3>Recommended review queue</h3>
+          <ul>
+            @for (item of debt().reviewQueue; track item.id) {
+              <li>
+                <a [routerLink]="['/review', item.id]">{{ debtTitle(item) }}</a>
+                <span class="debt-summary__queue-status" [attr.data-status]="item.status">{{ item.status }}</span>
+              </li>
+            }
+          </ul>
+        </div>
+      } @else {
+        <p class="debt-summary__clear">🟢 No open technical debt. The platform is steady.</p>
+      }
+    </section>
+
+    <section class="notes-summary ea-panel">
+      <div class="notes-summary__head">
+        <h2>Notes</h2>
+        <a class="ea-btn" routerLink="/notes">All notes</a>
+      </div>
+      @if (gameState.notes().length === 0) {
+        <p class="notes-summary__empty">No notes yet — capture a lesson after a mission or review.</p>
+      } @else {
+        @if (pinnedNotes().length > 0) {
+          <div class="notes-summary__group">
+            <h3>📌 Pinned</h3>
+            <ul>
+              @for (note of pinnedNotes(); track note.id) {
+                <li><a routerLink="/notes">{{ note.title }}</a></li>
+              }
+            </ul>
+          </div>
+        }
+        <div class="notes-summary__group">
+          <h3>Recent</h3>
+          <ul>
+            @for (note of recentNotes(); track note.id) {
+              <li><a routerLink="/notes">{{ note.title }}</a></li>
+            }
+          </ul>
         </div>
       }
     </section>
