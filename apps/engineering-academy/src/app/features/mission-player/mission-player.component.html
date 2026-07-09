@@ -1,5 +1,8 @@
 <div class="player ea-page">
   @if (mission(); as mission) {
+    <a class="player__back" [routerLink]="['/campaigns', mission.campaignId]">
+      ← {{ campaign()?.title ?? 'Campaign' }} · all missions
+    </a>
     <ea-hud
       [rank]="gameState.rank()"
       [xp]="gameState.xp()"

@@ -78,6 +78,7 @@
           [class.mission--locked]="!node.unlocked"
           [class.mission--complete]="node.completed"
           [attr.data-status]="node.status"
+          [attr.data-state]="node.state"
           [class.mission--boss]="node.mission.difficulty === 'boss'"
         >
           <div class="mission__index" aria-hidden="true">
@@ -101,6 +102,9 @@
                 @case ('partial') {
                   <span class="ea-chip mission__partial">◐ partial</span>
                 }
+              }
+              @if (node.state === 'in-progress') {
+                <span class="ea-chip mission__in-progress">▸ in progress</span>
               }
               @if (node.outstandingDebt > 0) {
                 <a class="ea-chip mission__debt" routerLink="/backlog">
@@ -128,7 +132,7 @@
             @if (node.unlocked) {
               <a class="ea-btn" [class.ea-btn--primary]="!node.completed"
                  [routerLink]="['/missions', node.mission.id]">
-                {{ node.completed ? 'Replay' : 'Start' }}
+                {{ node.actionLabel }}
               </a>
             } @else {
               <span class="mission__locked-note">Complete the previous mission</span>

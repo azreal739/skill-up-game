@@ -178,6 +178,11 @@
   border-color: rgba(34, 211, 238, 0.5);
 }
 
+.mission__in-progress {
+  color: var(--ea-accent);
+  border-color: rgba(34, 211, 238, 0.5);
+}
+
 .mission__debt {
   color: var(--ea-orange);
   border-color: rgba(251, 146, 60, 0.5);
@@ -232,6 +237,11 @@
   &[data-result='open'] {
     background: var(--ea-warn);
     border-color: transparent;
+  }
+  // Not yet attempted — a hollow grey dot.
+  &[data-result='not-started'] {
+    background: rgba(148, 163, 255, 0.12);
+    border-color: var(--ea-border);
   }
 }
 
