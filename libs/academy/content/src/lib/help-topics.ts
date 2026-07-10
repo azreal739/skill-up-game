@@ -695,6 +695,46 @@ export const helpTopics: HelpTopic[] = [
       "You do not own server data; you hold a copy with a timestamp. Model the request status as data, not booleans: a Remote<T> union — idle | loading | loaded {data, fetchedAt, refreshing} | error {error, stale?} — can express 'loaded but refreshing' and 'errored with a stale copy worth showing', which isLoading cannot (the eternal spinner is a missing error state). Wire invalidation to the events that falsify the cache: the app's own mutations, workspace/tenant switches (reset, or the old tenant's data flashes), and staleness rules from fetchedAt. For refreshes, prefer stale-while-revalidate — show the loaded data with a subtle refreshing indicator and swap when fresh arrives, deferring the swap while the user is mid-interaction.",
   },
   {
+    id: 'perf.measure-first',
+    title: 'Measure Before Optimising',
+    tags: ['angular'],
+    summary: 'Profile, rank the costs, optimise the top — hunches point at interesting code, not expensive code.',
+    content:
+      'Optimisation effort pays proportionally to the slice it targets: a week on a 3% slice caps its win at 3%. So rule one: no optimisation without a measurement someone can re-run — DevTools profiler for CPU, the network waterfall for requests, Lighthouse/field vitals for user experience. Rank the costs, fix the top, re-measure. Distinguish LATENCY (a rare 8s export — manageable with honest progress feedback) from RESPONSIVENESS (a freeze while typing — a blocked main thread no spinner can excuse): responsiveness is the floor. And apply the rule to your own favourite refactor too — even the good migration waits for its ranking.',
+  },
+  {
+    id: 'perf.bundle-size',
+    title: 'Bundle Size',
+    tags: ['angular'],
+    summary: 'Bytes cost twice — download AND main-thread parse/execute — and imports decide what ships.',
+    content:
+      "Every shipped byte is paid twice: over the network (scales with connection) and in parse/compile/execute on the main thread (scales with the user's WORST device — fibre does not ship a faster CPU). Run the bundle analyzer and read the treemap: tree-shaking removes only what is provably unreachable, so import styles matter — import _ from 'lodash' ships the library; side-effect imports are never shaken; barrel files couple fates (import one export and every side-effectful sibling rides along — the removed-widget-still-shipping ghost). Budgets in CI catch regressions of the known; the analyzer finds the unknown.",
+  },
+  {
+    id: 'perf.rendering',
+    title: 'Rendering Performance',
+    tags: ['angular'],
+    summary: 'Track identity so refreshes patch DOM; virtualise so only the viewport has DOM.',
+    content:
+      "Long lists have two separate costs. CHANGE cost: @for diffs by the track expression — track entry (object identity) sees every polled refresh as ten thousand strangers and rebuilds the list (flash, lost scroll, closed menus); track entry.id matches rows across refreshes so unchanged rows keep their DOM. EXISTENCE cost: ten thousand live DOM nodes burn layout, style and memory even when nothing changes — virtual scrolling (cdk-virtual-scroll-viewport) renders only the visible window and recycles rows, making DOM cost O(viewport) instead of O(data). For high-frequency events that change no app state (mousemove crosshairs), subscribe inside NgZone.runOutsideAngular and draw directly — re-enter the zone (or set a signal, throttled) only when real state changes.",
+  },
+  {
+    id: 'perf.memory-leaks',
+    title: 'Memory Leaks',
+    tags: ['angular'],
+    summary: 'Leaks are references that outlive their purpose — prove them with heap snapshot diffs.',
+    content:
+      'GC collects the unreachable, so a leak is always a REFERENCE: a long-lived holder keeping a short-lived object alive. The workflow: heap snapshot, repeat the suspected action ×10, snapshot again, diff — leaked objects appear ten-fold; the retainer chain then names the holder. Usual suspects: subscriptions/listeners on service-owned sources whose callbacks capture `this` (deregister on destroy — takeUntilDestroyed, or socket.off in DestroyRef.onDestroy); setInterval without clearInterval (an immortal timer pinning its closure); static or root-service caches with no eviction (an unbounded Map is a leak with a business justification — bound it with LRU/max-entries/TTL); detached DOM nodes captured in closures.',
+  },
+  {
+    id: 'perf.web-vitals',
+    title: 'Web Vitals & Assets',
+    tags: ['angular'],
+    summary: 'LCP/INP/CLS proxy user moments; field data is truth, lab data is for debugging.',
+    content:
+      'The vitals name feelings: LCP — when the main content APPEARS (hero image size/priority, server latency, render-blocking JS; never loading="lazy" on the LCP element — priority exists to name it); INP — when I interact, how fast the page RESPONDS (long main-thread tasks, heavy handlers, oversized change detection); CLS — does the page hold STILL (reserve space: width/height on images, fixed containers for banners, geometry-true skeletons — late content fills in instead of shoving the layout under fingers). Assets: serve what the layout renders — srcset/NgOptimizedImage right-sizes (a 2400px PNG in a 320px card discards ~98% of its pixels), WebP/AVIF on top, lazy below the fold. Lab numbers (your laptop) are for debugging; FIELD numbers (real users, p75) are how the product actually performs — a 4× lab/field gap is the fibre-laptop assumption, measured. Loading UX: progressive sections beat all-or-nothing spinners — never gate the whole page on its slowest request.',
+  },
+  {
     id: 'http.contract-design',
     title: 'API Contract Design',
     tags: ['api'],

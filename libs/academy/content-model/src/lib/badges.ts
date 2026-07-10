@@ -130,6 +130,12 @@ export const BADGES: readonly BadgeDefinition[] = [
     description: 'Completed the State Management field notes — every piece of state in its right home.',
     icon: '🗃️',
   },
+  {
+    id: 'perf-surgeon',
+    title: 'Performance Surgeon',
+    description: 'Completed the Performance field notes — measured first, cut where the numbers pointed.',
+    icon: '⚡',
+  },
   // Programmatic achievements (Review Loop spec 08) — awarded by
   // GameStateService from play history, not by content rewards.
   {
