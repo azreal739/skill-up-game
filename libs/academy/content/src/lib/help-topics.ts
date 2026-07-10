@@ -526,4 +526,44 @@ export const helpTopics: HelpTopic[] = [
     content:
       "Signals hold what things ARE; streams describe what HAPPENS — the bridges let each do its job. toSignal(stream$, { initialValue }) subscribes immediately, exposes the latest value as a signal, and unsubscribes automatically with the component's DestroyRef (no takeUntilDestroyed needed). Always provide initialValue (or handle undefined): the signal has no value until the first emission. toObservable(sig) emits on every change so you can debounceTime, switchMap and friends — the standard shape for search boxes: toSignal(toObservable(query).pipe(debounceTime(300), switchMap(fetch)), { initialValue: [] }).",
   },
+  {
+    id: 'di.injector-tree',
+    title: 'Injector Hierarchy',
+    tags: ['angular'],
+    summary: 'Resolution walks up from the asker; the nearest provider wins.',
+    content:
+      "Injectors form a tree: component injectors at the leaves, route injectors above them, the root injector at the top (and the empty NullInjector above that). inject(Token) walks UP from the asking component and stops at the first injector holding a recipe for the token — nearest wins, root is the fallback. A providers entry on a component therefore scopes a fresh instance per component instance (deliberate scoping: per-tab state), and reaching the NullInjector empty-handed throws NullInjectorError: no level on the path had a recipe. Remember: TypeScript imports and DI providers are unrelated — adding a provider to fix a missing import mints accidental per-component instances.",
+  },
+  {
+    id: 'di.provider-recipes',
+    title: 'Provider Recipes',
+    tags: ['angular'],
+    summary: 'useClass constructs, useValue hands over, useFactory computes, useExisting aliases.',
+    content:
+      'A provider maps a token (the question) to a recipe (the answer). useClass: construct this class instead — a NEW instance for that token. useValue: here is the finished object — ideal for config. useFactory: run this function to build the answer; it may declare deps or call inject() inside, making it the only recipe that can decide at runtime (environment forks, feature flags). useExisting: construct NOTHING — resolve that other token and hand over the same instance, the alias recipe that keeps old and new APIs sharing one state during migrations. Choosing useClass where useExisting was meant is the classic two-instances bug.',
+  },
+  {
+    id: 'di.injection-token',
+    title: 'InjectionToken',
+    tags: ['angular', 'typescript'],
+    summary: 'A runtime key for injecting non-class values — config, callbacks, interfaces.',
+    content:
+      "The injector is a runtime map, and TypeScript erases interfaces at compile time — so an interface cannot be a token: nothing survives to use as the key. Classes work because they are both a type and a runtime value. For everything else, create const MY_CONFIG = new InjectionToken<MyConfig>('my.config') — a unique runtime object carrying its type as a generic. Provide against the token object itself ({ provide: MY_CONFIG, useValue: {...} }); a string in its place registers under a DIFFERENT key. An optional factory default ({ factory: () => ... }) makes the token work with zero providers — handy in specs — while an explicit provider overrides it.",
+  },
+  {
+    id: 'di.injection-context',
+    title: 'Injection Context',
+    tags: ['angular'],
+    summary: 'inject() only works while Angular is constructing something — capture early, use later.',
+    content:
+      'inject() reads an injection context that Angular opens during construction (field initialisers, constructors, provider factories) and closes immediately after — calling it from a click handler, timer or subscription callback throws NG0203. The pattern: ask during construction, store the reference, use it any time. The context is also a composition feature: a plain function called during construction inherits the CALLER’s injector, so utilities can inject(DestroyRef) and register their own cleanup — this is how takeUntilDestroyed works. For rare late-injection needs, capture an Injector or EnvironmentInjector early and use runInInjectionContext.',
+  },
+  {
+    id: 'di.testing',
+    title: 'Overriding Providers in Tests',
+    tags: ['angular', 'testing'],
+    summary: 'TestBed is an injector you configure — provide fakes for the same tokens.',
+    content:
+      "TestBed.configureTestingModule({ providers: [...] }) builds the spec's injector; a provider there shadows any providedIn: 'root' recipe for the same token (nearest wins, as always). Fake collaborators with useValue and jasmine spies — { provide: CartService, useValue: { add: jasmine.createSpy('add') } } — so the component under test runs unchanged while the test decides what arrives. Assert via TestBed.inject(Token): it resolves the same instance the component received. Fake INPUTS (environment services, HttpClient, config tokens), never transport internals like window.fetch, and remember a plain arrow function is not a spy — toHaveBeenCalled needs jasmine.createSpy.",
+  },
 ];
