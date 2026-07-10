@@ -414,4 +414,36 @@ export const helpTopics: HelpTopic[] = [
     content:
       'A closure captures the variables of its creation site, so a factory like makeTaxer(rate) returns a specialised pure function with its configuration baked in — each call captures fresh values. Composition chains such functions: pipe(f, g, h) runs left to right (f first), while classical compose runs right to left. Prefer the form that lets the code read in the same order as the requirement.',
   },
+  {
+    id: 'rx.observables',
+    title: 'Observables: Streams, Not Values',
+    tags: ['angular', 'typescript'],
+    summary: 'An Observable produces values over time — and is lazy until subscribed.',
+    content:
+      'Observable<T> is a producer of T values over time: it can emit many times, error, or complete, and nothing runs until something subscribes (a cold Observable runs its producer once per subscription). Read users$ as "a stream that emits user arrays", never as the array itself, and keep the $ suffix so streams stay visible. Promises settle exactly once; streams are the general tool for events, form input, HTTP and sockets.',
+  },
+  {
+    id: 'rx.operators',
+    title: 'Operators: map, tap & catchError',
+    tags: ['angular'],
+    summary: 'map transforms emissions, tap observes them, and catchError replaces the stream where it sits.',
+    content:
+      'RxJS map emits the value your function returns; tap runs a side effect and forwards the ORIGINAL value — anything returned from tap is discarded, so transformations in tap silently vanish. catchError swaps the errored stream for the one you return, at the level it is placed: on the outer pipe it replaces (and so ends) the whole stream, while inside a flattening projection it sacrifices only that one inner request and the outer stream keeps listening.',
+  },
+  {
+    id: 'rx.subscriptions',
+    title: 'Subscription Cleanup',
+    tags: ['angular'],
+    summary: 'Every subscribe must answer: who unsubscribes?',
+    content:
+      'An active subscription outlives its component unless something completes or unsubscribes it — stacked timers and duplicate handlers are the classic leak. Prefer consumption that cleans up for you: the async pipe (unsubscribes with the view), toSignal (cleans up with the injection context), or takeUntilDestroyed in the pipe. Reserve manual unsubscribe bookkeeping for the rare case none of those fit, and never nest subscribes — compose instead.',
+  },
+  {
+    id: 'rx.flattening',
+    title: 'switchMap & Flattening Strategies',
+    tags: ['angular'],
+    summary: 'When new work arrives mid-flight: cancel, queue, ignore, or run both.',
+    content:
+      'A flattening operator answers one question: what happens to overlapping inner work? switchMap cancels the previous inner Observable (latest-only: search, route data). concatMap queues so every value runs in order (autosave, sequential writes). exhaustMap ignores new values while busy (submit buttons, payments). mergeMap runs everything concurrently — which lets slow old responses overwrite fresh ones, the classic stale-search bug. Name the requirement first; it names the operator.',
+  },
 ];

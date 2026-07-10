@@ -20,6 +20,7 @@ import {
   saveProductionPack,
   tsFundamentalsPack,
   fpTypescriptPack,
+  rxjsReactivePack,
   helpTopics,
 } from '@academy/content';
 import { z } from 'zod';
@@ -47,6 +48,7 @@ export class ContentService {
       saveProductionPack,
       tsFundamentalsPack,
       fpTypescriptPack,
+      rxjsReactivePack,
     ].map((pack) => this.validatePack(pack));
     this.topics = helpTopics.map((topic) => this.validateTopic(topic));
 

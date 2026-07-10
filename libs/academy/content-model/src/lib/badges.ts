@@ -88,6 +88,12 @@ export const BADGES: readonly BadgeDefinition[] = [
     description: 'Completed the Functional Programming field notes — predictable, composable, testable.',
     icon: '🧮',
   },
+  {
+    id: 'stream-navigator',
+    title: 'Stream Navigator',
+    description: 'Completed the RxJS field notes — change over time, modelled on purpose.',
+    icon: '🌊',
+  },
   // Programmatic achievements (Review Loop spec 08) — awarded by
   // GameStateService from play history, not by content rewards.
   {
