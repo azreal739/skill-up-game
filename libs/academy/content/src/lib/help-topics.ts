@@ -446,4 +446,44 @@ export const helpTopics: HelpTopic[] = [
     content:
       'A flattening operator answers one question: what happens to overlapping inner work? switchMap cancels the previous inner Observable (latest-only: search, route data). concatMap queues so every value runs in order (autosave, sequential writes). exhaustMap ignores new values while busy (submit buttons, payments). mergeMap runs everything concurrently — which lets slow old responses overwrite fresh ones, the classic stale-search bug. Name the requirement first; it names the operator.',
   },
+  {
+    id: 'forms.typed-controls',
+    title: 'Typed Form Controls',
+    tags: ['angular', 'typescript'],
+    summary: 'FormControl<T> ties value, setValue and valueChanges to one contract.',
+    content:
+      'Typed reactive forms give every control a value type: FormControl<string> means value is string, setValue accepts only string, and valueChanges is Observable<string>. The type is inferred from the initial value. This protects the CODE around the form — reading a quantity as number when the control holds a string is now a compile error, not a two-year-old production bug. Access controls through group.controls.name (fully typed) rather than get(\'name\') (returns AbstractControl<any> | null).',
+  },
+  {
+    id: 'forms.nullability',
+    title: 'Form Nullability & NonNullableFormBuilder',
+    tags: ['angular', 'typescript'],
+    summary: 'Default controls reset to null; nonNullable controls reset to their initial value.',
+    content:
+      'A default FormControl(\'\')  types as string | null because reset() without arguments installs null — the classic Clear-button crash. NonNullableFormBuilder (or { nonNullable: true }) removes null from the type AND changes reset() to restore the initial value. Choose per control: nonNullable when a sensible default exists and absence is meaningless; keep T | null when absence is genuine data (an optional date of birth) — never fake absence with sentinel values.',
+  },
+  {
+    id: 'forms.value-vs-raw',
+    title: 'value vs getRawValue',
+    tags: ['angular'],
+    summary: 'value excludes disabled controls; getRawValue is the complete form state.',
+    content:
+      'group.value reports ENABLED controls only, which is why its type marks every property optional — any control might be disabled at runtime. Disabling preserves a control\'s data but removes it from value, the source of the classic half-payload submit bug. getRawValue() includes every control regardless of disabled state and types without optionality. Ask per call site: "what did the user actively edit?" → value; "what is the complete state?" (submits, drafts) → getRawValue.',
+  },
+  {
+    id: 'forms.validators',
+    title: 'Validators',
+    tags: ['angular', 'typescript'],
+    summary: 'A validator is a pure function: control in, ValidationErrors | null out.',
+    content:
+      'Custom validators are pure verdicts: read the control, return null for valid or an errors object ({ myRule: details }) for invalid. Any non-null return — including an empty object — marks the control invalid, so never return {} for success. Validators must not cause side effects: no setValue on siblings, no HTTP, no analytics — they run on every value change and side effects create validation loops. Carry details in the error object so templates can render the requirement.',
+  },
+  {
+    id: 'forms.valuechanges',
+    title: 'valueChanges & statusChanges',
+    tags: ['angular'],
+    summary: 'Typed streams from controls — future changes only, with two classic traps.',
+    content:
+      'Every control and group publishes valueChanges (typed values) and statusChanges (VALID/INVALID/…) — full RxJS streams, so debounce, distinctUntilChanged and switchMap all apply. Two traps: valueChanges does NOT emit the current value on subscribe (prepend startWith(control.value) or seed toSignal with an initialValue); and calling setValue inside your own valueChanges handler loops forever — pass { emitEvent: false } to write without re-triggering the stream.',
+  },
 ];

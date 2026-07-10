@@ -94,6 +94,12 @@ export const BADGES: readonly BadgeDefinition[] = [
     description: 'Completed the RxJS field notes — change over time, modelled on purpose.',
     icon: '🌊',
   },
+  {
+    id: 'form-warden',
+    title: 'Form Warden',
+    description: 'Completed the Typed Forms field notes — user input, modelled safely.',
+    icon: '📋',
+  },
   // Programmatic achievements (Review Loop spec 08) — awarded by
   // GameStateService from play history, not by content rewards.
   {
