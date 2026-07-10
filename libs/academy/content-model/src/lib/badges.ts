@@ -76,6 +76,12 @@ export const BADGES: readonly BadgeDefinition[] = [
     description: 'Kept the pipeline green under pressure.',
     icon: '✅',
   },
+  {
+    id: 'compiler-ally',
+    title: 'Compiler Ally',
+    description: 'Completed the TypeScript Fundamentals field notes — the compiler is your teammate now.',
+    icon: '📐',
+  },
   // Programmatic achievements (Review Loop spec 08) — awarded by
   // GameStateService from play history, not by content rewards.
   {

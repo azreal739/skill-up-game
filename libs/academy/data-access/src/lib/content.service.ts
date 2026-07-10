@@ -18,6 +18,7 @@ import {
   apiContractCrisisPack,
   cloudfrontOutagePack,
   saveProductionPack,
+  tsFundamentalsPack,
   helpTopics,
 } from '@academy/content';
 import { z } from 'zod';
@@ -43,6 +44,7 @@ export class ContentService {
       apiContractCrisisPack,
       cloudfrontOutagePack,
       saveProductionPack,
+      tsFundamentalsPack,
     ].map((pack) => this.validatePack(pack));
     this.topics = helpTopics.map((topic) => this.validateTopic(topic));
 
