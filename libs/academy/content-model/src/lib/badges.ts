@@ -82,6 +82,12 @@ export const BADGES: readonly BadgeDefinition[] = [
     description: 'Completed the TypeScript Fundamentals field notes — the compiler is your teammate now.',
     icon: '📐',
   },
+  {
+    id: 'functional-artisan',
+    title: 'Functional Artisan',
+    description: 'Completed the Functional Programming field notes — predictable, composable, testable.',
+    icon: '🧮',
+  },
   // Programmatic achievements (Review Loop spec 08) — awarded by
   // GameStateService from play history, not by content rewards.
   {

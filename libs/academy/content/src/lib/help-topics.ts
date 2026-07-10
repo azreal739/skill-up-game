@@ -382,4 +382,36 @@ export const helpTopics: HelpTopic[] = [
     content:
       'When production is degraded, the first decision is how to restore service: roll back to the last good version, toggle the feature flag off, or ship a hotfix. Rollback and flags are usually fastest and safest; hotfixes carry the risk of a second incident. Communicate status early and write the root-cause analysis once customers are safe.',
   },
+  {
+    id: 'fp.pure-functions',
+    title: 'Pure Functions',
+    tags: ['typescript'],
+    summary: 'Same input, same output, nothing outside read or written.',
+    content:
+      'A pure function depends only on its parameters and changes nothing outside itself: no module-level reads, no mutation, no I/O. The payoff is predictability — pure functions are testable with plain assertions, safe to reuse anywhere, and composable without ordering surprises. Keep domain logic pure and push side effects (HTTP, storage, logging) to the edges of the program.',
+  },
+  {
+    id: 'fp.immutability',
+    title: 'Immutability & Copy-on-Write',
+    tags: ['typescript'],
+    summary: 'Create new objects and arrays instead of changing shared ones.',
+    content:
+      'JavaScript objects and arrays are shared by reference, so mutating a parameter changes every holder of that reference. Copy-on-write avoids the leak: spread into a new object ({ ...state, field }) or array ([...items]), and use non-mutating methods. Review checklist: push, splice, direct property assignment and in-place sort/reverse on anything the function did not create locally.',
+  },
+  {
+    id: 'fp.higher-order-functions',
+    title: 'map, filter & reduce',
+    tags: ['typescript'],
+    summary: 'Declarative array transformation: transform, gate, then fold.',
+    content:
+      "map turns T[] into U[] by collecting the callback's returned values — if the result is ignored, use forEach instead. filter keeps elements that pass a predicate. reduce folds an array into one value from an explicit seed; without the seed the first element becomes the accumulator and an empty array throws. Chained together they read like the requirement: transform, gate, fold.",
+  },
+  {
+    id: 'fp.composition',
+    title: 'Closures & Composition',
+    tags: ['typescript'],
+    summary: 'Functions that make functions, and pipelines that read in order.',
+    content:
+      'A closure captures the variables of its creation site, so a factory like makeTaxer(rate) returns a specialised pure function with its configuration baked in — each call captures fresh values. Composition chains such functions: pipe(f, g, h) runs left to right (f first), while classical compose runs right to left. Prefer the form that lets the code read in the same order as the requirement.',
+  },
 ];
