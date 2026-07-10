@@ -486,4 +486,44 @@ export const helpTopics: HelpTopic[] = [
     content:
       'Every control and group publishes valueChanges (typed values) and statusChanges (VALID/INVALID/…) — full RxJS streams, so debounce, distinctUntilChanged and switchMap all apply. Two traps: valueChanges does NOT emit the current value on subscribe (prepend startWith(control.value) or seed toSignal with an initialValue); and calling setValue inside your own valueChanges handler loops forever — pass { emitEvent: false } to write without re-triggering the stream.',
   },
+  {
+    id: 'signals.computed',
+    title: 'Computed Signals',
+    tags: ['angular'],
+    summary: 'computed() derives a value from other signals — memoised, pure, drift-proof.',
+    content:
+      'A computed signal recalculates from the signals it reads, only when one of them changes, and caches the result between changes. Because it is the ONLY writer of its own value, derived state cannot drift from its sources — delete hand-synchronised copies and derive instead. Keep the lambda pure: no setting other signals, no HTTP, no side effects; a computed answers "what is the value?" and nothing else. Chaining computeds (format(display(result())) style) is cheap and encouraged.',
+  },
+  {
+    id: 'signals.effects',
+    title: 'Effects',
+    tags: ['angular'],
+    summary: 'effect() re-runs when signals it reads change — reserve it for side effects.',
+    content:
+      'An effect runs its lambda once, records every signal it read, and re-runs when any of them changes. Use it at the edge of the app: logging, analytics, localStorage sync, integrating non-Angular libraries. The classic misuse is deriving state — effect(() => total.set(price() * qty())) makes total a writable, late, second source of truth; computed(() => price() * qty()) makes drift impossible. To read a signal WITHOUT registering it as a trigger, wrap the read in untracked(() => …).',
+  },
+  {
+    id: 'signals.equality',
+    title: 'Signal Equality & Immutable Updates',
+    tags: ['angular', 'functional-programming'],
+    summary: 'Signals compare by reference — mutating in place notifies nobody.',
+    content:
+      "Before notifying readers, a signal checks whether the value actually changed — by reference for objects and arrays. update(list => { list.push(item); return list; }) returns the SAME array, so the signal stays silent and the view freezes. Produce fresh references instead: [...list, item] for arrays, ({ ...obj, name }) for objects. This is the immutability discipline from functional programming made mandatory: change means a new value, not a modified old one — and OnPush input checks live by the same rule.",
+  },
+  {
+    id: 'signals.cd-cycle',
+    title: 'Change Detection Cycles',
+    tags: ['angular'],
+    summary: 'zone.js triggers cycles after async events; default strategy checks every binding.',
+    content:
+      'Angular never watches your properties. Instead zone.js patches the async entry points — DOM events, setTimeout/setInterval, resolved promises, XHR — and when any completes, Angular re-checks the component tree. Under the default strategy that means EVERY binding in EVERY component, which is why {{ someFunction() }} in a template re-runs on every keystroke anywhere in the app: arbitrary work placed inside the hottest loop. Move template computations into computed signals or pure pipes so they run only when their inputs change.',
+  },
+  {
+    id: 'signals.rxjs-interop',
+    title: 'Signals ↔ RxJS Interop',
+    tags: ['angular', 'rxjs'],
+    summary: 'toSignal brings streams in as current state; toObservable lends signals the operator toolkit.',
+    content:
+      "Signals hold what things ARE; streams describe what HAPPENS — the bridges let each do its job. toSignal(stream$, { initialValue }) subscribes immediately, exposes the latest value as a signal, and unsubscribes automatically with the component's DestroyRef (no takeUntilDestroyed needed). Always provide initialValue (or handle undefined): the signal has no value until the first emission. toObservable(sig) emits on every change so you can debounceTime, switchMap and friends — the standard shape for search boxes: toSignal(toObservable(query).pipe(debounceTime(300), switchMap(fetch)), { initialValue: [] }).",
+  },
 ];
