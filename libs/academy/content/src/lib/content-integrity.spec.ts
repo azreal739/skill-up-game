@@ -17,6 +17,7 @@ import { apiContractCrisisPack } from './api-contract-crisis/campaign';
 import { cloudfrontOutagePack } from './cloudfront-outage/campaign';
 import { saveProductionPack } from './save-production/campaign';
 import { tsFundamentalsPack } from './ts-fundamentals/campaign';
+import { fpTypescriptPack } from './fp-typescript/campaign';
 import { helpTopics } from './help-topics';
 
 /**
@@ -34,6 +35,7 @@ describe('content integrity', () => {
     cloudfrontOutagePack,
     saveProductionPack,
     tsFundamentalsPack,
+    fpTypescriptPack,
   ];
 
   it('validates every campaign pack against the Zod schema', () => {
@@ -149,6 +151,7 @@ describe('content integrity', () => {
       'save-production': 'cloudfront-outage',
       // field-notes (DMM past learnings)
       'ts-fundamentals': undefined,
+      'fp-typescript': 'ts-fundamentals',
     };
     for (const pack of packs) {
       expect(pack.campaign.requiredCampaignId)

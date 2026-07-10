@@ -19,6 +19,7 @@ import {
   cloudfrontOutagePack,
   saveProductionPack,
   tsFundamentalsPack,
+  fpTypescriptPack,
   helpTopics,
 } from '@academy/content';
 import { z } from 'zod';
@@ -45,6 +46,7 @@ export class ContentService {
       cloudfrontOutagePack,
       saveProductionPack,
       tsFundamentalsPack,
+      fpTypescriptPack,
     ].map((pack) => this.validatePack(pack));
     this.topics = helpTopics.map((topic) => this.validateTopic(topic));
 
