@@ -17,8 +17,8 @@ describe('ranks', () => {
   it('promotes at each threshold', () => {
     expect(rankForXp(119).id).toBe('junior-1');
     expect(rankForXp(120).id).toBe('junior-2');
-    expect(rankForXp(10649).id).toBe('distinguished-2');
-    expect(rankForXp(10650).id).toBe('distinguished-3');
+    expect(rankForXp(13199).id).toBe('distinguished-2');
+    expect(rankForXp(13200).id).toBe('distinguished-3');
   });
 
   it('has 18 strictly increasing tiers in I/II/III bands', () => {

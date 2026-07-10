@@ -9,4 +9,5 @@ export * from './lib/save-production/campaign';
 export * from './lib/ts-fundamentals/campaign';
 export * from './lib/fp-typescript/campaign';
 export * from './lib/rxjs-reactive/campaign';
+export * from './lib/ng-typed-forms/campaign';
 export * from './lib/help-topics';
