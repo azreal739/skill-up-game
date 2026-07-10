@@ -20,6 +20,7 @@ export const nxMonorepoMazePack: CampaignPack = {
     subtitle: 'Restore order to the workspace',
     description:
       'The monorepo is growing and, without rules, heading for chaos. Place code in the right libraries, break cycles, scope CI with affected builds, and enforce boundaries with tags so the workspace stays maintainable.',
+    track: 'mission-control',
     difficulty: 'advanced',
     requiredCampaignId: 'zod-gate',
     tags: ['nx', 'cicd'],

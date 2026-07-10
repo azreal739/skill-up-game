@@ -2,6 +2,7 @@
  * Core content model for Engineering Academy.
  * See docs/engineering-academy/06_CONTENT_MODEL_AND_SCHEMAS.md.
  */
+import { CampaignTrack } from './tracks';
 
 export type Difficulty = 'intro' | 'easy' | 'medium' | 'hard' | 'boss';
 
@@ -147,6 +148,8 @@ export interface CampaignDefinition {
   title: string;
   subtitle: string;
   description: string;
+  /** Which gameplay path this campaign belongs to (its own unlock chain). */
+  track: CampaignTrack;
   difficulty: CampaignDifficulty;
   requiredRank?: string;
   /** Campaign that must be completed before this one unlocks. */

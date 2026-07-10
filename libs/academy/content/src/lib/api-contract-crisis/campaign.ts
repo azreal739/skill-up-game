@@ -21,6 +21,7 @@ export const apiContractCrisisPack: CampaignPack = {
     subtitle: 'Front end and back end have drifted apart',
     description:
       'A live integration is failing on real data. Read the DTO the API actually sends, decode its status and error payloads, reconcile front-end and back-end contracts, adapt cleanly at the boundary, and release the fix without causing a second incident.',
+    track: 'mission-control',
     difficulty: 'advanced',
     requiredCampaignId: 'nx-monorepo-maze',
     tags: ['api', 'java'],

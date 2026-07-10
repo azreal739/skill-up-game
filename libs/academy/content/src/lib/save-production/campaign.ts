@@ -23,6 +23,7 @@ export const saveProductionPack: CampaignPack = {
     subtitle: 'A live incident — bring the platform back',
     description:
       'Production is degraded and you are the incident commander. Declare and size the incident, let logs and metrics find the cause, mitigate with a feature flag or rollback, keep stakeholders informed, validate recovery with real signals, and run a blameless review — then survive a fresh Sev1 end to end.',
+    track: 'mission-control',
     difficulty: 'expert',
     requiredCampaignId: 'cloudfront-outage',
     tags: ['incident-response'],

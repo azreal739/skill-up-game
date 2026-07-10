@@ -1,9 +1,15 @@
 import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { PercentPipe } from '@angular/common';
+import { CampaignDefinition, TRACKS, TrackDefinition } from '@academy/content-model';
 import { ContentService, GameStateService } from '@academy/data-access';
 import { IconComponent } from '@academy/ui';
 import { CampaignEmblemComponent } from './campaign-emblem.component';
+
+interface TrackSection {
+  track: TrackDefinition;
+  campaigns: CampaignDefinition[];
+}
 
 @Component({
   selector: 'ea-campaign-hub',
@@ -17,6 +23,12 @@ export class CampaignHubComponent {
   protected readonly gameState = inject(GameStateService);
 
   protected readonly campaigns = this.content.campaigns();
+
+  /** Tracks that actually have campaigns, in TRACKS display order. */
+  protected readonly trackSections: TrackSection[] = TRACKS.map((track) => ({
+    track,
+    campaigns: this.content.campaignsForTrack(track.id),
+  })).filter((section) => section.campaigns.length > 0);
 
   /** The first incomplete mission across unlocked campaigns. */
   protected readonly recommendedMission = computed(() => {

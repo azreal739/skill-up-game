@@ -43,7 +43,10 @@ GameStateService, MissionSessionService, persistence) → `ui` / `challenges`
 - Real challenge XP comes from `difficulty` (intro/easy 10, medium 25, hard 50,
   boss 100) — challenge-level `rewards` xp amounts are display-only. Mission-level
   xp rewards DO count. Perfect +50, no-hint +25 per mission.
-- Campaigns: linear unlock chain via `requiredCampaignId`; declare `difficulty`
+- Campaigns declare a `track` (`mission-control` story sims | `field-notes`
+  DMM past learnings — `content-model/src/lib/tracks.ts`). Each track is its
+  own linear unlock chain via `requiredCampaignId` (exactly one root per
+  track; prerequisites never cross tracks); declare `difficulty`
   (beginner→expert, never decreasing along the chain); every campaign ends in
   exactly one `boss` mission (bosses get special UI automatically); badge ids
   must exist in `content-model/src/lib/badges.ts`; helpLink topicIds must exist

@@ -6,6 +6,7 @@
  * enforced here rather than by convention.
  */
 import { z } from 'zod';
+import { campaignTrackSchema } from './tracks';
 
 export const difficultySchema = z.enum(['intro', 'easy', 'medium', 'hard', 'boss']);
 
@@ -145,6 +146,7 @@ export const campaignSchema = z.object({
   title: z.string().min(1),
   subtitle: z.string().min(1),
   description: z.string().min(1),
+  track: campaignTrackSchema,
   difficulty: campaignDifficultySchema,
   requiredRank: z.string().optional(),
   requiredCampaignId: z.string().optional(),

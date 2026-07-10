@@ -30,8 +30,14 @@
     </section>
   }
 
-  <section class="campaigns">
-    @for (campaign of campaigns; track campaign.id; let i = $index) {
+  @for (section of trackSections; track section.track.id) {
+    <section class="track" [attr.data-track]="section.track.id">
+      <header class="track__header">
+        <h2 class="track__title">{{ section.track.title }}</h2>
+        <p class="track__tagline">{{ section.track.tagline }}</p>
+      </header>
+      <div class="campaigns">
+        @for (campaign of section.campaigns; track campaign.id; let i = $index) {
       <article
         class="campaign ea-panel"
         [style.animation-delay]="i * 55 + 'ms'"
@@ -90,6 +96,8 @@
           }
         </div>
       </article>
-    }
-  </section>
+        }
+      </div>
+    </section>
+  }
 </div>
