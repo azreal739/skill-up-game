@@ -6,4 +6,5 @@ export * from './lib/nx-monorepo-maze/campaign';
 export * from './lib/api-contract-crisis/campaign';
 export * from './lib/cloudfront-outage/campaign';
 export * from './lib/save-production/campaign';
+export * from './lib/ts-fundamentals/campaign';
 export * from './lib/help-topics';

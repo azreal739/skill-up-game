@@ -16,6 +16,7 @@ import { nxMonorepoMazePack } from './nx-monorepo-maze/campaign';
 import { apiContractCrisisPack } from './api-contract-crisis/campaign';
 import { cloudfrontOutagePack } from './cloudfront-outage/campaign';
 import { saveProductionPack } from './save-production/campaign';
+import { tsFundamentalsPack } from './ts-fundamentals/campaign';
 import { helpTopics } from './help-topics';
 
 /**
@@ -32,6 +33,7 @@ describe('content integrity', () => {
     apiContractCrisisPack,
     cloudfrontOutagePack,
     saveProductionPack,
+    tsFundamentalsPack,
   ];
 
   it('validates every campaign pack against the Zod schema', () => {
@@ -145,7 +147,8 @@ describe('content integrity', () => {
       'api-contract-crisis': 'nx-monorepo-maze',
       'cloudfront-outage': 'api-contract-crisis',
       'save-production': 'cloudfront-outage',
-      // field-notes (DMM past learnings) — extend as campaigns land
+      // field-notes (DMM past learnings)
+      'ts-fundamentals': undefined,
     };
     for (const pack of packs) {
       expect(pack.campaign.requiredCampaignId)

@@ -119,6 +119,14 @@ export const helpTopics: HelpTopic[] = [
       "Narrowing is using runtime checks — if (!account) return, typeof x === 'string', Array.isArray(items) — so the compiler can prove what a value is afterwards. It replaces non-null assertions (!) and casts (as) with behaviour that is defined for every input.",
   },
   {
+    id: 'typescript.discriminated-unions',
+    title: 'Discriminated Unions & Result Types',
+    tags: ['typescript'],
+    summary: 'A literal tag field lets the compiler prove which union member you hold.',
+    content:
+      "A discriminated union gives every member one shared field with a unique literal type — kind: 'ok' versus kind: 'err'. Comparing that tag narrows the whole object: inside if (r.kind === 'ok') the compiler knows r.value exists. The Result<T> pattern applies this to failure handling: return { kind: 'ok', value } or { kind: 'err', reason } instead of throwing or returning booleans, so failures travel on one typed channel and switch statements can be checked for exhaustiveness.",
+  },
+  {
     id: 'typescript.strict-null-checks',
     title: 'Strict Null Checks',
     tags: ['typescript'],
