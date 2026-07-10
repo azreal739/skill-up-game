@@ -14,4 +14,5 @@ export * from './lib/ng-signals-cd/campaign';
 export * from './lib/ng-di-providers/campaign';
 export * from './lib/ng-routing/campaign';
 export * from './lib/ng-http-api/campaign';
+export * from './lib/ng-state-management/campaign';
 export * from './lib/help-topics';

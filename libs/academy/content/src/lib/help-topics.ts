@@ -655,6 +655,46 @@ export const helpTopics: HelpTopic[] = [
       'shareReplay({ bufferSize: 1 }) turns N subscribers into one upstream execution with the last value replayed to newcomers — right for read-mostly data like config. Its liabilities: an ERROR is replayed to every future subscriber (retry before the share), and the memory lives until something resets it. For mutable data, give the cache a reset switch: refresh$ = new BehaviorSubject<void>(undefined), orders$ = refresh$.pipe(switchMap(fetch), shareReplay(...)), and every mutation taps refresh$.next() on success — the mutation is the one code that knows the exact moment the cache became a lie. Never mutate a replayed value in place: same reference, no re-emission. refCount: true drops the cache when the last subscriber leaves — a safe default for mutable lists.',
   },
   {
+    id: 'state.kinds',
+    title: 'Kinds of State',
+    tags: ['angular'],
+    summary: 'Server, UI, derived and URL state are different problems with different homes.',
+    content:
+      'Before choosing a store, name the kind. SERVER state (orders, profiles) is owned elsewhere — you hold a cache, so staleness and invalidation are its real problems. UI state (modal open, accordion expanded) is born and dies with a view — component signals, as local as possible, promoted only when a second distant consumer genuinely appears. DERIVED state (totals, filtered lists, canSave) is computable from the others and must NEVER be stored — every stored derivable is a drift waiting for the update site someone forgets. URL state (filters, tabs, selected ids) should survive refresh and travel in links — query params give persistence, sharing and back/forward for free.',
+  },
+  {
+    id: 'state.signal-store',
+    title: 'Signal Stores',
+    tags: ['angular'],
+    summary: 'Private writable signals, public readonly views, computed selectors, named mutations.',
+    content:
+      "The house store pattern: an @Injectable service holding private writable signals (_items = signal([])), exposing items = this._items.asReadonly() plus computed selectors (count, total), and mutating ONLY through methods with business names (addItem, removeItem). The split makes the store the only writer — the mutation surface is enumerable, 'who changed this' reads one class, and invariants have exactly one home. Extending it follows one rule: new FACTS become private signals with named mutations; new CONSEQUENCES extend existing computeds. If a value can be computed from the others, it is never stored.",
+  },
+  {
+    id: 'state.single-source',
+    title: 'Single Source of Truth',
+    tags: ['angular'],
+    summary: 'Copies drift — read through to the source; the only honest copy is an editing draft.',
+    content:
+      'Every copy of shared state needs sync code, and sync code is where truth dies — the classic symptom is one rename showing three different names across dialog, sidebar and tab. The fix is subtraction: components hold IDs and read entities THROUGH the store with computeds; a mutation updates the store once and every reader is current by construction. The one legitimate copy is the editing DRAFT: a form deliberately diverging from the source, initialised from it, committed on save, discarded on cancel — which is why live-syncing form controls straight into shared state (breaking Cancel, shipping half-typed values) is the over-application to avoid. Display reads through; editing drafts.',
+  },
+  {
+    id: 'state.when-ngrx',
+    title: 'When NgRx',
+    tags: ['angular'],
+    summary: 'Actions are facts that persist — buy the ceremony when "what happened, in order" is a requirement.',
+    content:
+      "NgRx's cycle: components dispatch ACTIONS (past-tense facts — '[Orders API] Orders Loaded', never command-style setOrders), pure REDUCERS fold facts into new state (no mutation, no Date.now(), no I/O — or replay breaks), SELECTORS expose the read side, effects handle the world. What it adds over a signal store with named methods: changes as serialisable DATA — full history in devtools, time-travel, many features reacting to one fact, incident reconstruction from logs. Buy it per feature slice when those questions are real (many independent writers, cross-team event flows, audit requirements, replay); a one-form preferences page pays the same ceremony for nothing. Facts carry their context (who, when) on the action — reducers reading ambient state or clocks stop being replayable.",
+  },
+  {
+    id: 'state.server-state',
+    title: 'Server State',
+    tags: ['angular', 'api'],
+    summary: 'Client-held server data is a cache — model status as data and let mutations invalidate.',
+    content:
+      "You do not own server data; you hold a copy with a timestamp. Model the request status as data, not booleans: a Remote<T> union — idle | loading | loaded {data, fetchedAt, refreshing} | error {error, stale?} — can express 'loaded but refreshing' and 'errored with a stale copy worth showing', which isLoading cannot (the eternal spinner is a missing error state). Wire invalidation to the events that falsify the cache: the app's own mutations, workspace/tenant switches (reset, or the old tenant's data flashes), and staleness rules from fetchedAt. For refreshes, prefer stale-while-revalidate — show the loaded data with a subtle refreshing indicator and swap when fresh arrives, deferring the swap while the user is mid-interaction.",
+  },
+  {
     id: 'http.contract-design',
     title: 'API Contract Design',
     tags: ['api'],

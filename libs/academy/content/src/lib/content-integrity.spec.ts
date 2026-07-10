@@ -24,6 +24,7 @@ import { ngSignalsCdPack } from './ng-signals-cd/campaign';
 import { ngDiProvidersPack } from './ng-di-providers/campaign';
 import { ngRoutingPack } from './ng-routing/campaign';
 import { ngHttpApiPack } from './ng-http-api/campaign';
+import { ngStateManagementPack } from './ng-state-management/campaign';
 import { helpTopics } from './help-topics';
 
 /**
@@ -48,6 +49,7 @@ describe('content integrity', () => {
     ngDiProvidersPack,
     ngRoutingPack,
     ngHttpApiPack,
+    ngStateManagementPack,
   ];
 
   it('validates every campaign pack against the Zod schema', () => {
@@ -170,6 +172,7 @@ describe('content integrity', () => {
       'ng-di-providers': 'ng-signals-cd',
       'ng-routing': 'ng-di-providers',
       'ng-http-api': 'ng-routing',
+      'ng-state-management': 'ng-http-api',
     };
     for (const pack of packs) {
       expect(pack.campaign.requiredCampaignId)

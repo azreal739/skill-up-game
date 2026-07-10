@@ -124,6 +124,12 @@ export const BADGES: readonly BadgeDefinition[] = [
     description: 'Completed the HTTP & API field notes — requests shaped, contracts honoured.',
     icon: '📨',
   },
+  {
+    id: 'state-steward',
+    title: 'State Steward',
+    description: 'Completed the State Management field notes — every piece of state in its right home.',
+    icon: '🗃️',
+  },
   // Programmatic achievements (Review Loop spec 08) — awarded by
   // GameStateService from play history, not by content rewards.
   {
