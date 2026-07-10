@@ -566,4 +566,52 @@ export const helpTopics: HelpTopic[] = [
     content:
       "TestBed.configureTestingModule({ providers: [...] }) builds the spec's injector; a provider there shadows any providedIn: 'root' recipe for the same token (nearest wins, as always). Fake collaborators with useValue and jasmine spies — { provide: CartService, useValue: { add: jasmine.createSpy('add') } } — so the component under test runs unchanged while the test decides what arrives. Assert via TestBed.inject(Token): it resolves the same instance the component received. Fake INPUTS (environment services, HttpClient, config tokens), never transport internals like window.fetch, and remember a plain arrow function is not a spy — toHaveBeenCalled needs jasmine.createSpy.",
   },
+  {
+    id: 'routing.route-config',
+    title: 'Route Configuration',
+    tags: ['angular'],
+    summary: 'A Routes array maps URLs to components; the outlet renders the match.',
+    content:
+      "Routing is configuration: { path: 'projects', component: ProjectListComponent } entries matched first-match-wins in array order (which is why the '**' wildcard goes last). The matched component renders into <router-outlet/>. routerLink navigates by swapping the outlet's content — same document, state preserved; a plain href triggers a full browser load that destroys and re-bootstraps the app. children nest routes under a parent that renders shared layout plus its OWN router-outlet — one outlet per nesting level. Empty-path redirects ({ path: '', redirectTo: 'dashboard', pathMatch: 'full' }) give sections a canonical default URL; pathMatch: 'full' stops the empty path from prefix-matching every sibling.",
+  },
+  {
+    id: 'routing.params',
+    title: 'Route Params',
+    tags: ['angular'],
+    summary: 'Same route + same component = reused instance — read params as a stream.',
+    content:
+      "Navigating project/1 → project/2 does NOT recreate the component: the router reuses the instance and updates the params. route.snapshot.paramMap is a photo taken when you read it — code that reads it at construction shows the first id forever (the classic frozen detail page with prev/next buttons). Read paramMap as a stream (pipe into toSignal) or enable withComponentInputBinding() so the router writes params into @Input setters on every change. snapshot IS safe when the instance cannot outlive one param value — a page only reachable by full navigation from elsewhere. The same rule applies to resolved route data: route.data is a stream too.",
+  },
+  {
+    id: 'routing.lazy-loading',
+    title: 'Lazy Loading',
+    tags: ['angular'],
+    summary: 'loadComponent/loadChildren split routes into chunks fetched on first navigation.',
+    content:
+      "loadComponent: () => import('./admin.component').then(m => m.AdminComponent) (or loadChildren for a whole subtree) makes the dynamic import a build-time split point: everything reachable only through it moves into a separate chunk, shrinking the initial bundle, and the router downloads the chunk on the FIRST navigation to that route. Consequences: the first click on a lazy area awaits the download (soften with a preloading strategy), and code nobody navigates to is never fetched. Pair with canMatch guards to reject a navigation BEFORE the chunk downloads — unauthorized users then never fetch the code at all.",
+  },
+  {
+    id: 'routing.guards',
+    title: 'Route Guards',
+    tags: ['angular'],
+    summary: 'canActivate/canMatch guard entry, canDeactivate guards exit — redirect with UrlTree, not false.',
+    content:
+      "Guards are functions the router runs mid-navigation: return true to proceed, false to cancel dead (the user sees nothing — almost never right), or a UrlTree (router.createUrlTree(['/login'], { queryParams: { returnTo: state.url } })) to cancel-and-redirect atomically. Place guards on a PARENT route to cover the whole subtree — never copy them onto every child. canMatch runs before a lazy chunk downloads; canActivate runs after matching; canDeactivate receives the component being LEFT and can return a confirm dialog's Observable<boolean> to protect unsaved work (window.onbeforeunload never fires for router navigations — the document doesn't unload). Debug dead navigations with router events: NavigationCancel during the guards phase means a guard said no.",
+  },
+  {
+    id: 'routing.resolvers',
+    title: 'Resolvers & Route Data',
+    tags: ['angular'],
+    summary: 'Resolvers fetch during navigation — data ready at activation, wait moved into the transition.',
+    content:
+      "A ResolveFn runs while the navigation is in flight: the URL only commits once the data arrives, and the component activates with route.data populated. The trade is honest: the skeleton-flash inside the page disappears, but the wait moves into the navigation itself — show a navigation progress indicator or clicks feel dead. Two failure modes to avoid: swallowing errors into of(null) makes a failed fetch 'succeed' into a page whose data is a lie (cancel or redirect instead), and reading route.data via snapshot at construction freezes the page when params change on a reused instance — data is a stream, read it like one.",
+  },
+  {
+    id: 'routing.preloading',
+    title: 'Preloading Strategies',
+    tags: ['angular'],
+    summary: 'Download lazy chunks in idle time after startup — all of them, or the ones data says you should.',
+    content:
+      "withPreloading(PreloadAllModules) fetches every lazy chunk once the app is interactive: initial load stays lean, first clicks find chunks already cached. When 'all' is wasteful (mobile traffic, many niche areas), a custom PreloadingStrategy decides per route — preload: (route, load) => route.data?.['preload'] ? load() : of(null) — and analytics tells you which routes to flag. Caution: preloading runs OUTSIDE navigation, so canMatch guards do not gate it; a route both guarded and flagged for preload downloads its chunk for users the guard would refuse unless the strategy itself consults auth state. Route-level providers pair well here: a providers array on a route scopes services to that subtree.",
+  },
 ];
