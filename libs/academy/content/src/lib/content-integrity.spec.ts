@@ -23,6 +23,7 @@ import { ngTypedFormsPack } from './ng-typed-forms/campaign';
 import { ngSignalsCdPack } from './ng-signals-cd/campaign';
 import { ngDiProvidersPack } from './ng-di-providers/campaign';
 import { ngRoutingPack } from './ng-routing/campaign';
+import { ngHttpApiPack } from './ng-http-api/campaign';
 import { helpTopics } from './help-topics';
 
 /**
@@ -46,6 +47,7 @@ describe('content integrity', () => {
     ngSignalsCdPack,
     ngDiProvidersPack,
     ngRoutingPack,
+    ngHttpApiPack,
   ];
 
   it('validates every campaign pack against the Zod schema', () => {
@@ -167,6 +169,7 @@ describe('content integrity', () => {
       'ng-signals-cd': 'ng-typed-forms',
       'ng-di-providers': 'ng-signals-cd',
       'ng-routing': 'ng-di-providers',
+      'ng-http-api': 'ng-routing',
     };
     for (const pack of packs) {
       expect(pack.campaign.requiredCampaignId)

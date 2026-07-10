@@ -614,4 +614,52 @@ export const helpTopics: HelpTopic[] = [
     content:
       "withPreloading(PreloadAllModules) fetches every lazy chunk once the app is interactive: initial load stays lean, first clicks find chunks already cached. When 'all' is wasteful (mobile traffic, many niche areas), a custom PreloadingStrategy decides per route — preload: (route, load) => route.data?.['preload'] ? load() : of(null) — and analytics tells you which routes to flag. Caution: preloading runs OUTSIDE navigation, so canMatch guards do not gate it; a route both guarded and flagged for preload downloads its chunk for users the guard would refuse unless the strategy itself consults auth state. Route-level providers pair well here: a providers array on a route scopes services to that subtree.",
   },
+  {
+    id: 'http.client-observables',
+    title: 'HttpClient & Observables',
+    tags: ['angular', 'api'],
+    summary: 'HttpClient calls return cold observables — the request fires per subscription.',
+    content:
+      'http.get/post/… BUILD a request description and return it as a cold observable: with no subscriber (no subscribe, async pipe, toSignal or firstValueFrom) nothing is ever sent — the classic empty-network-tab mystery. Conversely each ADDITIONAL subscription re-executes the request: two async pipes on one post$ means two POSTs (double orders). For reads, share the execution (shareReplay) when several consumers need one answer; for mutations, wire exactly-one execution deliberately in the handler and let templates read the RESULT. The observable completes after one response — HTTP streams are one-shot.',
+  },
+  {
+    id: 'http.interceptors',
+    title: 'HTTP Interceptors',
+    tags: ['angular', 'api'],
+    summary: 'Cross-cutting request concerns in one gate — clone requests, mind the chain order.',
+    content:
+      "A functional interceptor — (req, next) => next(req.clone({ setHeaders: {...} })) — sees every request and response: auth tokens, tracing headers, logging and error policy live once instead of at 41 call sites. Requests are immutable BY DESIGN: they can be re-executed (retries, resubscribes) and flow through a chain, so handlers clone-with-changes rather than mutate — a mutated request would be re-decorated on every retry. Chain order is nesting order: earlier interceptors wrap later ones. A useful default: auth → logging → retry, so logs show the request as actually sent and every retry attempt is both tokened and visible.",
+  },
+  {
+    id: 'http.resilience',
+    title: 'Retries & Timeouts',
+    tags: ['api', 'angular'],
+    summary: 'Retry transient failures on idempotent requests only — back off, cap, time out.',
+    content:
+      'A retry is a re-execution, so ask first: is running this twice safe? GETs yes; an unguarded POST /payments no — a timed-out request may have SUCCEEDED server-side (the response was lost, not the charge), and re-sending charges again. Make mutations retry-safe with a client-generated Idempotency-Key the server deduplicates on — the key stays FIXED across retries of one intent. Then retry only transient classes (5xx, 429, status 0 network), never deterministic 4xx; delay attempts with exponential backoff (1s, 2s, …) so a drowning service can breathe; cap at 2–3 attempts; and put timeout() on everything so slow failures fail fast instead of hanging the UI.',
+  },
+  {
+    id: 'http.list-design',
+    title: 'List Endpoint Design',
+    tags: ['api'],
+    summary: 'HttpParams is immutable; pagination by cursor survives inserts where offset repeats.',
+    content:
+      "HttpParams.set returns a NEW instance — params.set('q', v) as a statement discards its result (chain or reassign, like signals updates). On the endpoint side: limit/offset paginates by POSITION in a moving list, so inserts above shift every offset and page 2 re-serves page-1 rows — feeds and insert-heavy tables want a CURSOR (?after=<sortKey:id>), which anchors continuation by VALUE and cannot repeat. Always give pagination a deterministic order (sort key + id tiebreaker). Optional filters are cleanest omitted-when-absent — no 'all' sentinels — and clients should trust the server's answer rather than silently re-filtering it.",
+  },
+  {
+    id: 'http.caching',
+    title: 'Caching & Invalidation',
+    tags: ['angular', 'api'],
+    summary: 'shareReplay dedupes executions; mutations must reset the caches they falsify.',
+    content:
+      'shareReplay({ bufferSize: 1 }) turns N subscribers into one upstream execution with the last value replayed to newcomers — right for read-mostly data like config. Its liabilities: an ERROR is replayed to every future subscriber (retry before the share), and the memory lives until something resets it. For mutable data, give the cache a reset switch: refresh$ = new BehaviorSubject<void>(undefined), orders$ = refresh$.pipe(switchMap(fetch), shareReplay(...)), and every mutation taps refresh$.next() on success — the mutation is the one code that knows the exact moment the cache became a lie. Never mutate a replayed value in place: same reference, no re-emission. refCount: true drops the cache when the last subscriber leaves — a safe default for mutable lists.',
+  },
+  {
+    id: 'http.contract-design',
+    title: 'API Contract Design',
+    tags: ['api'],
+    summary: 'Additive changes are safe; removals, renames and new requirements break deployed clients.',
+    content:
+      'An API is a promise to clients you cannot see or redeploy. ADDITIVE changes keep it: new optional request fields, new response fields, new endpoints (new enum values are additive-with-an-asterisk — announce them; clients must handle unknown values). BREAKING changes: removing or renaming any field, changing a type or meaning, making optional input required, tightening validation — each fails some deployed client, often silently (renamed response fields read as undefined). Migrate by addition: ship new alongside old, deprecate, remove in a versioned successor. Verbs carry semantics too: PUT replaces the whole resource (an omitted field means DELETE it), PATCH merges only the provided changes — sending a one-field body via PUT politely erases everything else. Status codes: use the standard channel — 200-with-{success:false} makes every generic tool (interceptors, monitors, retries) read failure as success.',
+  },
 ];

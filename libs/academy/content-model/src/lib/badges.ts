@@ -118,6 +118,12 @@ export const BADGES: readonly BadgeDefinition[] = [
     description: 'Completed the Routing field notes — navigation without reboots, chunks on demand.',
     icon: '🧭',
   },
+  {
+    id: 'api-craftsman',
+    title: 'API Craftsman',
+    description: 'Completed the HTTP & API field notes — requests shaped, contracts honoured.',
+    icon: '📨',
+  },
   // Programmatic achievements (Review Loop spec 08) — awarded by
   // GameStateService from play history, not by content rewards.
   {
