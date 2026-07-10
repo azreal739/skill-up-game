@@ -26,6 +26,7 @@ import {
   ngDiProvidersPack,
   ngRoutingPack,
   ngHttpApiPack,
+  ngStateManagementPack,
   helpTopics,
 } from '@academy/content';
 import { z } from 'zod';
@@ -59,6 +60,7 @@ export class ContentService {
       ngDiProvidersPack,
       ngRoutingPack,
       ngHttpApiPack,
+      ngStateManagementPack,
     ].map((pack) => this.validatePack(pack));
     this.topics = helpTopics.map((topic) => this.validateTopic(topic));
 
