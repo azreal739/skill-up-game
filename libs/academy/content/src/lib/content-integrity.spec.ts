@@ -20,6 +20,7 @@ import { tsFundamentalsPack } from './ts-fundamentals/campaign';
 import { fpTypescriptPack } from './fp-typescript/campaign';
 import { rxjsReactivePack } from './rxjs-reactive/campaign';
 import { ngTypedFormsPack } from './ng-typed-forms/campaign';
+import { ngSignalsCdPack } from './ng-signals-cd/campaign';
 import { helpTopics } from './help-topics';
 
 /**
@@ -40,6 +41,7 @@ describe('content integrity', () => {
     fpTypescriptPack,
     rxjsReactivePack,
     ngTypedFormsPack,
+    ngSignalsCdPack,
   ];
 
   it('validates every campaign pack against the Zod schema', () => {
@@ -158,6 +160,7 @@ describe('content integrity', () => {
       'fp-typescript': 'ts-fundamentals',
       'rxjs-reactive': 'fp-typescript',
       'ng-typed-forms': 'rxjs-reactive',
+      'ng-signals-cd': 'ng-typed-forms',
     };
     for (const pack of packs) {
       expect(pack.campaign.requiredCampaignId)

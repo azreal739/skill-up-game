@@ -100,6 +100,12 @@ export const BADGES: readonly BadgeDefinition[] = [
     description: 'Completed the Typed Forms field notes — user input, modelled safely.',
     icon: '📋',
   },
+  {
+    id: 'signal-operator',
+    title: 'Signal Operator',
+    description: 'Completed the Change Detection & Signals field notes — the view updates on purpose.',
+    icon: '📡',
+  },
   // Programmatic achievements (Review Loop spec 08) — awarded by
   // GameStateService from play history, not by content rewards.
   {

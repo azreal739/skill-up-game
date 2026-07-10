@@ -22,6 +22,7 @@ import {
   fpTypescriptPack,
   rxjsReactivePack,
   ngTypedFormsPack,
+  ngSignalsCdPack,
   helpTopics,
 } from '@academy/content';
 import { z } from 'zod';
@@ -51,6 +52,7 @@ export class ContentService {
       fpTypescriptPack,
       rxjsReactivePack,
       ngTypedFormsPack,
+      ngSignalsCdPack,
     ].map((pack) => this.validatePack(pack));
     this.topics = helpTopics.map((topic) => this.validateTopic(topic));
 
