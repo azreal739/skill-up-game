@@ -23,6 +23,7 @@ import {
   rxjsReactivePack,
   ngTypedFormsPack,
   ngSignalsCdPack,
+  ngDiProvidersPack,
   helpTopics,
 } from '@academy/content';
 import { z } from 'zod';
@@ -53,6 +54,7 @@ export class ContentService {
       rxjsReactivePack,
       ngTypedFormsPack,
       ngSignalsCdPack,
+      ngDiProvidersPack,
     ].map((pack) => this.validatePack(pack));
     this.topics = helpTopics.map((topic) => this.validateTopic(topic));
 

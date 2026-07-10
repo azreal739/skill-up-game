@@ -106,6 +106,12 @@ export const BADGES: readonly BadgeDefinition[] = [
     description: 'Completed the Change Detection & Signals field notes — the view updates on purpose.',
     icon: '📡',
   },
+  {
+    id: 'injection-architect',
+    title: 'Injection Architect',
+    description: 'Completed the Dependency Injection field notes — dependencies declared, never hard-wired.',
+    icon: '🔌',
+  },
   // Programmatic achievements (Review Loop spec 08) — awarded by
   // GameStateService from play history, not by content rewards.
   {

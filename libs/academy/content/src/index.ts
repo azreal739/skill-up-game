@@ -11,4 +11,5 @@ export * from './lib/fp-typescript/campaign';
 export * from './lib/rxjs-reactive/campaign';
 export * from './lib/ng-typed-forms/campaign';
 export * from './lib/ng-signals-cd/campaign';
+export * from './lib/ng-di-providers/campaign';
 export * from './lib/help-topics';
