@@ -24,6 +24,7 @@ import {
   ngTypedFormsPack,
   ngSignalsCdPack,
   ngDiProvidersPack,
+  ngRoutingPack,
   helpTopics,
 } from '@academy/content';
 import { z } from 'zod';
@@ -55,6 +56,7 @@ export class ContentService {
       ngTypedFormsPack,
       ngSignalsCdPack,
       ngDiProvidersPack,
+      ngRoutingPack,
     ].map((pack) => this.validatePack(pack));
     this.topics = helpTopics.map((topic) => this.validateTopic(topic));
 

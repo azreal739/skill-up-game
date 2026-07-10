@@ -112,6 +112,12 @@ export const BADGES: readonly BadgeDefinition[] = [
     description: 'Completed the Dependency Injection field notes — dependencies declared, never hard-wired.',
     icon: '🔌',
   },
+  {
+    id: 'route-navigator',
+    title: 'Route Navigator',
+    description: 'Completed the Routing field notes — navigation without reboots, chunks on demand.',
+    icon: '🧭',
+  },
   // Programmatic achievements (Review Loop spec 08) — awarded by
   // GameStateService from play history, not by content rewards.
   {

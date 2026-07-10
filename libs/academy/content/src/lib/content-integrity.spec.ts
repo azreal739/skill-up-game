@@ -22,6 +22,7 @@ import { rxjsReactivePack } from './rxjs-reactive/campaign';
 import { ngTypedFormsPack } from './ng-typed-forms/campaign';
 import { ngSignalsCdPack } from './ng-signals-cd/campaign';
 import { ngDiProvidersPack } from './ng-di-providers/campaign';
+import { ngRoutingPack } from './ng-routing/campaign';
 import { helpTopics } from './help-topics';
 
 /**
@@ -44,6 +45,7 @@ describe('content integrity', () => {
     ngTypedFormsPack,
     ngSignalsCdPack,
     ngDiProvidersPack,
+    ngRoutingPack,
   ];
 
   it('validates every campaign pack against the Zod schema', () => {
@@ -164,6 +166,7 @@ describe('content integrity', () => {
       'ng-typed-forms': 'rxjs-reactive',
       'ng-signals-cd': 'ng-typed-forms',
       'ng-di-providers': 'ng-signals-cd',
+      'ng-routing': 'ng-di-providers',
     };
     for (const pack of packs) {
       expect(pack.campaign.requiredCampaignId)
