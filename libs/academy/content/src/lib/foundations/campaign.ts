@@ -22,6 +22,7 @@ export const foundationsPack: CampaignPack = {
     subtitle: 'Begin your Academy journey',
     description:
       'Learn the Angular, TypeScript, SCSS, Git, testing and API-boundary basics needed to work safely on the platform — then run the Dashboard v2 launch yourself.',
+    track: 'mission-control',
     difficulty: 'beginner',
     tags: ['angular', 'typescript', 'scss', 'git', 'testing', 'api'],
     missions: [

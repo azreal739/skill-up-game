@@ -31,6 +31,39 @@
   max-width: 38rem;
 }
 
+.track {
+  display: grid;
+  gap: 0.9rem;
+
+  & + .track {
+    margin-top: 1.6rem;
+  }
+}
+
+.track__header {
+  display: grid;
+  gap: 0.15rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid var(--ea-border);
+}
+
+.track__title {
+  margin: 0;
+  font-size: 1.15rem;
+  letter-spacing: 0.02em;
+}
+
+// The team's real learnings get a distinct violet accent.
+.track[data-track='field-notes'] .track__title {
+  color: var(--ea-accent-2);
+}
+
+.track__tagline {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--ea-muted);
+}
+
 .campaigns {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr));

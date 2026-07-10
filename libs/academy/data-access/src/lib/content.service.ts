@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {
   CampaignDefinition,
   CampaignPack,
+  CampaignTrack,
   ChallengeDefinition,
   HelpTopic,
   MissionDefinition,
@@ -54,6 +55,11 @@ export class ContentService {
 
   campaigns(): CampaignDefinition[] {
     return this.packs.map((pack) => pack.campaign);
+  }
+
+  /** Campaigns belonging to one track, in registration (unlock-chain) order. */
+  campaignsForTrack(track: CampaignTrack): CampaignDefinition[] {
+    return this.campaigns().filter((campaign) => campaign.track === track);
   }
 
   campaignById(campaignId: string): CampaignDefinition | undefined {

@@ -6,6 +6,7 @@ import {
   campaignPackSchema,
   helpTopicSchema,
   missionScore,
+  trackById,
 } from '@academy/content-model';
 import { foundationsPack } from './foundations/campaign';
 import { componentForgePack } from './component-forge/campaign';
@@ -132,8 +133,10 @@ describe('content integrity', () => {
     }
   });
 
-  it('chains campaigns into a linear progression', () => {
+  it('chains campaigns into a linear progression per track', () => {
+    // Each track is its own unlock chain, starting from its own root.
     const chain: Record<string, string | undefined> = {
+      // mission-control
       foundations: undefined,
       'component-forge': 'foundations',
       'typescript-trials': 'component-forge',
@@ -142,11 +145,42 @@ describe('content integrity', () => {
       'api-contract-crisis': 'nx-monorepo-maze',
       'cloudfront-outage': 'api-contract-crisis',
       'save-production': 'cloudfront-outage',
+      // field-notes (DMM past learnings) — extend as campaigns land
     };
     for (const pack of packs) {
       expect(pack.campaign.requiredCampaignId)
         .withContext(pack.campaign.id)
         .toBe(chain[pack.campaign.id]);
+    }
+  });
+
+  it('declares a known track on every campaign', () => {
+    for (const pack of packs) {
+      expect(trackById(pack.campaign.track))
+        .withContext(`${pack.campaign.id} track "${pack.campaign.track}"`)
+        .toBeDefined();
+    }
+  });
+
+  it('keeps every unlock chain within its own track', () => {
+    const byId = new Map(packs.map((pack) => [pack.campaign.id, pack.campaign]));
+    for (const pack of packs) {
+      const required = pack.campaign.requiredCampaignId;
+      if (required) {
+        expect(byId.get(required)?.track)
+          .withContext(`${pack.campaign.id} (${pack.campaign.track}) requires ${required}`)
+          .toBe(pack.campaign.track);
+      }
+    }
+  });
+
+  it('gives each track exactly one root campaign', () => {
+    const tracksInUse = new Set(packs.map((pack) => pack.campaign.track));
+    for (const track of tracksInUse) {
+      const roots = packs.filter(
+        (pack) => pack.campaign.track === track && !pack.campaign.requiredCampaignId
+      );
+      expect(roots.length).withContext(`track ${track} roots`).toBe(1);
     }
   });
 

@@ -20,6 +20,7 @@ export const componentForgePack: CampaignPack = {
     subtitle: 'Build the reusable tile system',
     description:
       'The UI guild needs reusable components for the platform. Separate smart from dumb, keep components typed and accessible, respect monorepo boundaries, and forge a tile system every team can build on.',
+    track: 'mission-control',
     difficulty: 'beginner',
     requiredCampaignId: 'foundations',
     tags: ['angular', 'scss', 'a11y', 'nx'],

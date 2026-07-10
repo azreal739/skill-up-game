@@ -21,6 +21,7 @@ export const cloudfrontOutagePack: CampaignPack = {
     subtitle: 'A deploy went out — users still see the old app',
     description:
       'Static hosting looks simple until a deploy will not appear. Learn how a built SPA is served from the edge, why bundles are hashed, how cache TTLs and invalidation decide what users see, and how to verify a deploy is genuinely live — then restore a real stale-edge outage.',
+    track: 'mission-control',
     difficulty: 'expert',
     requiredCampaignId: 'api-contract-crisis',
     tags: ['cicd', 'incident-response'],
