@@ -142,6 +142,12 @@ export const BADGES: readonly BadgeDefinition[] = [
     description: 'Completed the Component Architecture field notes — parts with contracts, composed to outlive their pages.',
     icon: '🧱',
   },
+  {
+    id: 'test-strategist',
+    title: 'Test Strategist',
+    description: 'Completed the Testing field notes — promises placed at their cheapest level, red meaning news.',
+    icon: '🧪',
+  },
   // Programmatic achievements (Review Loop spec 08) — awarded by
   // GameStateService from play history, not by content rewards.
   {

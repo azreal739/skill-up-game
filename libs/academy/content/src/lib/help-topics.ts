@@ -783,6 +783,54 @@ export const helpTopics: HelpTopic[] = [
       'The quality bar for a component spec: it FAILS when behaviour changes and PASSES when implementation changes. Achieve it by testing through the contract the parent uses — setInput() the data, dispatch real DOM events (click the rendered header, never call component.toggle() directly — the template wiring is exactly what goes untested otherwise), assert on rendered DOM and spied outputs. Assertions on private fields, method call counts or internal class names are refactoring handcuffs: a zero-behaviour refactor breaks them, teaching teams to "fix the specs to match" — a suite that mirrors the code can never catch a regression. And never enshrine observed behaviour as the expectation to make a test pass: drive the contract, expect the contract.',
   },
   {
+    id: 'test.pyramid',
+    title: 'The Test Pyramid',
+    tags: ['testing'],
+    summary: 'A cost model, not a ritual — buy each promise at the cheapest level that enforces it.',
+    content:
+      "A test is an executable promise: this input produces that behaviour, or the build goes red. The pyramid prices the levels: unit tests (~1ms, one promise apiece, hundreds — logic and edges against pure functions), integration tests (~100ms, dozens — seams and wiring with real collaborators), E2E journeys (seconds each, whole-system, a handful — flows whose breakage is an incident). Buy each promise at its cheapest sufficient level: nine VAT rules are nine unit promises plus ONE journey proving the wiring — never nine browser tests. A suite's value is the sum of behaviours it can catch breaking; green is only meaningful where red was possible.",
+  },
+  {
+    id: 'test.doubles',
+    title: 'Test Doubles',
+    tags: ['testing'],
+    summary: 'Stubs answer, spies record, fakes behave — double at the seam, keep everything inside real.',
+    content:
+      "Doubles have job titles. STUB: answers a question the code reads (a clock returning a fixed date, a store signal returning a value) — for state. SPY: records calls for outbound effects you cannot otherwise observe (analytics.track fired with the query) — the one place 'was called' IS the promise. FAKE: a lightweight working implementation (in-memory repo) when the interaction is too rich to script. The discipline: double only at the SEAM the test owns — what the unit itself injects. Mocking through the seam (the store's service's http client's config) re-implements three layers' interactions in mocks that then verify each other: every internal refactor breaks thirty tests for zero behaviour reasons.",
+  },
+  {
+    id: 'test.behaviour',
+    title: 'Testing Behaviour',
+    tags: ['testing'],
+    summary: 'One behaviour per test, literal expectations, coverage as gap-finder — never a target.',
+    content:
+      'Disciplines that serve the reader-at-3am: one behaviour per test (a failure names one thing — stapled assertions hide everything behind the first failure); arrange-act-assert visually separated; names shaped as does-X-when-Y so the red list reads as a bug report; literal expected values (deriving expectations from the code\'s own constants makes tests agree by construction). Edge cases earn tests where the team had to DECIDE an answer: boundaries, rule interactions, contracted rejections. Coverage counts lines EXECUTED, not promises made — as a target it manufactures theatre (was-called specs, should-create per file, not.toThrow blessings); as an instrument it maps the untested, which is real information. The only review question: what bug turns this test red?',
+  },
+  {
+    id: 'test.integration',
+    title: 'Integration Seams',
+    tags: ['testing', 'angular'],
+    summary: 'Keep one seam real to catch handshake bugs; HttpTestingController plays the server.',
+    content:
+      "Unit-green, production-wrong happens when both sides of a handshake are stubbed by the same imagination: the store passes currency as a param, the service expects it in the payload, both stubs agree with their own author. Integration tests keep ONE seam real — real store + real service — and double only at the far edge. At the wire, HttpTestingController keeps everything in-process real (HttpClient, interceptors, serialisation) while scripting responses: the outgoing REQUEST becomes the assertion (expectOne(url), check headers/params/body), then flush() the response and verify() nothing escaped. Stop realness at the process boundary: staging APIs in CI make red mean 'someone deployed' — cross-process truth belongs to a few contract tests, not the suite.",
+  },
+  {
+    id: 'test.e2e',
+    title: 'E2E Strategy',
+    tags: ['testing'],
+    summary: 'A hardened handful of critical journeys — volume converts inherited flakiness into noise.',
+    content:
+      'E2E is the only level proving "a real user can actually check out" — and each test crosses every layer, inheriting every layer\'s failure rate. Those rates COMPOUND with count: at 212 tests even 99.9% per-test reliability fails runs constantly for non-bug reasons, red stops meaning news, and re-running becomes documented policy — the suite is dead. Keep a handful: journeys whose breakage is a company incident (sign-in, checkout, the search spine). Harden each: setup through APIs, not UI tours (seed carts and sessions via requests — the test proves checkout, not the catalogue\'s clickability); selectors via data-testid (classes are styling, renamed without warning); waits via auto-waiting assertions, never wall-clock sleeps. A hardened journey fails for exactly one reason: the journey broke.',
+  },
+  {
+    id: 'test.flaky-discipline',
+    title: 'Flaky Tests',
+    tags: ['testing'],
+    summary: 'Four sources — time, order, shared state, network — and same-day quarantine.',
+    content:
+      "A handful of flaky tests taxes the credibility of thousands of good ones — teams start dismissing REAL failures as 'probably the flaky ones'. Every flake has one of four sources, each with a tell. TIME: fails at specific hours, sleeps, new Date() anywhere — inject the clock, use fakeAsync/tick (time becomes an input). ORDER: passes alone, fails in the suite — some test needs a sibling's leftovers; fresh instance per test, no test may know its siblings exist. SHARED STATE: fails only after certain tests — singletons, static caches, un-reset stores. NETWORK: fails on slow CI days — anything off-process. Policy: quarantine the day it flakes (skip + ticket), root-cause or delete within the sprint. Never auto-retry in CI: retries absorb real intermittent bugs (the 1-in-3 race) along with the flakes, and green degrades to 'passed eventually'.",
+  },
+  {
     id: 'http.contract-design',
     title: 'API Contract Design',
     tags: ['api'],
