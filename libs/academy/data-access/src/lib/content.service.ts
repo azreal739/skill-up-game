@@ -32,6 +32,7 @@ import {
   ngTestingPack,
   ngAccessibilityPack,
   ngSecurityPack,
+  ngProductionDebuggingPack,
   helpTopics,
 } from '@academy/content';
 import { z } from 'zod';
@@ -71,6 +72,7 @@ export class ContentService {
       ngTestingPack,
       ngAccessibilityPack,
       ngSecurityPack,
+      ngProductionDebuggingPack,
     ].map((pack) => this.validatePack(pack));
     this.topics = helpTopics.map((topic) => this.validateTopic(topic));
 
