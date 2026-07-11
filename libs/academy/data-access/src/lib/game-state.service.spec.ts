@@ -21,7 +21,7 @@ describe('GameStateService', () => {
     expect(service.xp()).toBe(0);
   });
 
-  it('creates a Junior Engineer I profile and persists it', () => {
+  it('creates a Deck Initiate I profile and persists it', () => {
     service.createProfile('Avery');
     expect(service.hasProfile()).toBeTrue();
     expect(service.rank().id).toBe('junior-1');
