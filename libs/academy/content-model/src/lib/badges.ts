@@ -160,6 +160,12 @@ export const BADGES: readonly BadgeDefinition[] = [
     description: 'Completed the Security field notes — hostile input assumed, defended in depth.',
     icon: '🛡️',
   },
+  {
+    id: 'incident-responder',
+    title: 'Incident Responder',
+    description: 'Completed the Production Debugging field notes — reproduce, mitigate, prevent.',
+    icon: '🚒',
+  },
   // Programmatic achievements (Review Loop spec 08) — awarded by
   // GameStateService from play history, not by content rewards.
   {

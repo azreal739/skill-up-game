@@ -951,6 +951,70 @@ export const helpTopics: HelpTopic[] = [
       "Threat modeling is structured pessimism, fifteen minutes before you build. Walk three questions: ASSETS (what's worth stealing/breaking — user data, tokens, money, integrity), ACTORS (who attacks and why — external, malicious user, compromised account, curious insider, bots), ENTRY POINTS (each trust boundary). For every entry×asset, name what goes wrong, rank by likelihood × impact, and match a known defence (validate, encode, authorize server-side, store secrets away, contain with CSP), noting residual risk. Example: a user-uploaded avatar shown to everyone is a stored-XSS vector (a 'png' can be a scripted SVG) far more than a bandwidth concern; a share link with a sequential DB id invites enumeration and needs an unguessable token plus server-enforced read-only scope. The output is a short 'what could go wrong and what we did' list — written before the attacker writes theirs.",
   },
   {
+    id: 'debug.reproduce',
+    title: 'Reproduce First',
+    tags: ['incident-response'],
+    summary: 'A reliable repro is the primary debugging asset — without it, every fix is an unverifiable guess.',
+    content:
+      "The first law of debugging: reproduce before you fix. A reliable reproduction turns \"I think this helps\" into \"watch: it fails, I change this, now it passes\" — it lets you confirm the CAUSE and verify the FIX, and it becomes the regression test. Shipping a plausible fix and waiting to see if reports stop is a slow, uncontrolled experiment on users (and intermittent reports can pause by luck, falsely confirming a wrong fix). To make an intermittent bug deterministic, treat your evidence as a dataset: cross-reference tickets and session replays for the shared conditions (same data? coupon? quantity? browser? locale?), form a hypothesis, and recreate those conditions locally with production-like data until it fails on demand. \"Random\" is conditions you haven't named yet.",
+  },
+  {
+    id: 'debug.devtools',
+    title: 'DevTools',
+    tags: ['incident-response'],
+    summary: 'Each panel answers a question — ask the instrument instead of console.logging in the dark.',
+    content:
+      "DevTools are instruments; pick the panel that answers the question. \"Data isn't showing\" → Network: did the request fire, what status, what's the real response shape? (distinguishes no-request / 403 / empty / mapping-loss in one glance, before any console.log). \"Value is wrong\" → Sources with a CONDITIONAL breakpoint (break only when qty < 0) that pauses on the exact case with the full live scope and call stack — far more than a logged value, and no editing/rebuilding/removing of twenty console.logs. \"It's slow\" → Performance flame chart; \"memory grows\" → Memory heap snapshots; \"layout off\" → Elements computed styles. console.log is fine for a quick probe, but a breakpoint or the network tab usually answers faster and tells you WHICH layer to investigate next.",
+  },
+  {
+    id: 'debug.source-maps',
+    title: 'Source Maps & Prod Builds',
+    tags: ['incident-response'],
+    summary: 'Source maps de-minify production traces; some bugs exist only in the production build.',
+    content:
+      "Production errors arrive minified (\"n is not a function at a.js:1:48293\") because the build mangles names. SOURCE MAPS (.map files) translate minified positions back to your original source — upload them to your error monitor (PRIVATELY; serving them publicly hands attackers your source) so every trace reads \"PriceService.calc (price.service.ts:42)\". And prod-only bugs are real: the production BUILD differs from the dev one — it minifies/mangles names, tree-shakes \"unused\" code (breaking anything referenced only reflectively by string name), strips Angular's dev-mode checks, applies optimizer assumptions, and runs with prod config/CDN. \"Works in dev\" narrows nothing until you reproduce against a PRODUCTION build (build prod + serve the output, or use source maps on the deployed error) — the build difference is itself the clue.",
+  },
+  {
+    id: 'debug.monitoring',
+    title: 'Error Monitoring',
+    tags: ['incident-response'],
+    summary: 'Export unhandled errors with context and alert on spikes — find bugs before users tell you.',
+    content:
+      "console.error writes to the USER's console, which you never see — silent production failures can run for weeks until a social-media complaint. Observability means a global ErrorHandler (plus an unhandledrejection listener) that ships every unhandled error to a monitoring service WITH CONTEXT: the de-minified stack (via uploaded source maps), the release version (which deploy introduced it), breadcrumbs (the clicks/navigations before the crash), browser/OS, and the count of DISTINCT users affected — with alerting on error-rate spikes so a new failure pages you in minutes. Prioritise fixes by IMPACT (users × severity), not loudness: a silent null-deref hitting 6% of sessions outranks a single vocal power user's daily tickets or 4,000 benign \"ResizeObserver loop\" warnings (filter those as noise). Uptime/health checks catch server-DOWN, not client-side errors on a healthy server — you need front-end error monitoring for those.",
+  },
+  {
+    id: 'debug.heisenbugs',
+    title: 'Intermittent Bugs',
+    tags: ['incident-response'],
+    summary: 'Races, timing, environment — “random” is unfound conditions, not true randomness.',
+    content:
+      "Intermittent bugs cluster into three classes. RACE: two async operations whose ORDER varies — e.g. a slow search response landing after a fast one overwrites the display with stale results; the tell is timing-sensitivity (a breakpoint or slowdown changes the outcome), and the fix makes \"latest wins\" structural (switchMap to cancel superseded requests, or a query-match/sequence guard). TIMING: something assumed instant occasionally isn't — fails under load, on slow devices, or cold cache. ENVIRONMENT: a specific browser, locale, network, data shape, or timezone — clusters by user-agent/region/a data attribute (a date parser crashing one region is a locale format like DD/MM/YYYY). An environment bug is deterministic once you MATCH the environment: set your locale/timezone/data to theirs and it reproduces every time. Never write a bug off as \"flaky/unfixable\" — name the unfound condition.",
+  },
+  {
+    id: 'debug.bisection',
+    title: 'Systematic Isolation',
+    tags: ['incident-response', 'git'],
+    summary: 'Binary search over time (git bisect) and code — and change one variable per experiment.',
+    content:
+      "Binary search halves the unknown each step. In TIME: git bisect — mark a known-good and known-bad commit, git checks out the midpoint, you run your repro and mark good/bad, repeat; 400 commits collapse to ~9 tests and it names the EXACT introducing commit (needs only a reliable good/bad test — your repro). In CODE: disable half the suspect feature, see if the bug survives, keep halving. Underneath both: change ONE variable per experiment — flip two things (a CSS property AND a dependency version) and the result is uninterpretable (you can't say which caused it, and a \"fix\" you can't explain may be coincidental and may hide a new regression). Debugging is controlled experiments; understanding, not just green, is the goal.",
+  },
+  {
+    id: 'debug.incident-response',
+    title: 'Incident Response',
+    tags: ['incident-response'],
+    summary: 'In a live incident the order inverts: restore service first, understand later.',
+    content:
+      "Calm debugging is reproduce → diagnose → fix. A LIVE incident inverts it: MITIGATE first — restore service by the fastest safe means, almost always a ROLLBACK to the last known-good deploy (seconds, proven) rather than a hotfix (unproven, written under stress, can deepen the hole). When a blanket rollback is unsafe or too broad (it would revert an urgent security patch or a migration that already ran), a FEATURE FLAG is surgical mitigation — flip off just the broken feature in seconds with zero code risk. Then COMMUNICATE status so support/customers aren't guessing. THEN, with service restored and no clock pressure, do the real root-cause diagnosis, fix, and verify with a regression test. The outage is the emergency, not the unknown bug — every minute spent \"finding it properly\" while users fail is a minute of avoidable outage.",
+  },
+  {
+    id: 'debug.post-mortems',
+    title: 'Post-Mortems',
+    tags: ['incident-response'],
+    summary: 'Blameless analysis of why the SYSTEM allowed a bug through — actions that prevent the class.',
+    content:
+      "A post-mortem is BLAMELESS by design: humans make mistakes, so the question is never \"who was careless\" but why the SYSTEM let a mistake reach production and hurt users. Use the five whys to move from person to process (bug shipped → no test caught it → that path had no coverage → edge cases aren't in our definition of done → …). \"Be more careful\" is not an action — it's unmeasurable, changes no system, and guarantees recurrence. Strong actions are self-enforcing MECHANISMS with owners: a regression test for the exact failing case, an error-rate alert, a canary/gradual rollout that caps any bad deploy's blast radius, a one-click rollback, a validation guard at the boundary. Weak actions are awareness theatre (\"be vigilant\", a company-wide \"outages are costly\" email). Good incidents make the system stronger; the systemic hardening is the highest-value output, never skipped because the team is tired.",
+  },
+  {
     id: 'http.contract-design',
     title: 'API Contract Design',
     tags: ['api'],
