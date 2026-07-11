@@ -735,6 +735,54 @@ export const helpTopics: HelpTopic[] = [
       'The vitals name feelings: LCP — when the main content APPEARS (hero image size/priority, server latency, render-blocking JS; never loading="lazy" on the LCP element — priority exists to name it); INP — when I interact, how fast the page RESPONDS (long main-thread tasks, heavy handlers, oversized change detection); CLS — does the page hold STILL (reserve space: width/height on images, fixed containers for banners, geometry-true skeletons — late content fills in instead of shoving the layout under fingers). Assets: serve what the layout renders — srcset/NgOptimizedImage right-sizes (a 2400px PNG in a 320px card discards ~98% of its pixels), WebP/AVIF on top, lazy below the fold. Lab numbers (your laptop) are for debugging; FIELD numbers (real users, p75) are how the product actually performs — a 4× lab/field gap is the fibre-laptop assumption, measured. Loading UX: progressive sections beat all-or-nothing spinners — never gate the whole page on its slowest request.',
   },
   {
+    id: 'arch.io-contracts',
+    title: 'Input/Output Contracts',
+    tags: ['angular'],
+    summary: 'Inputs carry the narrowest data the render needs; outputs name user intent.',
+    content:
+      "A component's inputs and outputs ARE its API — design them like REST endpoints. Inputs: the data to render (a User), never the source that can find it (the UserStore) — passing sources couples the component to their API, kills reuse anywhere the source doesn't exist, enables hidden writes, and makes specs need fakes instead of plain objects. Outputs: name the user's INTENT at the component's level of authority — (deleteRequested), not (trashClicked) (mechanics age with the design) and not (orderDeleted) (the row can't know the API succeeded). Children report intent; parents decide what happens. A child injecting its parent component to steer it is the coupling anti-pattern — control flows down, intent flows up.",
+  },
+  {
+    id: 'arch.content-projection',
+    title: 'Content Projection',
+    tags: ['angular'],
+    summary: 'Own the frame, project the filling — slots end configuration-flag sprawl.',
+    content:
+      'When a component keeps growing inputs that describe CONTENT (titleIcon, badgeText, subtitleTemplate…), it is refusing projection: <ng-content select="[panel-title]" /> hands the region to the caller, who composes whatever they need from components they already own. The durable rule for what stays an input: inputs configure what the component DOES (collapse behaviour, variant styling — things it implements); projection supplies what the caller SHOWS. Projected content wears its author\'s style scoping and belongs to the caller in every sense. Plain slots are stamped once and carry no data — when content must render per item with context (table cells needing their row), use ng-template with ngTemplateOutlet context instead.',
+  },
+  {
+    id: 'arch.composition',
+    title: 'Composition Patterns',
+    tags: ['angular'],
+    summary: 'Slots for regions, templates-with-context for data-driven holes, directives for behaviour.',
+    content:
+      'The composition kit has three tools beyond plain components. Named ng-content slots: caller-owned regions, stamped once (frames, panels, cards). Templates with context: the caller passes an ng-template, the component stamps it per item via *ngTemplateOutlet="tpl; context: { $implicit: row }" — projection that carries data, the answer to cell-renderer switches that grow a variant per sprint. Attribute directives: behaviour (copy-on-click, tooltips, autofocus) packaged to attach to ANY element — implemented once, composed onto spans, inputs and buttons without touching their components. Choose by the variation\'s shape: content region → slot; per-item content → template; cross-cutting behaviour → directive; behaviour the component itself owns → input.',
+  },
+  {
+    id: 'arch.reuse-boundaries',
+    title: 'Reuse Boundaries',
+    tags: ['angular'],
+    summary: 'Extract on evidence (rule of three) — duplication is cheaper than the wrong abstraction.',
+    content:
+      'Two things that LOOK identical are not yet the same thing: extracting a shared component from coincidental resemblance welds different concepts together, and every divergence afterwards becomes a boolean input (the divergence ledger — flags each used by exactly one caller). Wait for the third real usage; the copies teach you what genuinely varies together, and the eventual abstraction is shaped by evidence. Duplication is visible, mergeable debt — an afternoon to unify; a welded abstraction is invisible glue — surgery to split. When you find a shared component whose flags map one-to-one to callers, un-merge it and share only the honestly-common layer beneath. Real sameness (the design-system button) extracts beautifully — the discipline is about timing, not against sharing.',
+  },
+  {
+    id: 'arch.encapsulation',
+    title: 'Style Encapsulation',
+    tags: ['angular', 'scss'],
+    summary: 'Emulated encapsulation stamps attributes; customise through custom-property doors, never ::ng-deep.',
+    content:
+      "Emulated view encapsulation works by attribute stamping: Angular adds generated attributes (_ngcontent-xx) to a component's template elements and rewrites its CSS to .title[_ngcontent-xx] — rules only match elements wearing the stamp. (Projected content wears the CALLER's stamp — whoever writes markup styles it.) ::ng-deep drills through the wall and couples you to another component's PRIVATE markup: the internal rename that breaks four consumers. The civilised door: CSS custom properties — the component declares its themeable surface (.cell { background: var(--picker-cell-bg, #fff) }), consumers set --picker-cell-bg from outside, and internals stay renameable. Custom properties inherit through style boundaries BY DESIGN — a documented contract, not a trespass. Ban new ::ng-deep with lint; migrate old ones onto doors.",
+  },
+  {
+    id: 'arch.testing-contracts',
+    title: 'Testing Component Contracts',
+    tags: ['angular', 'testing'],
+    summary: 'Specs drive inputs and DOM, assert renders and outputs — refactors pass, behaviour breaks fail.',
+    content:
+      'The quality bar for a component spec: it FAILS when behaviour changes and PASSES when implementation changes. Achieve it by testing through the contract the parent uses — setInput() the data, dispatch real DOM events (click the rendered header, never call component.toggle() directly — the template wiring is exactly what goes untested otherwise), assert on rendered DOM and spied outputs. Assertions on private fields, method call counts or internal class names are refactoring handcuffs: a zero-behaviour refactor breaks them, teaching teams to "fix the specs to match" — a suite that mirrors the code can never catch a regression. And never enshrine observed behaviour as the expectation to make a test pass: drive the contract, expect the contract.',
+  },
+  {
     id: 'http.contract-design',
     title: 'API Contract Design',
     tags: ['api'],
