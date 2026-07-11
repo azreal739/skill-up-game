@@ -14,12 +14,51 @@
 }
 
 .recommended {
+  --ea-path-accent: var(--ea-accent);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1.2rem;
   flex-wrap: wrap;
-  border-color: rgba(34, 211, 238, 0.35);
+  border-color: color-mix(in srgb, var(--ea-path-accent) 40%, var(--ea-border));
+}
+
+/* Where the recommended mission lives: path · campaign. */
+.recommended__path {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.1rem 0 0.15rem;
+  font-size: 0.82rem;
+}
+
+.recommended__emblem {
+  font-size: 1rem;
+}
+
+.recommended__path-link {
+  color: var(--ea-path-accent);
+  text-decoration: none;
+  font-weight: 700;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.recommended__sep {
+  color: var(--ea-muted);
+}
+
+.recommended__campaign-link {
+  color: var(--ea-muted);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--ea-text);
+    text-decoration: underline;
+  }
 }
 
 .recommended__title {
