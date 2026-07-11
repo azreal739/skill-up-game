@@ -178,6 +178,13 @@ export const BADGES: readonly BadgeDefinition[] = [
     description: 'Completed the AI-Assisted Engineering field notes — amplify judgement, stay accountable.',
     icon: '🤖',
   },
+  // Dance Academy — Judge Path
+  {
+    id: 'judge-foundations',
+    title: 'Judge Foundations',
+    description: 'Completed Core Judging Fundamentals — the six lenses every dance is judged through.',
+    icon: '⚖️',
+  },
   // Programmatic achievements (Review Loop spec 08) — awarded by
   // GameStateService from play history, not by content rewards.
   {

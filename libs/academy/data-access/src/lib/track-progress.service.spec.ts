@@ -31,7 +31,11 @@ describe('TrackProgressService', () => {
 
   it('summarises one path per non-empty track, in TRACKS order', () => {
     const summaries = service.summaries();
-    expect(summaries.map((s) => s.track.id)).toEqual(['mission-control', 'field-notes']);
+    expect(summaries.map((s) => s.track.id)).toEqual([
+      'mission-control',
+      'field-notes',
+      'dance-judging',
+    ]);
   });
 
   it('reports campaign and mission totals straight from content', () => {

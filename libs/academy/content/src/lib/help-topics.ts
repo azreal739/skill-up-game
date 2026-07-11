@@ -1150,4 +1150,69 @@ export const helpTopics: HelpTopic[] = [
     content:
       'An API is a promise to clients you cannot see or redeploy. ADDITIVE changes keep it: new optional request fields, new response fields, new endpoints (new enum values are additive-with-an-asterisk — announce them; clients must handle unknown values). BREAKING changes: removing or renaming any field, changing a type or meaning, making optional input required, tightening validation — each fails some deployed client, often silently (renamed response fields read as undefined). Migrate by addition: ship new alongside old, deprecate, remove in a versioned successor. Verbs carry semantics too: PUT replaces the whole resource (an omitted field means DELETE it), PATCH merges only the provided changes — sending a one-field body via PUT politely erases everything else. Status codes: use the standard channel — 200-with-{success:false} makes every generic tool (interceptors, monitors, retries) read failure as success.',
   },
+  // ---- Dance Academy — Judge Path (Judge Handbook) ----
+  {
+    id: 'judging.criteria',
+    title: 'The Six Judging Lenses',
+    tags: ['dance', 'judging'],
+    summary: 'Every dance is judged through timing, rhythm, motion, character, signature figures and spatial structure.',
+    content:
+      'A judge does not score "good dancing" as one blur — they watch through six lenses. TIMING: are the dancers on the music, in the correct time signature and count? RHYTHM: do their steps match the slow/quick pattern and accents of the style? MOTION: is the body producing movement the right way for the dance (rise and fall, Cuban action, pulse)? CHARACTER: does the energy match the dance — regal Waltz, cheeky Cha Cha, romantic Nightclub? SIGNATURE FIGURES: are the figures that define the dance present and recognisable? SPATIAL STRUCTURE: is the couple using the floor correctly — progressive travel where the dance demands it, contained geometry where it does not, with good floorcraft. Score each lens on its own; a dance can nail timing yet miss character entirely.',
+  },
+  {
+    id: 'judging.timing',
+    title: 'Timing and Time Signature',
+    tags: ['dance', 'judging'],
+    summary: 'Timing is whether the dance sits correctly on the music and its counts.',
+    content:
+      'Timing asks a single question: are the dancers where the music says they should be? Identify the time signature first (Waltz is 3/4; most others are 4/4 or 2/4), then the counting structure and the musical accents. A Waltz carries its musical accents on 1 and 4 across six counts; a Cha Cha emphasises the 4& and 8&. A couple can move beautifully and still be judged down for landing steps off the beat, or for dancing a pattern that does not fit the phrase. Distinguish MUSICAL accents (where the music is strong) from DANCE accents (where the body expresses) — good dancers align the two.',
+  },
+  {
+    id: 'judging.rhythm',
+    title: 'Rhythm: Slow, Quick and Syncopation',
+    tags: ['dance', 'judging'],
+    summary: 'Rhythm is the slow/quick pattern a style rides on, including syncopations.',
+    content:
+      'Where timing is about being on the beat, rhythm is about the PATTERN of durations a style rides on. Nightclub is slow-quick-quick; Two Step is quick-quick-slow-slow; Triple Two is slow-slow-triple-triple. Syncopation is a deliberate, temporary displacement of the expected accent that resolves back — judged as skilful when controlled and musical, and as an error when it is really just poor timing. A judge listens for whether the couple is expressing the style\'s rhythm, not merely stepping on every beat.',
+  },
+  {
+    id: 'judging.motion',
+    title: 'Motion and Body Action',
+    tags: ['dance', 'judging'],
+    summary: 'Motion is how the body produces movement — and whether it fits the dance and its music.',
+    content:
+      'Motion is the quality of movement the body generates, and it must match the dance AND the music playing. Waltz uses rise and fall with swing and sway; Nightclub draws sway from the base rather than the upper body; Cha Cha chooses Cuban motion for Latin-flavoured music and a flatter action for rolling country rhythm. The classic judging error is correct footwork with the wrong motion for the song — the steps are "right" but the body is telling the wrong story. Judge whether the action is appropriate, controlled and driven from the correct part of the body.',
+  },
+  {
+    id: 'judging.character',
+    title: 'Character and Expression',
+    tags: ['dance', 'judging'],
+    summary: 'Character is whether the couple embodies the personality of the dance.',
+    content:
+      'Every dance has a personality, and character judges whether the couple embodies it. Waltz is elegant, formal and regal; Cha Cha is fiery, flirtatious and cheeky; Nightclub is soft, fluid and romantic; Polka is energetic and country. A technically clean routine danced with the wrong character reads as a rehearsal, not a performance. Character is not costume — it is carriage, energy, musical interpretation and connection. Judge it as its own lens: a couple can be perfectly on time and rhythm yet flat in character.',
+  },
+  {
+    id: 'judging.signature-figures',
+    title: 'Signature Figures',
+    tags: ['dance', 'judging'],
+    summary: 'Signature figures are the defining shapes and patterns that make a dance recognisable.',
+    content:
+      'Each dance is identified by a vocabulary of signature figures. Waltz has the box, twinkle, and fallaway; West Coast Swing has the push, pass and whip; Samba has the volta, whisk and botafogo. A judge checks that the defining figures of the claimed dance are present and correctly executed — a "Waltz" with no recognisable Waltz figures, or a "West Coast Swing" that never uses a push or pass, fails this lens no matter how pretty it looks. Absence or misuse of signature figures is one of the fastest ways to tell that a couple is dancing the wrong dance to the music.',
+  },
+  {
+    id: 'judging.spatial-structure',
+    title: 'Spatial Structure and Floorcraft',
+    tags: ['dance', 'judging'],
+    summary: 'Spatial structure is whether the couple uses the floor the way the dance demands.',
+    content:
+      'Spatial structure judges the couple\'s relationship with the floor. PROGRESSIVE dances (Waltz, Polka, Two Step) travel around the floor along the line of dance; NON-PROGRESSIVE dances (Nightclub, East Coast Swing) hold a contained geometric area — diamonds, squares, circles — parallel to the audience edge. West Coast Swing lives in a SLOT, using extension and compression, and may change direction briefly without abandoning the slot. Using the wrong structure — a Nightclub travelling continuously around the room, or a slot dance wandering off its line — is a spatial-structure error. FLOORCRAFT (avoiding collisions, sharing space) is judged alongside it.',
+  },
+  {
+    id: 'judging.process',
+    title: 'The Judging Process',
+    tags: ['dance', 'judging'],
+    summary: 'Judge each lens deliberately, compare fairly, and record a defensible decision.',
+    content:
+      'A defensible judgement is built, not felt. First identify the dance being claimed, then watch through each of the six lenses in turn rather than reacting to overall impression. Separate what is genuinely wrong from what is merely to your personal taste. When comparing couples, hold every couple to the same criteria in the same order, and be able to state the concrete reason one placed above another — "stronger timing and clearer signature figures", not "I liked them more". Record notes as you go: a score you can explain is a score you can stand behind on a panel.',
+  },
 ];

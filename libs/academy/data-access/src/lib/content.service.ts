@@ -35,6 +35,7 @@ import {
   ngProductionDebuggingPack,
   feSystemDesignPack,
   aiAssistedEngineeringPack,
+  judgeCoreFundamentalsPack,
   helpTopics,
 } from '@academy/content';
 import { z } from 'zod';
@@ -77,6 +78,7 @@ export class ContentService {
       ngProductionDebuggingPack,
       feSystemDesignPack,
       aiAssistedEngineeringPack,
+      judgeCoreFundamentalsPack,
     ].map((pack) => this.validatePack(pack));
     this.topics = helpTopics.map((topic) => this.validateTopic(topic));
 
