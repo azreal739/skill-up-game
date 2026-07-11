@@ -1015,6 +1015,70 @@ export const helpTopics: HelpTopic[] = [
       "A post-mortem is BLAMELESS by design: humans make mistakes, so the question is never \"who was careless\" but why the SYSTEM let a mistake reach production and hurt users. Use the five whys to move from person to process (bug shipped → no test caught it → that path had no coverage → edge cases aren't in our definition of done → …). \"Be more careful\" is not an action — it's unmeasurable, changes no system, and guarantees recurrence. Strong actions are self-enforcing MECHANISMS with owners: a regression test for the exact failing case, an error-rate alert, a canary/gradual rollout that caps any bad deploy's blast radius, a one-click rollback, a validation guard at the boundary. Weak actions are awareness theatre (\"be vigilant\", a company-wide \"outages are costly\" email). Good incidents make the system stronger; the systemic hardening is the highest-value output, never skipped because the team is tired.",
   },
   {
+    id: 'sysd.requirements',
+    title: 'Requirements First',
+    tags: ['angular'],
+    summary: 'Clarify scope, users, scale and constraints before drawing any architecture.',
+    content:
+      "The first move in any system design is REQUIREMENTS, not boxes — the same feature name (\"news feed\") hides ten different systems until you bound it. FUNCTIONAL: what must it do (core flows, real-time?, edit?, offline?). NON-FUNCTIONAL: how well — scale (100 users vs 100M changes caching/pagination/everything), devices (desktop vs low-end mobile on 3G changes the budget), constraints (SEO/SSR, offline/PWA, accessibility, i18n, regulatory), acceptable latency. Every one flips the architecture, so gather them before choosing components, data models, or state tools. A single late constraint — \"it needs to rank on Google\" — can invert the rendering strategy from CSR to SSR/SSG; discovered late it's a rewrite, discovered early it's a design input.",
+  },
+  {
+    id: 'sysd.rendering',
+    title: 'Rendering Strategies',
+    tags: ['angular'],
+    summary: 'CSR/SSR/SSG/hydration trade first-paint, freshness and server cost — choose per page.',
+    content:
+      "Rendering strategy is WHERE and WHEN the HTML is generated, chosen PER PAGE by that page's needs. CSR (client): blank shell, JS builds it — best for private, interactive apps; poor first paint/SEO, cheap server. SSR (server per request): HTML built each request then hydrated — best for fresh + SEO-critical pages (feed, product page); server cost/complexity. SSG (build time): pre-rendered static HTML — fastest and cheapest, stale until rebuild, best for blog/docs/marketing. Most teams wrongly pick ONE for the whole app when a marketing page (SSG), a private dashboard (CSR) and a blog (SSG) want different answers. HYDRATION attaches JS to server HTML to make it interactive — it assumes the client produces the SAME DOM the server sent, so non-deterministic initial render (Date.now(), random, browser timezone/APIs) causes a hydration MISMATCH (flicker, re-render); keep initial render deterministic and defer client-only differences until after hydration.",
+  },
+  {
+    id: 'sysd.data-layer',
+    title: 'The Data Layer',
+    tags: ['angular'],
+    summary: 'Client caching, normalization and invalidation are architecture — coherence is designed, not hoped.',
+    content:
+      "At scale the client data layer is real architecture with three concerns. CACHING: hold fetched data and don't re-request what's fresh (Remote<T>, TTL, shareReplay) while knowing when it's stale. NORMALIZATION: store each entity ONCE keyed by id and have views reference it by id — so one user object serves every view and there are no denormalized copies to drift (the five-caches-of-one-user bug is a design failure, not a whack-a-mole). INVALIDATION: a mutation marks the cache it falsifies as stale (the mutation owns invalidation). Build-vs-buy the layer by data complexity: a small surface can hand-roll a Remote<T> cache; a large app with many entities, dedup, background refetch, pagination and optimistic updates is re-implementing a caching library (TanStack Query / Apollo) badly — adopt one. The design question: is \"same entity, same value, everywhere\" guaranteed by normalization or hoped for by sync code?",
+  },
+  {
+    id: 'sysd.realtime',
+    title: 'Real-Time Transports',
+    tags: ['angular', 'rxjs'],
+    summary: 'Polling, SSE and WebSockets trade simplicity for latency and direction — choose by frequency and direction.',
+    content:
+      "\"Make it real-time\" hides three systems. POLLING: client asks every N seconds — simplest, works everywhere; latency = interval, wasteful when idle; best for infrequent updates. SSE (Server-Sent Events): server pushes to client over one long-lived HTTP connection, auto-reconnects — best for ONE-WAY streams (notifications, live feeds, dashboards); server→client only. WEBSOCKETS: full bidirectional persistent connection — for genuinely TWO-WAY low-latency needs (chat, collaborative editing, live cursors, presence, games); connection-management and scaling cost. Choose by update frequency AND whether the CLIENT needs to push. Critically, ANY persistent connection drops on flaky mobile networks, so design RECONNECTION and GAP RECOVERY: on reconnect tell the server the last-seen event (SSE's Last-Event-ID / a since-cursor) so missed events are replayed — a live feature is done when it survives a flaky connection, not a stable demo.",
+  },
+  {
+    id: 'sysd.scaling',
+    title: 'Scaling the Codebase',
+    tags: ['angular', 'nx'],
+    summary: 'Scale architecture to teams — enforced module boundaries first, micro-frontends only for deploy independence.',
+    content:
+      "Codebase architecture is org architecture (Conway's law: the system mirrors the org's communication structure). When many teams tangle in one codebase, the fix is enforced MODULE BOUNDARIES: organise into feature libraries with clear public APIs and use dependency constraints (Nx tag rules) so a feature can't reach into another team's internals — teams then change in parallel safely, at a fraction of heavier options' cost. MICRO-FRONTENDS (independently built and deployed apps per team) grant deployment autonomy and stack independence but bring runtime integration, shared-dependency version drift, and coordination cost — they earn that cost only when independent DEPLOYMENT is a hard requirement (e.g. an hourly-shipping team that cannot be coupled to a quarterly regulated release) or stacks genuinely diverge, NOT merely because the team is large. Enforce boundaries in a monorepo first; reach for micro-frontends only when deployment independence is proven.",
+  },
+  {
+    id: 'sysd.performance',
+    title: 'Performance as Architecture',
+    tags: ['angular'],
+    summary: 'Design for speed with a budget, a minimal critical path, and edge delivery — don’t optimise it in later.',
+    content:
+      "At system scale, performance is designed in, not patched after. A PERFORMANCE BUDGET is a hard CI-enforced limit (initial JS ≤ X KB, LCP ≤ Y on the target device) that fails the build when exceeded — so features are shaped WITHIN it and bloat is caught at PR time as a design decision, ending the grow-then-trim quarterly-sprint cycle (which exists because nothing prevents growth between cleanups). The CRITICAL PATH — what MUST load for first meaningful paint — is deliberately minimised: route-level code splitting (ship only this route), defer non-critical/below-fold JS (e.g. a charting library), fetch only above-the-fold data in parallel, prioritise the LCP asset. DELIVERY: a CDN/edge serves static assets and cached responses close to users, because geography is latency. Speed becomes a property of the design, not a rescue mission.",
+  },
+  {
+    id: 'sysd.resilience',
+    title: 'Designing for Failure',
+    tags: ['angular'],
+    summary: 'Assume the network and backends fail — degrade gracefully, isolate failures, never a white screen.',
+    content:
+      "Production never gets the happy path, so resilience is a design property, not a bolted-on handler. GRACEFUL DEGRADATION: compose the page from INDEPENDENTLY-failing sections so one failing widget degrades to its own fallback (\"couldn't load — retry\") while the rest render — the all-or-nothing render that lets one optional service blank six working ones is the anti-pattern. OFFLINE support (service worker + local-first data + sync-on-reconnect) is a REQUIREMENT decided at design time for apps whose users are genuinely offline while needing them (field tools, transit, note-taking) — expensive to retrofit, and pure cost for an online-only marketing site, so decide per app. And ALWAYS a meaningful fallback UI, never a dead white screen. Assume every backend and the network will fail; design the fallback first.",
+  },
+  {
+    id: 'sysd.tradeoffs',
+    title: 'Articulating Tradeoffs',
+    tags: ['angular'],
+    summary: 'There is no best, only fit — tie each choice to a requirement and name what it sacrifices.',
+    content:
+      "Senior system design is not knowing the \"right\" answer — it is naming tradeoffs and defending fit. Every decision in the discipline is a tradeoff: SSR buys SEO and first paint, costs server complexity; WebSockets buy two-way low latency, cost connection management; micro-frontends buy deploy autonomy, cost coordination. State each choice as: I chose X, which OPTIMISES ___ (for requirement ___), and SACRIFICES ___ (acceptable because ___); the alternative would instead ___, worse here because ___. Red flags that mark an indefensible choice: \"best practice\", \"modern\", \"industry-standard\", \"future-proof\", \"everyone uses it\" — none name a requirement, so the choice can't be defended in review or revisited when it no longer fits. The senior artifact is a DECISION RECORD: each choice tied to a requirement with its tradeoff and rejected alternative, plus the conditions that would change it. A record that decides nothing (\"go either way in implementation\") is not a design.",
+  },
+  {
     id: 'http.contract-design',
     title: 'API Contract Design',
     tags: ['api'],

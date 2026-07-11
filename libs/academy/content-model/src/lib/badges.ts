@@ -166,6 +166,12 @@ export const BADGES: readonly BadgeDefinition[] = [
     description: 'Completed the Production Debugging field notes — reproduce, mitigate, prevent.',
     icon: '🚒',
   },
+  {
+    id: 'systems-architect',
+    title: 'Systems Architect',
+    description: 'Completed the System Design field notes — requirements first, every tradeoff named.',
+    icon: '🏛️',
+  },
   // Programmatic achievements (Review Loop spec 08) — awarded by
   // GameStateService from play history, not by content rewards.
   {

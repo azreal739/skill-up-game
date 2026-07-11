@@ -33,6 +33,7 @@ import {
   ngAccessibilityPack,
   ngSecurityPack,
   ngProductionDebuggingPack,
+  feSystemDesignPack,
   helpTopics,
 } from '@academy/content';
 import { z } from 'zod';
@@ -73,6 +74,7 @@ export class ContentService {
       ngAccessibilityPack,
       ngSecurityPack,
       ngProductionDebuggingPack,
+      feSystemDesignPack,
     ].map((pack) => this.validatePack(pack));
     this.topics = helpTopics.map((topic) => this.validateTopic(topic));
 
