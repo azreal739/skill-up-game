@@ -8,14 +8,28 @@
     </p>
   </header>
 
-  @if (recommendedMission(); as recommended) {
-    <section class="recommended ea-panel">
+  @if (recommended(); as rec) {
+    <section
+      class="recommended ea-panel"
+      [attr.data-track]="rec.track.id"
+      [style.--ea-path-accent]="rec.track.accent"
+    >
       <div>
         <p class="ea-eyebrow">Recommended next mission</p>
-        <h2 class="recommended__title">{{ recommended.title }}</h2>
-        <p class="recommended__summary">{{ recommended.summary }}</p>
+        <p class="recommended__path">
+          <span class="recommended__emblem" aria-hidden="true">{{ rec.track.emblem }}</span>
+          <a class="recommended__path-link" [routerLink]="['/paths', rec.track.id]">{{
+            rec.track.title
+          }}</a>
+          <span class="recommended__sep">·</span>
+          <a class="recommended__campaign-link" [routerLink]="['/campaigns', rec.campaign.id]">{{
+            rec.campaign.title
+          }}</a>
+        </p>
+        <h2 class="recommended__title">{{ rec.mission.title }}</h2>
+        <p class="recommended__summary">{{ rec.mission.summary }}</p>
       </div>
-      <a class="ea-btn ea-btn--primary" [routerLink]="['/missions', recommended.id]">
+      <a class="ea-btn ea-btn--primary" [routerLink]="['/missions', rec.mission.id]">
         Start mission
       </a>
     </section>

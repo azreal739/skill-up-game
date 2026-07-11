@@ -1,7 +1,7 @@
 import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { PercentPipe } from '@angular/common';
-import { ContentService, GameStateService, TrackProgressService } from '@academy/data-access';
+import { TrackProgressService } from '@academy/data-access';
 
 /**
  * Campaign hub / path overview (`/campaigns`). The top level of the game: a
@@ -17,28 +17,20 @@ import { ContentService, GameStateService, TrackProgressService } from '@academy
   styleUrls: ['./campaign-hub.component.scss'],
 })
 export class CampaignHubComponent {
-  private readonly content = inject(ContentService);
-  protected readonly gameState = inject(GameStateService);
   protected readonly tracks = inject(TrackProgressService);
 
   protected readonly paths = this.tracks.summaries;
 
-  /** The first incomplete mission across unlocked campaigns, any path. */
-  protected readonly recommendedMission = computed(() => {
-    for (const campaign of this.content.campaigns()) {
-      const prerequisite = campaign.requiredCampaignId
-        ? this.content.campaignById(campaign.requiredCampaignId)
-        : undefined;
-      if (!this.gameState.isCampaignUnlocked(campaign, prerequisite)) {
-        continue;
-      }
-      for (const missionId of campaign.missions) {
-        if (!this.gameState.isMissionCompleted(missionId)) {
-          const mission = this.content.missionById(missionId);
-          if (mission) {
-            return mission;
-          }
-        }
+  /**
+   * The recommended next mission across all paths, carrying its path and
+   * campaign so the overview can show where it drops you. Picks the first
+   * path (in display order) that still has an unlocked, unfinished mission —
+   * reusing each path's own `next` so the two never disagree.
+   */
+  protected readonly recommended = computed(() => {
+    for (const path of this.paths()) {
+      if (path.next) {
+        return { track: path.track, campaign: path.next.campaign, mission: path.next.mission };
       }
     }
     return null;
