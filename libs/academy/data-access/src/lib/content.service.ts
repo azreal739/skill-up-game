@@ -29,6 +29,7 @@ import {
   ngStateManagementPack,
   ngPerformancePack,
   ngComponentArchitecturePack,
+  ngTestingPack,
   helpTopics,
 } from '@academy/content';
 import { z } from 'zod';
@@ -65,6 +66,7 @@ export class ContentService {
       ngStateManagementPack,
       ngPerformancePack,
       ngComponentArchitecturePack,
+      ngTestingPack,
     ].map((pack) => this.validatePack(pack));
     this.topics = helpTopics.map((topic) => this.validateTopic(topic));
 

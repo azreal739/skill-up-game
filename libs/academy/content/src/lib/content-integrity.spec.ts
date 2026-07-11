@@ -27,6 +27,7 @@ import { ngHttpApiPack } from './ng-http-api/campaign';
 import { ngStateManagementPack } from './ng-state-management/campaign';
 import { ngPerformancePack } from './ng-performance/campaign';
 import { ngComponentArchitecturePack } from './ng-component-architecture/campaign';
+import { ngTestingPack } from './ng-testing/campaign';
 import { helpTopics } from './help-topics';
 
 /**
@@ -54,6 +55,7 @@ describe('content integrity', () => {
     ngStateManagementPack,
     ngPerformancePack,
     ngComponentArchitecturePack,
+    ngTestingPack,
   ];
 
   it('validates every campaign pack against the Zod schema', () => {
@@ -179,6 +181,7 @@ describe('content integrity', () => {
       'ng-state-management': 'ng-http-api',
       'ng-performance': 'ng-state-management',
       'ng-component-architecture': 'ng-performance',
+      'ng-testing': 'ng-component-architecture',
     };
     for (const pack of packs) {
       expect(pack.campaign.requiredCampaignId)
