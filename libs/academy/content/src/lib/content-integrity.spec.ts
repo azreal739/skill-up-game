@@ -32,6 +32,7 @@ import { ngAccessibilityPack } from './ng-accessibility/campaign';
 import { ngSecurityPack } from './ng-security/campaign';
 import { ngProductionDebuggingPack } from './ng-production-debugging/campaign';
 import { feSystemDesignPack } from './fe-system-design/campaign';
+import { aiAssistedEngineeringPack } from './ai-assisted-engineering/campaign';
 import { helpTopics } from './help-topics';
 
 /**
@@ -64,6 +65,7 @@ describe('content integrity', () => {
     ngSecurityPack,
     ngProductionDebuggingPack,
     feSystemDesignPack,
+    aiAssistedEngineeringPack,
   ];
 
   it('validates every campaign pack against the Zod schema', () => {
@@ -194,6 +196,7 @@ describe('content integrity', () => {
       'ng-security': 'ng-accessibility',
       'ng-production-debugging': 'ng-security',
       'fe-system-design': 'ng-production-debugging',
+      'ai-assisted-engineering': 'fe-system-design',
     };
     for (const pack of packs) {
       expect(pack.campaign.requiredCampaignId)

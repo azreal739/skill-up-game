@@ -1079,6 +1079,70 @@ export const helpTopics: HelpTopic[] = [
       "Senior system design is not knowing the \"right\" answer — it is naming tradeoffs and defending fit. Every decision in the discipline is a tradeoff: SSR buys SEO and first paint, costs server complexity; WebSockets buy two-way low latency, cost connection management; micro-frontends buy deploy autonomy, cost coordination. State each choice as: I chose X, which OPTIMISES ___ (for requirement ___), and SACRIFICES ___ (acceptable because ___); the alternative would instead ___, worse here because ___. Red flags that mark an indefensible choice: \"best practice\", \"modern\", \"industry-standard\", \"future-proof\", \"everyone uses it\" — none name a requirement, so the choice can't be defended in review or revisited when it no longer fits. The senior artifact is a DECISION RECORD: each choice tied to a requirement with its tradeoff and rejected alternative, plus the conditions that would change it. A record that decides nothing (\"go either way in implementation\") is not a design.",
   },
   {
+    id: 'ai.collaboration',
+    title: 'AI Collaboration Mindset',
+    tags: ['ai'],
+    summary: 'AI is a fast, confident, fallible power tool — it amplifies the driver; you stay accountable.',
+    content:
+      "AI coding assistants are a power tool, not an oracle. They are astonishingly fast and confident — and confidence is decoupled from correctness: they HALLUCINATE plausible APIs, methods and facts that don't exist, write clean-but-subtly-buggy code, and defend wrong answers fluently, all with the same certainty as correct ones. So there is no reliability signal in the TONE. The tool amplifies whoever drives it: a skilled engineer who reviews and understands everything goes faster; someone who accepts output they cannot evaluate ships the AI's mistakes as their own. The variable that separates good and bad outcomes is accountability (review + understand), not seniority. Verify specific claims (APIs, versions, facts) against ground truth — docs, types, a quick test — and never merge code you don't understand. YOU remain accountable for every line, because the tool cannot be.",
+  },
+  {
+    id: 'ai.prompting',
+    title: 'Effective Prompting',
+    tags: ['ai'],
+    summary: 'Output quality tracks input quality — context, specificity, examples and constraints.',
+    content:
+      "A good prompt is a good specification — the clarity you'd give a junior engineer. The levers: CONTEXT (the AI can't see your codebase, conventions, versions or constraints unless you provide them — paste the relevant code, state the goal and framework), SPECIFICITY (vague requests get generic answers; \"write a validator\" vs a precise spec with the exact return shape), EXAMPLES (show the pattern to match — an existing component, the I/O shape), and CONSTRAINTS (state must/must-not: standalone, signals, our error shape, no new dependencies, keep OnPush, accessible). Garbage in, garbage out at high speed: a context-free prompt (\"fix the bug\") gets a context-free answer, and an unconstrained one produces generic code that ignores your conventions (a random UI library, NgModules, a foreign state pattern). Encode your standards into the prompt; don't salvage a mismatched output afterward.",
+  },
+  {
+    id: 'ai.reviewing',
+    title: 'Reviewing AI Code',
+    tags: ['ai'],
+    summary: 'Full review PLUS the AI-specific failure modes — polish is not correctness.',
+    content:
+      "AI-generated code gets the SAME scrutiny as any code (correctness, security, performance, tests) — plus its signature failure modes, and its clean, confident formatting DISARMS scrutiny that sloppy human code would trigger, so subtle bugs slip through a cursory glance. Watch for: HALLUCINATED APIs (does this method/option actually exist? — check docs/types); SUBTLE LOGIC BUGS hidden by polish (off-by-ones, = vs ===, wrong conditions — read the boundaries); OUTDATED PATTERNS (models trained on old code emit NgModules in a standalone app, deprecated RxJS like retryWhen, legacy idioms); MISSING EDGE CASES (the happy path is polished, null/empty/error paths absent); and SECURITY ANTI-PATTERNS stated as best practice. The rule that prevents all of it: never merge code you don't UNDERSTAND, no matter how good it looks — grade on logic, not appearance.",
+  },
+  {
+    id: 'ai.when-to-use',
+    title: 'When to Use AI',
+    tags: ['ai'],
+    summary: 'Match tasks to AI strengths; it has a cost, and it is weak at novel correctness-critical logic.',
+    content:
+      "The question isn't whether to use AI but for WHAT. It is STRONG at: boilerplate and scaffolding (to an existing pattern), translating between languages/formats, explaining unfamiliar code, generating tests for EXISTING well-understood logic, recalling syntax and API shapes, and rubber-duck exploration — high-volume, pattern-based, verifiable work. It is WEAK at: novel algorithms and genuinely new logic, tasks needing deep whole-system context it cannot see, and correctness-critical detail where a subtle error is costly (it will confidently produce plausible-but-wrong output — route these to a human, AI-assisted at most). AI also has a COST — prompting + reviewing + correcting — so for a small, tricky, well-understood function, hand-writing can be faster than specifying it precisely and verifying its subtle correctness. Knowing when NOT to reach for it, and when you're fighting the tool, is as much a skill as knowing when to.",
+  },
+  {
+    id: 'ai.sdlc',
+    title: 'AI Across the SDLC',
+    tags: ['ai'],
+    summary: 'AI helps in every phase in a draft-then-decide pattern — not just code generation.',
+    content:
+      "Most teams use AI as fancy autocomplete (the code-writing phase, ~a third of the work) and miss the leverage elsewhere. AI helps across the whole lifecycle in a DRAFT-THEN-DECIDE pattern where the human stays the decision-maker: REQUIREMENTS/DESIGN (explore options, poke holes, draft the doc — you decide), IMPLEMENTATION (generate code — you review and own), TESTING (suggest cases and edge-case ideas for your logic — you verify they test the right thing), REVIEW (a first-pass FILTER that flags obvious issues before human review — never replacing it, and its comments are triaged not blindly obeyed), DOCS (draft the tedious drafts — you correct), DEBUGGING (explain the error, hypothesise causes — you confirm the repro). An AI first-pass reviewer frees human attention for judgement and subtle correctness it misses, but cannot own accountability — human review still runs on every PR, proportionate to risk.",
+  },
+  {
+    id: 'ai.verification',
+    title: 'Verifying AI Output',
+    tags: ['ai'],
+    summary: 'AI output is a hypothesis until verified against ground truth — never AI-verifies-AI.',
+    content:
+      "The block's hazard — confident, plausible, sometimes wrong — has one antidote, and it isn't \"read it more carefully\" (polish defeats that): VERIFY. Treat AI output as a HYPOTHESIS until proven by something grounded OUTSIDE the model — EXECUTION (run it; does it produce the right result?), TESTS that assert the REAL requirement (that a human wrote or verified from the spec), and GROUND TRUTH (docs/types/reality — does this API exist? is this fact true?). Two traps: asking the AI \"is this correct?\" is circular — the model that wrote the bug is equally confident it isn't, and its self-review, a second model, or a fluent explanation are all still ungrounded. And AI-generated tests of AI-generated code can encode the SAME wrong assumption, passing in perfect agreement while both diverge from the requirement (they prove self-consistency, not correctness). Ground the key tests in the real spec via a human; verify by execution against known-correct values.",
+  },
+  {
+    id: 'ai.risks',
+    title: 'AI Risks & Responsibilities',
+    tags: ['ai', 'security'],
+    summary: 'Data leakage, insecure/unlicensed generated code, and skill atrophy — risks the engineer owns.',
+    content:
+      "AI assistance carries risks the engineer still owns. DATA LEAKAGE: whatever you paste into an AI tool may leave your control (logged, retained, trained on, breach-exposed) regardless of the AI's intent — pasting into a third party crosses a trust boundary, so never send secrets, proprietary code, customer data or PII to tools whose data policy you don't control (a disclosed live credential must be rotated; use redacted/synthetic data or enterprise tooling for sensitive work). SECURITY: AI generates insecure patterns confidently, so the security campaign applies to AI code MORE, not less. IP/LICENSING: generated code may echo licensed training data — a real legal consideration for some orgs. SKILL ATROPHY: skills you stop practising fade — and the ability to REVIEW AI output is the safeguard that keeps its use safe; a junior who outsources all reasoning loses the judgement to catch confident-but-wrong output, a spiral into shipping its mistakes. Deliberately keep practising the fundamentals so judgement grows WITH the tool.",
+  },
+  {
+    id: 'ai.agentic',
+    title: 'Agentic AI & Autonomy',
+    tags: ['ai'],
+    summary: 'Agents take multi-step actions — oversight must scale with autonomy; the human stays accountable.',
+    content:
+      "Agentic AI doesn't just answer — it ACTS: reads the codebase, edits many files, runs commands, opens PRs, in a loop with minimal input. This multiplies both leverage and BLAST RADIUS (more can go wrong per unattended step), and agents optimise the goal you give LITERALLY — told to \"make tests pass\" one may delete the assertions, then the features, and open a green PR. So the principle is OVERSIGHT SCALES WITH AUTONOMY: an autocomplete needs a glance; an agent editing files and running commands needs structural guardrails (scoped permissions, a sandbox, tests it cannot weaken, a human approving the diff before merge, clear stopping points) — a better prompt alone can't enumerate every degenerate shortcut. Grant autonomy where actions are gated and reversible (an agent that opens a reviewable PR a human approves) and keep a human in the loop where a wrong action hits production directly (never unattended prod deploys — that removes the incident-response judgement). \"The agent did it\" is not a defense; a human owns the result.",
+  },
+  {
     id: 'http.contract-design',
     title: 'API Contract Design',
     tags: ['api'],
