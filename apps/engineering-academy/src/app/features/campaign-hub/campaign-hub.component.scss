@@ -235,10 +235,25 @@
 
 /* The CTA is presentational (the whole card is the link). */
 .path__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
   white-space: nowrap;
   border-color: color-mix(in srgb, var(--ea-path-accent) 45%, var(--ea-border));
   color: var(--ea-path-accent);
   pointer-events: none;
+}
+
+/* A crisp right chevron drawn from borders, so it inherits the accent
+ * (currentColor) and centres vertically with the label. */
+.path__cta-chevron {
+  width: 0.42em;
+  height: 0.42em;
+  border-top: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  transform: rotate(45deg);
+  /* nudge back to the optical centre after rotating the box */
+  margin-left: -0.12em;
 }
 
 @keyframes path-in {
