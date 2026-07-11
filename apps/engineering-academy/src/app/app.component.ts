@@ -1,5 +1,6 @@
-import { Component, effect, inject } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { TRACKS } from '@academy/content-model';
 import { AudioService, GameStateService } from '@academy/data-access';
 import { WaveBackgroundComponent } from './shared/wave-background/wave-background.component';
 
@@ -17,7 +18,43 @@ import { WaveBackgroundComponent } from './shared/wave-background/wave-backgroun
       </a>
       <nav class="topbar__nav" aria-label="Primary">
         @if (gameState.hasProfile()) {
-          <a routerLink="/campaigns" routerLinkActive="is-active">Campaigns</a>
+          <div
+            class="topbar__group"
+            [class.is-open]="pathsOpen()"
+            (mouseleave)="closePaths()"
+            (keydown.escape)="closePaths()"
+          >
+            <a routerLink="/campaigns" routerLinkActive="is-active">Campaigns</a>
+            <button
+              type="button"
+              class="topbar__caret"
+              (click)="togglePaths()"
+              [attr.aria-expanded]="pathsOpen()"
+              aria-haspopup="true"
+              aria-label="Choose a path"
+            >
+              ▾
+            </button>
+            <div class="topbar__menu" role="menu">
+              <a
+                class="topbar__menu-overview"
+                routerLink="/campaigns"
+                role="menuitem"
+                (click)="closePaths()"
+                >All paths</a
+              >
+              @for (path of paths; track path.id) {
+                <a
+                  [routerLink]="['/paths', path.id]"
+                  role="menuitem"
+                  (click)="closePaths()"
+                >
+                  <span class="topbar__menu-emblem" aria-hidden="true">{{ path.emblem }}</span>
+                  {{ path.title }}
+                </a>
+              }
+            </div>
+          </div>
           <a routerLink="/backlog" routerLinkActive="is-active">
             Backlog
             @if (gameState.openDebtCount() > 0) {
@@ -51,6 +88,18 @@ export class AppComponent {
   protected readonly gameState = inject(GameStateService);
   private readonly audio = inject(AudioService);
   private interacted = false;
+
+  /** Paths listed in the Campaigns nav dropdown (iterated, so extensible). */
+  protected readonly paths = TRACKS;
+  protected readonly pathsOpen = signal(false);
+
+  togglePaths(): void {
+    this.pathsOpen.update((open) => !open);
+  }
+
+  closePaths(): void {
+    this.pathsOpen.set(false);
+  }
 
   constructor() {
     // Reflect accessibility settings onto <body> so global styles apply

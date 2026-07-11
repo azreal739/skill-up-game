@@ -1,39 +1,35 @@
 import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { PercentPipe } from '@angular/common';
-import { CampaignDefinition, TRACKS, TrackDefinition } from '@academy/content-model';
-import { ContentService, GameStateService } from '@academy/data-access';
-import { IconComponent } from '@academy/ui';
-import { CampaignEmblemComponent } from './campaign-emblem.component';
+import { ContentService, GameStateService, TrackProgressService } from '@academy/data-access';
 
-interface TrackSection {
-  track: TrackDefinition;
-  campaigns: CampaignDefinition[];
-}
-
+/**
+ * Campaign hub / path overview (`/campaigns`). The top level of the game: a
+ * recommended next mission, then one summary card per path. Drilling into a
+ * card opens that path's campaign list ({@link PathViewComponent}). Cards are
+ * driven by {@link TrackProgressService}, so new paths appear automatically.
+ */
 @Component({
   selector: 'ea-campaign-hub',
   standalone: true,
-  imports: [RouterLink, PercentPipe, IconComponent, CampaignEmblemComponent],
+  imports: [RouterLink, PercentPipe],
   templateUrl: './campaign-hub.component.html',
   styleUrls: ['./campaign-hub.component.scss'],
 })
 export class CampaignHubComponent {
-  protected readonly content = inject(ContentService);
+  private readonly content = inject(ContentService);
   protected readonly gameState = inject(GameStateService);
+  protected readonly tracks = inject(TrackProgressService);
 
-  protected readonly campaigns = this.content.campaigns();
+  protected readonly paths = this.tracks.summaries;
 
-  /** Tracks that actually have campaigns, in TRACKS display order. */
-  protected readonly trackSections: TrackSection[] = TRACKS.map((track) => ({
-    track,
-    campaigns: this.content.campaignsForTrack(track.id),
-  })).filter((section) => section.campaigns.length > 0);
-
-  /** The first incomplete mission across unlocked campaigns. */
+  /** The first incomplete mission across unlocked campaigns, any path. */
   protected readonly recommendedMission = computed(() => {
-    for (const campaign of this.campaigns) {
-      if (!this.gameState.isCampaignUnlocked(campaign, this.prerequisiteOf(campaign))) {
+    for (const campaign of this.content.campaigns()) {
+      const prerequisite = campaign.requiredCampaignId
+        ? this.content.campaignById(campaign.requiredCampaignId)
+        : undefined;
+      if (!this.gameState.isCampaignUnlocked(campaign, prerequisite)) {
         continue;
       }
       for (const missionId of campaign.missions) {
@@ -47,34 +43,4 @@ export class CampaignHubComponent {
     }
     return null;
   });
-
-  progressFor(campaignId: string): number {
-    const campaign = this.content.campaignById(campaignId);
-    return campaign ? this.gameState.campaignProgress(campaign) : 0;
-  }
-
-  missionCount(campaignId: string): number {
-    return this.content.campaignById(campaignId)?.missions.length ?? 0;
-  }
-
-  isCompleted(campaignId: string): boolean {
-    const campaign = this.content.campaignById(campaignId);
-    return campaign ? this.gameState.isCampaignCompleted(campaign) : false;
-  }
-
-  isLocked(campaignId: string): boolean {
-    const campaign = this.content.campaignById(campaignId);
-    return campaign ? !this.gameState.isCampaignUnlocked(campaign, this.prerequisiteOf(campaign)) : true;
-  }
-
-  prerequisiteTitle(campaignId: string): string | null {
-    const campaign = this.content.campaignById(campaignId);
-    return campaign ? (this.prerequisiteOf(campaign)?.title ?? null) : null;
-  }
-
-  private prerequisiteOf(campaign: { requiredCampaignId?: string }) {
-    return campaign.requiredCampaignId
-      ? this.content.campaignById(campaign.requiredCampaignId)
-      : undefined;
-  }
 }

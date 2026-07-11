@@ -6,6 +6,7 @@ import {
   ContentService,
   GameStateService,
   LearningAnalyticsService,
+  TrackProgressService,
 } from '@academy/data-access';
 import { BadgeChipComponent } from '@academy/ui';
 
@@ -20,6 +21,7 @@ export class ProfileComponent {
   protected readonly gameState = inject(GameStateService);
   private readonly content = inject(ContentService);
   private readonly analytics = inject(LearningAnalyticsService);
+  private readonly tracks = inject(TrackProgressService);
   private readonly router = inject(Router);
 
   protected readonly allBadges = BADGES;
@@ -90,10 +92,17 @@ export class ProfileComponent {
       ).length
   );
 
-  protected readonly campaignStats = computed(() =>
-    this.content.campaigns().map((campaign) => ({
-      campaign,
-      progress: this.gameState.campaignProgress(campaign),
+  /** Campaigns grouped by path, so the profile mirrors the two-path structure. */
+  protected readonly pathGroups = computed(() =>
+    this.tracks.summaries().map((summary) => ({
+      track: summary.track,
+      campaignsDone: summary.campaignsDone,
+      campaignsTotal: summary.campaignsTotal,
+      ratio: summary.ratio,
+      campaigns: summary.campaigns.map((campaign) => ({
+        campaign,
+        progress: this.gameState.campaignProgress(campaign),
+      })),
     }))
   );
 
