@@ -148,6 +148,12 @@ export const BADGES: readonly BadgeDefinition[] = [
     description: 'Completed the Testing field notes — promises placed at their cheapest level, red meaning news.',
     icon: '🧪',
   },
+  {
+    id: 'access-champion',
+    title: 'Access Champion',
+    description: 'Completed the Accessibility field notes — usable by everyone, proven not assumed.',
+    icon: '♿',
+  },
   // Programmatic achievements (Review Loop spec 08) — awarded by
   // GameStateService from play history, not by content rewards.
   {

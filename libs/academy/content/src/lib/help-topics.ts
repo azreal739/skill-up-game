@@ -831,6 +831,62 @@ export const helpTopics: HelpTopic[] = [
       "A handful of flaky tests taxes the credibility of thousands of good ones — teams start dismissing REAL failures as 'probably the flaky ones'. Every flake has one of four sources, each with a tell. TIME: fails at specific hours, sleeps, new Date() anywhere — inject the clock, use fakeAsync/tick (time becomes an input). ORDER: passes alone, fails in the suite — some test needs a sibling's leftovers; fresh instance per test, no test may know its siblings exist. SHARED STATE: fails only after certain tests — singletons, static caches, un-reset stores. NETWORK: fails on slow CI days — anything off-process. Policy: quarantine the day it flakes (skip + ticket), root-cause or delete within the sprint. Never auto-retry in CI: retries absorb real intermittent bugs (the 1-in-3 race) along with the flakes, and green degrades to 'passed eventually'.",
   },
   {
+    id: 'a11y.keyboard',
+    title: 'Keyboard Access',
+    tags: ['a11y'],
+    summary: 'Every interaction reachable, focus visible, nothing trapped.',
+    content:
+      "Everything operable by mouse must be operable by keyboard alone — the fastest audit is to unplug the mouse and use the app. Three health checks: REACHABLE (Tab visits every control in an order matching the visual flow — fix wrong order by fixing DOM order, not tabindex=\"5\"); VISIBLE (a :focus-visible indicator on everything — never `outline: none` without a replacement; :focus-visible shows the ring for keyboard focus and hides it for mouse clicks, answering the \"ugly rings\" complaint honestly); UNTRAPPED (modals trap focus WHILE open and release on close). The modal focus contract: move focus INTO the dialog on open, TRAP it within while open (CDK cdkTrapFocus / Dialog), RETURN it to the trigger on close.",
+  },
+  {
+    id: 'a11y.aria',
+    title: 'ARIA: Name, Role, State',
+    tags: ['a11y'],
+    summary: 'ARIA describes to the accessibility tree — prefer native, and keep it true.',
+    content:
+      "ARIA writes three things into the accessibility tree: NAME (what the reader calls it), ROLE (what kind of thing), STATE (expanded/checked/disabled/busy). Rule one: don't use ARIA where a native element gives it for free (a <button> beats role=\"button\"). Rule two: if you use it, keep it TRUE and bound to state — users can't see the screen, so they trust the reader completely; an aria-expanded=\"false\" hardcoded on an open menu is confident misdirection worse than silence. ARIA is essential where NO native element models the widget (a custom combobox): then implement the full WAI-ARIA authoring pattern completely, every attribute bound to real state. Common harms: role that changes announced behaviour, aria-label overriding/duplicating visible text, state attributes never bound.",
+  },
+  {
+    id: 'a11y.forms',
+    title: 'Accessible Forms',
+    tags: ['a11y', 'angular'],
+    summary: 'Programmatic labels, announced required/invalid state, errors tied to inputs.',
+    content:
+      "An accessible field needs three links. A LABEL programmatically tied (<label for> or aria-labelledby) — placeholders are NOT labels: they vanish on type, fail contrast by design, and create no association. REQUIRED and INVALID state via the required attribute and aria-invalid, so the reader announces them. And ERROR text tied to the input with aria-describedby (pointing at the error's id) so the reason is read WITH the field, plus a live announcement (role=\"alert\" / aria-live) so submitting an invalid form speaks the problem immediately. A red border and an asterisk convey none of this to a reader — which field, that it's wrong, and why must all reach the accessibility tree.",
+  },
+  {
+    id: 'a11y.focus-management',
+    title: 'Focus Management',
+    tags: ['a11y', 'angular'],
+    summary: 'SPAs must move focus deliberately on navigation and content changes — and never steal it.',
+    content:
+      "A full-page navigation resets focus to the top; a SPA outlet swap does not, leaving a reader user on a stale link hearing nothing. On each NavigationEnd, move focus into the new view — its <h1> made focusable with tabindex=\"-1\" (focusable, not a tab stop) — so the reader announces arrival; add a \"Skip to main content\" link as the first focusable element. For dynamic content, focus follows the user's INTENT: content the user requested (clicked \"load more\") may receive focus; content that arrived on its own (a poll) must NOT — stealing focus mid-task is a top complaint; announce it with a POLITE live region instead. After an element is removed, move focus somewhere sensible rather than letting it fall to the body.",
+  },
+  {
+    id: 'a11y.color-contrast',
+    title: 'Colour & Contrast',
+    tags: ['a11y', 'scss'],
+    summary: 'Meet WCAG ratios and never let colour be the only signal.',
+    content:
+      "Two rules. CONTRAST: body text ≥ 4.5:1, large text and UI components ≥ 3:1 against their background — measurable with a checker, non-negotiable; #aaa on white is 2.3:1 and fails. Hierarchy that relied on failing greys can be rebuilt with size, weight, spacing, and colours that still clear 4.5:1 (e.g. #767676) — legibility is a requirement, low-contrast-as-hierarchy a preference. NEVER COLOUR ALONE: any meaning carried by colour must ALSO be carried another way — shape, icon, text, or pattern — because ~8% of men have red-green colour blindness and colour vanishes in greyscale, bright sun and cheap projectors. Status shown by a green/red dot must add a distinct shape and a text label; the label also hands the meaning straight to the screen reader.",
+  },
+  {
+    id: 'a11y.live-regions',
+    title: 'Live Regions',
+    tags: ['a11y', 'angular'],
+    summary: 'Announce dynamic changes at the right politeness, without flooding.',
+    content:
+      "When content updates without a page load, a screen reader hears nothing unless a LIVE REGION announces it. Politeness matches urgency: aria-live=\"polite\" waits for a pause (result counts, \"Saved\" — most things); aria-live=\"assertive\" interrupts immediately (errors, session-expiry — rare, because interrupting is rude, and overuse trains users to tune the region out). The test for assertive: does the user suffer if they hear it a few seconds late? Angular's LiveAnnouncer does this imperatively (announce(msg) / announce(msg, 'assertive')). Discipline: announce SETTLED, meaningful states — a region bound to a value that changes per keystroke fires a torrent that buries the one announcement that matters. Drive it from the resolved result, not optimistic intermediate renders.",
+  },
+  {
+    id: 'a11y.testing',
+    title: 'Testing Accessibility',
+    tags: ['a11y', 'testing'],
+    summary: 'Automate the mechanical floor; test the usability ceiling by hand.',
+    content:
+      "Automated tools (axe, Lighthouse) catch roughly a third of issues — the MECHANICAL ones: missing alt/labels, low contrast, invalid ARIA. Real value: add axe assertions to CI so those regressions fail on the push that introduces them, on every rendered state. But automation cannot judge whether a label is MEANINGFUL (\"Button\" passes), alt text DESCRIBES the image, tab order is LOGICAL, focus lands SENSIBLY, ARIA is TRUE, or the widget is actually OPERABLE — a checkout can be mechanically perfect and experientially unusable. That ceiling needs humans: a keyboard-only pass (reachable, visible, untrapped) and a real screen-reader pass on new/changed flows, plus a 200% zoom pass. Automation is the continuous floor; manual testing per feature is the ceiling — layers, not rivals. Dropping either lets its class of failures reach production.",
+  },
+  {
     id: 'http.contract-design',
     title: 'API Contract Design',
     tags: ['api'],
