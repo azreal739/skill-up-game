@@ -29,6 +29,7 @@ import { ngPerformancePack } from './ng-performance/campaign';
 import { ngComponentArchitecturePack } from './ng-component-architecture/campaign';
 import { ngTestingPack } from './ng-testing/campaign';
 import { ngAccessibilityPack } from './ng-accessibility/campaign';
+import { ngSecurityPack } from './ng-security/campaign';
 import { helpTopics } from './help-topics';
 
 /**
@@ -58,6 +59,7 @@ describe('content integrity', () => {
     ngComponentArchitecturePack,
     ngTestingPack,
     ngAccessibilityPack,
+    ngSecurityPack,
   ];
 
   it('validates every campaign pack against the Zod schema', () => {
@@ -185,6 +187,7 @@ describe('content integrity', () => {
       'ng-component-architecture': 'ng-performance',
       'ng-testing': 'ng-component-architecture',
       'ng-accessibility': 'ng-testing',
+      'ng-security': 'ng-accessibility',
     };
     for (const pack of packs) {
       expect(pack.campaign.requiredCampaignId)
