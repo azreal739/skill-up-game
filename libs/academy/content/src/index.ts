@@ -19,4 +19,5 @@ export * from './lib/ng-performance/campaign';
 export * from './lib/ng-component-architecture/campaign';
 export * from './lib/ng-testing/campaign';
 export * from './lib/ng-accessibility/campaign';
+export * from './lib/ng-security/campaign';
 export * from './lib/help-topics';

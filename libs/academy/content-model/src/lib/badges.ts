@@ -154,6 +154,12 @@ export const BADGES: readonly BadgeDefinition[] = [
     description: 'Completed the Accessibility field notes — usable by everyone, proven not assumed.',
     icon: '♿',
   },
+  {
+    id: 'security-sentinel',
+    title: 'Security Sentinel',
+    description: 'Completed the Security field notes — hostile input assumed, defended in depth.',
+    icon: '🛡️',
+  },
   // Programmatic achievements (Review Loop spec 08) — awarded by
   // GameStateService from play history, not by content rewards.
   {

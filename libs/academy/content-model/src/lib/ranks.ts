@@ -3,7 +3,7 @@
  *
  * - RANKS — the engineering career ladder, in granular I/II/III tiers so a
  *   promotion is earned, not tripped over. The top tier sits at ~90% of the
- *   maximum earnable XP (~27.3k across all campaigns, perfect and hint-free),
+ *   maximum earnable XP (~28.7k across all campaigns, perfect and hint-free),
  *   so Distinguished III is a completionist's badge of honour.
  * - LEVELS — game-flavoured operator codenames on a faster cadence, so the
  *   player levels up regularly even while the next rank tier is far away.
@@ -23,16 +23,16 @@ export const RANKS: readonly Rank[] = [
   { id: 'intermediate-3', title: 'Intermediate Engineer III', minXp: 1000 },
   { id: 'senior-1', title: 'Senior Engineer I', minXp: 1350 },
   { id: 'senior-2', title: 'Senior Engineer II', minXp: 1750 },
-  { id: 'senior-3', title: 'Senior Engineer III', minXp: 4200 },
-  { id: 'staff-1', title: 'Staff Engineer I', minXp: 5700 },
-  { id: 'staff-2', title: 'Staff Engineer II', minXp: 7400 },
-  { id: 'staff-3', title: 'Staff Engineer III', minXp: 9300 },
-  { id: 'principal-1', title: 'Principal Engineer I', minXp: 11300 },
-  { id: 'principal-2', title: 'Principal Engineer II', minXp: 13400 },
-  { id: 'principal-3', title: 'Principal Engineer III', minXp: 15600 },
-  { id: 'distinguished-1', title: 'Distinguished Engineer I', minXp: 17900 },
-  { id: 'distinguished-2', title: 'Distinguished Engineer II', minXp: 20300 },
-  { id: 'distinguished-3', title: 'Distinguished Engineer III', minXp: 22700 },
+  { id: 'senior-3', title: 'Senior Engineer III', minXp: 4500 },
+  { id: 'staff-1', title: 'Staff Engineer I', minXp: 6200 },
+  { id: 'staff-2', title: 'Staff Engineer II', minXp: 8100 },
+  { id: 'staff-3', title: 'Staff Engineer III', minXp: 10200 },
+  { id: 'principal-1', title: 'Principal Engineer I', minXp: 12400 },
+  { id: 'principal-2', title: 'Principal Engineer II', minXp: 14700 },
+  { id: 'principal-3', title: 'Principal Engineer III', minXp: 17100 },
+  { id: 'distinguished-1', title: 'Distinguished Engineer I', minXp: 19600 },
+  { id: 'distinguished-2', title: 'Distinguished Engineer II', minXp: 22700 },
+  { id: 'distinguished-3', title: 'Distinguished Engineer III', minXp: 25800 },
 ] as const;
 
 export function rankForXp(xp: number): Rank {
@@ -93,6 +93,7 @@ export const LEVELS: readonly PlayerLevel[] = [
   { level: 24, codename: 'Keeper of Contracts', minXp: 17400 },
   { level: 25, codename: 'Frame Budget Guardian', minXp: 19400 },
   { level: 26, codename: 'Inclusive Architect', minXp: 21500 },
+  { level: 27, codename: 'Breach Warden', minXp: 23800 },
 ] as const;
 
 export function levelForXp(xp: number): PlayerLevel {

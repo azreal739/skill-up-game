@@ -887,6 +887,70 @@ export const helpTopics: HelpTopic[] = [
       "Automated tools (axe, Lighthouse) catch roughly a third of issues — the MECHANICAL ones: missing alt/labels, low contrast, invalid ARIA. Real value: add axe assertions to CI so those regressions fail on the push that introduces them, on every rendered state. But automation cannot judge whether a label is MEANINGFUL (\"Button\" passes), alt text DESCRIBES the image, tab order is LOGICAL, focus lands SENSIBLY, ARIA is TRUE, or the widget is actually OPERABLE — a checkout can be mechanically perfect and experientially unusable. That ceiling needs humans: a keyboard-only pass (reachable, visible, untrapped) and a real screen-reader pass on new/changed flows, plus a 200% zoom pass. Automation is the continuous floor; manual testing per feature is the ceiling — layers, not rivals. Dropping either lets its class of failures reach production.",
   },
   {
+    id: 'sec.trust-boundaries',
+    title: 'Trust Boundaries',
+    tags: ['security'],
+    summary: 'Every place external data enters is a checkpoint — input is hostile until checked.',
+    content:
+      "Security starts with a map: every arrow where data crosses from outside your control to inside it — URL params, form input, API responses (yes, these too — your backend is a courier for data other users authored), localStorage, postMessage, uploaded files. At each crossing, input is guilty until proven innocent. Data does NOT become trusted by travelling; only by being validated (shape, via Zod-style schemas) and encoded for its destination. Encoding is contextual — the same hostile string is defused differently for HTML, a URL, or an attribute — and data written to storage is untrusted AGAIN when read back. A boundary you didn't know existed is a boundary with no guard.",
+  },
+  {
+    id: 'sec.xss',
+    title: 'Cross-Site Scripting',
+    tags: ['security', 'angular'],
+    summary: 'XSS runs attacker JS in your users’ sessions — Angular escapes by default; respect the sanitiser.',
+    content:
+      "XSS is running the attacker's JavaScript in your user's authenticated session — read cookies/tokens, act as them, rewrite the page. Angular defends by default: {{ }} interpolation escapes HTML, and [innerHTML] runs the DomSanitizer (keeps safe formatting, strips scripts AND event handlers like onerror — regex-stripping <script> misses the hundreds of other vectors). Two footguns: reaching past the framework to raw element.innerHTML bypasses the sanitiser entirely, and bypassSecurityTrustHtml turns it OFF. Bypass is legitimate ONLY for content of trusted provenance with zero user input (e.g. SVG you generated from your own config) — the moment user data flows in, it becomes an XSS vector. Document the invariant at the call site.",
+  },
+  {
+    id: 'sec.tokens',
+    title: 'Token Storage',
+    tags: ['security'],
+    summary: 'localStorage tokens are XSS-readable; httpOnly cookies aren’t — each has a tradeoff.',
+    content:
+      "Where the auth token sleeps decides the blast radius of an XSS. localStorage/sessionStorage is readable by ANY script on the origin — a single injected script steals the token and becomes a logged-in attacker (a signed JWT prevents forgery, not theft). An httpOnly + Secure cookie is invisible to JavaScript: the browser attaches it automatically but document.cookie can't read it, so XSS can't exfiltrate it — at the cost of automatic attachment, which introduces CSRF (mitigate with SameSite + anti-CSRF token). In-memory storage (a variable, gone on refresh) paired with an httpOnly refresh cookie is a strong pattern. This is defence in depth: you both reduce XSS AND shrink what one XSS can do — because you'll never prove zero XSS bugs forever, including in dependencies.",
+  },
+  {
+    id: 'sec.csrf',
+    title: 'CSRF',
+    tags: ['security'],
+    summary: 'Forged authenticated requests riding the victim’s ambient cookie — defend with SameSite + tokens.',
+    content:
+      "CSRF borrows the victim's ambient authority: if auth is a cookie the browser sends automatically, any site can make the victim's browser fire authenticated requests to your origin (a hidden <img> or auto-submitting <form>) — the user clicks nothing, nothing is stolen, and the server sees a legitimate logged-in request. (CORS doesn't stop it — CORS governs reading the RESPONSE, not sending the request; the side effect happens regardless.) Defences: SameSite=Lax/Strict on the cookie (browser withholds it cross-site — the baseline) PLUS an anti-CSRF token for state-changing endpoints (Angular HttpClient supports the cookie-to-header XSRF-TOKEN convention). Authorization-header auth is naturally CSRF-resistant (a cross-site request can't add the header) — but that reintroduces the XSS-exfiltration tradeoff of non-cookie storage.",
+  },
+  {
+    id: 'sec.authz',
+    title: 'Authorization',
+    tags: ['security', 'angular'],
+    summary: 'Client checks are UX; the server is the only real gate — it re-authorizes every request.',
+    content:
+      "The entire front end runs on the attacker's machine: they can edit your JS, un-hide buttons, ignore route guards, and replay any API call with curl. So client-side checks (hidden admin links, canActivate guards, disabled fields) are UX — they show the right things to the right people — NOT security. Every request must be independently authorized by the SERVER against the real identity derived from the verified token (never from a client-supplied role field). A hidden button in front of an open endpoint is no protection: the test is whether a non-privileged session can replay the call with curl and succeed. Keep the client checks (deleting them just gives users dead 403s), but understand their job: the client decides what to SHOW; the server decides what to ALLOW.",
+  },
+  {
+    id: 'sec.dependencies',
+    title: 'Supply Chain Security',
+    tags: ['security'],
+    summary: 'Most of your app is third-party code with full trust — audit, triage by reachability, minimise deps.',
+    content:
+      "You write a fraction of your node_modules; the rest runs with the same trust and ships to users. Three shapes of risk: KNOWN CVEs (npm audit / Dependabot flag them — triage by SEVERITY and REACHABILITY: a critical flaw in an unused dev tool can matter less than a moderate one on your user-input path; don't blanket `audit fix --force`, which pulls breaking majors); MALICIOUS packages (typosquats, or a hijacked maintainer shipping a miner in a patch — pin versions, review diffs on bump); and TRANSITIVE trust (your 40 deps pull 1,300 more). A dependency is an ongoing trust relationship, not just code — for a trivial function, writing the few lines yourself removes the trust entirely. The cheapest dependency is the one you don't take.",
+  },
+  {
+    id: 'sec.secrets',
+    title: 'Secrets & CSP',
+    tags: ['security'],
+    summary: 'Nothing shipped to the browser is secret; CSP contains the XSS you fail to prevent.',
+    content:
+      "Everything you ship to the browser is public — source, environment.ts, feature flags, any 'API key' in the bundle (minification is not encryption; not-in-git ≠ not-in-browser; a runtime config fetch just hands the secret to the network tab). Secrets that must stay secret live on a SERVER: the browser calls YOUR backend, which holds the third-party key and proxies the call (gaining rate-limiting and caching too). Where a vendor forces a browser-side key, use their origin/referrer restrictions and treat it as semi-public. Content-Security-Policy is the defence-in-depth containment layer: a strict policy (scripts from self, no inline/eval, connect-src limited to your API) means an XSS that DOES slip through can't load remote attacker code or exfiltrate to evil.com — prevention (sanitising) and containment (CSP) defend different moments, and CSP must ENFORCE, not sit permanently in report-only.",
+  },
+  {
+    id: 'sec.threat-modeling',
+    title: 'Threat Modeling',
+    tags: ['security'],
+    summary: 'Before shipping: what’s worth attacking, who would, and how — security designed in, not bolted on.',
+    content:
+      "Threat modeling is structured pessimism, fifteen minutes before you build. Walk three questions: ASSETS (what's worth stealing/breaking — user data, tokens, money, integrity), ACTORS (who attacks and why — external, malicious user, compromised account, curious insider, bots), ENTRY POINTS (each trust boundary). For every entry×asset, name what goes wrong, rank by likelihood × impact, and match a known defence (validate, encode, authorize server-side, store secrets away, contain with CSP), noting residual risk. Example: a user-uploaded avatar shown to everyone is a stored-XSS vector (a 'png' can be a scripted SVG) far more than a bandwidth concern; a share link with a sequential DB id invites enumeration and needs an unguessable token plus server-enforced read-only scope. The output is a short 'what could go wrong and what we did' list — written before the attacker writes theirs.",
+  },
+  {
     id: 'http.contract-design',
     title: 'API Contract Design',
     tags: ['api'],
