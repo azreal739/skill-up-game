@@ -46,6 +46,42 @@
   border: 1px solid color-mix(in srgb, var(--ea-path-accent) 40%, transparent);
 }
 
+/* ---- Per-path signature look ---- *
+ * Each path gets a background motif on its header (and a matching emblem
+ * silhouette) so it reads as its own place. Adding a motif for a new path is
+ * a small opt-in block here; without one it simply keeps the accent-only look. */
+
+/* Mission Control — satellite ops: concentric radar rings sweeping in from
+ * the top-right, with a soft signal glow. */
+.path-view[data-track='mission-control'] .path-view__header {
+  background-image:
+    repeating-radial-gradient(
+      circle at 95% -10%,
+      transparent 0 27px,
+      color-mix(in srgb, var(--ea-path-accent) 10%, transparent) 27px 28px
+    ),
+    radial-gradient(circle at 92% -25%, color-mix(in srgb, var(--ea-path-accent) 16%, transparent), transparent 55%);
+  background-repeat: no-repeat;
+}
+
+.path-view[data-track='mission-control'] .path-view__emblem {
+  border-radius: 50%;
+}
+
+/* DMM Field Notes — field journal: faint ruled lines like a notebook page. */
+.path-view[data-track='field-notes'] .path-view__header {
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent 0 27px,
+    color-mix(in srgb, var(--ea-path-accent) 9%, transparent) 27px 28px
+  );
+  background-position: 0 3px;
+}
+
+.path-view[data-track='field-notes'] .path-view__emblem {
+  border-radius: 6px;
+}
+
 .path-view__title {
   margin: 0.15rem 0 0;
   font-size: 1.7rem;

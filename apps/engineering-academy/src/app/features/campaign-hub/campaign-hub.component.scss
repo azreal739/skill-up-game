@@ -252,3 +252,34 @@
     transform: none;
   }
 }
+
+/* ---- Per-path signature look (subtle on the summary cards) ---- */
+
+/* Mission Control — radar rings sweeping in from the top-right corner. */
+.path[data-track='mission-control'] {
+  background-image:
+    repeating-radial-gradient(
+      circle at 98% -8%,
+      transparent 0 24px,
+      color-mix(in srgb, var(--ea-path-accent) 8%, transparent) 24px 25px
+    ),
+    radial-gradient(circle at 96% -20%, color-mix(in srgb, var(--ea-path-accent) 12%, transparent), transparent 50%);
+  background-repeat: no-repeat;
+}
+
+.path[data-track='mission-control'] .path__emblem {
+  border-radius: 50%;
+}
+
+/* DMM Field Notes — faint ruled journal lines. */
+.path[data-track='field-notes'] {
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent 0 25px,
+    color-mix(in srgb, var(--ea-path-accent) 7%, transparent) 25px 26px
+  );
+}
+
+.path[data-track='field-notes'] .path__emblem {
+  border-radius: 6px;
+}
