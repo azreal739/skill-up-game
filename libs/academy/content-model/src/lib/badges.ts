@@ -172,6 +172,12 @@ export const BADGES: readonly BadgeDefinition[] = [
     description: 'Completed the System Design field notes — requirements first, every tradeoff named.',
     icon: '🏛️',
   },
+  {
+    id: 'ai-collaborator',
+    title: 'AI Collaborator',
+    description: 'Completed the AI-Assisted Engineering field notes — amplify judgement, stay accountable.',
+    icon: '🤖',
+  },
   // Programmatic achievements (Review Loop spec 08) — awarded by
   // GameStateService from play history, not by content rewards.
   {

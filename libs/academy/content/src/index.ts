@@ -22,4 +22,5 @@ export * from './lib/ng-accessibility/campaign';
 export * from './lib/ng-security/campaign';
 export * from './lib/ng-production-debugging/campaign';
 export * from './lib/fe-system-design/campaign';
+export * from './lib/ai-assisted-engineering/campaign';
 export * from './lib/help-topics';
