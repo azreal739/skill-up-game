@@ -53,6 +53,12 @@ export const appRoutes: Routes = [
       ),
   },
   {
+    path: 'paths/:trackId',
+    canActivate: [profileGuard],
+    loadComponent: () =>
+      import('./features/path-view/path-view.component').then((m) => m.PathViewComponent),
+  },
+  {
     path: 'campaigns/:campaignId',
     canActivate: [profileGuard],
     loadComponent: () =>

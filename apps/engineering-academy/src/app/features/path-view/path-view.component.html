@@ -1,0 +1,129 @@
+@if (path(); as path) {
+  <div
+    class="path-view ea-page"
+    [attr.data-track]="path.track.id"
+    [style.--ea-path-accent]="path.track.accent"
+  >
+    <a class="path-view__back" routerLink="/campaigns">← All paths</a>
+
+    <header class="path-view__header ea-panel">
+      <span class="path-view__emblem" aria-hidden="true">{{ path.track.emblem }}</span>
+      <div class="path-view__heading">
+        <p class="ea-eyebrow">Path</p>
+        <h1 class="path-view__title">{{ path.track.title }}</h1>
+        <p class="path-view__blurb">{{ path.track.blurb }}</p>
+        <div class="path-view__progress">
+          <div
+            class="path-view__bar"
+            role="progressbar"
+            [attr.aria-label]="path.track.title + ' progress'"
+            [attr.aria-valuenow]="(path.ratio * 100).toFixed(0)"
+            aria-valuemin="0"
+            aria-valuemax="100"
+          >
+            <div class="path-view__fill" [style.width.%]="path.ratio * 100"></div>
+          </div>
+          <span class="path-view__stats">
+            <strong>{{ path.campaignsDone }}/{{ path.campaignsTotal }}</strong> campaigns ·
+            <strong>{{ path.missionsDone }}/{{ path.missionsTotal }}</strong> missions ·
+            {{ path.ratio | percent }}
+          </span>
+        </div>
+      </div>
+    </header>
+
+    @if (path.next; as next) {
+      <section class="path-view__recommended ea-panel">
+        <div>
+          <p class="ea-eyebrow">Recommended next mission</p>
+          <h2 class="path-view__rec-title">{{ next.mission.title }}</h2>
+          <p class="path-view__rec-summary">
+            {{ next.campaign.title }} · {{ next.mission.summary }}
+          </p>
+        </div>
+        <a class="ea-btn ea-btn--primary" [routerLink]="['/missions', next.mission.id]">
+          Start mission
+        </a>
+      </section>
+    } @else {
+      <section class="path-view__recommended ea-panel path-view__recommended--done">
+        <div>
+          <p class="ea-eyebrow">Path complete</p>
+          <h2 class="path-view__rec-title">Every mission on this path is done 🎉</h2>
+          <p class="path-view__rec-summary">Replay any campaign for a perfect, hint-free run.</p>
+        </div>
+      </section>
+    }
+
+    <div class="campaigns">
+      @for (campaign of path.campaigns; track campaign.id; let i = $index) {
+        <article
+          class="campaign ea-panel"
+          [style.animation-delay]="i * 55 + 'ms'"
+          [class.campaign--complete]="isCompleted(campaign.id)"
+          [class.campaign--locked]="isLocked(campaign.id)"
+          [attr.aria-disabled]="isLocked(campaign.id) ? 'true' : null"
+        >
+          <div class="campaign__header">
+            <ea-campaign-emblem
+              class="campaign__emblem"
+              [campaignId]="campaign.id"
+              [difficulty]="campaign.difficulty"
+              [size]="42"
+            />
+            <h2 class="campaign__title">{{ campaign.title }}</h2>
+            @if (isCompleted(campaign.id)) {
+              <span class="ea-chip campaign__done">✓ complete</span>
+            } @else if (isLocked(campaign.id)) {
+              <span class="ea-chip">🔒 locked</span>
+            }
+          </div>
+          <p class="campaign__subtitle">{{ campaign.subtitle }}</p>
+          <p class="campaign__description">{{ campaign.description }}</p>
+
+          <div class="campaign__tags">
+            <span class="ea-chip campaign__difficulty" [attr.data-difficulty]="campaign.difficulty">
+              {{ campaign.difficulty }}
+            </span>
+            @for (tag of campaign.tags; track tag) {
+              <span class="ea-chip"><ea-icon [name]="tag" [size]="12" />{{ tag }}</span>
+            }
+          </div>
+
+          <div class="campaign__footer">
+            @if (isLocked(campaign.id)) {
+              <span class="campaign__locked-note">
+                Complete {{ prerequisiteTitle(campaign.id) }} to unlock
+              </span>
+            } @else {
+              <div class="campaign__progress">
+                <div
+                  class="campaign__bar"
+                  role="progressbar"
+                  [attr.aria-label]="campaign.title + ' progress'"
+                  [attr.aria-valuenow]="(progressFor(campaign.id) * 100).toFixed(0)"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                >
+                  <div class="campaign__fill" [style.width.%]="progressFor(campaign.id) * 100"></div>
+                </div>
+                <span class="campaign__percent">
+                  {{ progressFor(campaign.id) | percent }} · {{ missionCount(campaign.id) }} missions
+                </span>
+              </div>
+              <a class="ea-btn" [routerLink]="['/campaigns', campaign.id]">Open</a>
+            }
+          </div>
+        </article>
+      }
+    </div>
+  </div>
+} @else {
+  <div class="path-view ea-page">
+    <section class="path-view__missing ea-panel">
+      <h1>Path not found</h1>
+      <p>That path doesn’t exist (or has no campaigns yet).</p>
+      <a class="ea-btn ea-btn--primary" routerLink="/campaigns">← Back to all paths</a>
+    </section>
+  </div>
+}

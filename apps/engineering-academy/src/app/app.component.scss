@@ -55,6 +55,73 @@
   }
 }
 
+/* Campaigns nav item with a paths dropdown. */
+.topbar__group {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.topbar__caret {
+  padding: 0.35rem 0.3rem;
+  border: 0;
+  background: transparent;
+  color: var(--ea-muted);
+  font-size: 0.7rem;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 8px;
+
+  &:hover {
+    color: var(--ea-text);
+  }
+}
+
+.topbar__menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  left: 0;
+  min-width: 13rem;
+  padding: 0.4rem;
+  flex-direction: column;
+  gap: 0.15rem;
+  border: 1px solid var(--ea-border);
+  border-radius: 12px;
+  background: rgba(10, 14, 26, 0.97);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 22px 48px rgba(2, 6, 18, 0.55);
+  z-index: 60;
+
+  a {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.7rem;
+    border-radius: 8px;
+    white-space: nowrap;
+  }
+}
+
+.topbar__menu-overview {
+  color: var(--ea-muted);
+  border-bottom: 1px solid var(--ea-border);
+  border-radius: 8px 8px 0 0;
+  margin-bottom: 0.15rem;
+  font-size: 0.82rem;
+}
+
+.topbar__menu-emblem {
+  font-size: 1rem;
+}
+
+/* Reveal on hover (mouse), focus-within (keyboard), or explicit toggle (touch). */
+.topbar__group:hover .topbar__menu,
+.topbar__group:focus-within .topbar__menu,
+.topbar__group.is-open .topbar__menu {
+  display: flex;
+}
+
 .topbar__badge {
   display: inline-block;
   margin-left: 0.35rem;

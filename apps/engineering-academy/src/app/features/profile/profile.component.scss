@@ -104,6 +104,39 @@
   margin-bottom: 0.7rem;
 }
 
+.campaigns-progress__path {
+  --ea-path-accent: var(--ea-accent);
+
+  & + .campaigns-progress__path {
+    margin-top: 1.3rem;
+  }
+}
+
+.campaigns-progress__path-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.35rem;
+  margin-bottom: 0.2rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--ea-path-accent) 35%, var(--ea-border));
+}
+
+.campaigns-progress__path-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-decoration: none;
+  font-weight: 700;
+  color: var(--ea-path-accent);
+}
+
+.campaigns-progress__path-count {
+  font-family: var(--ea-mono);
+  font-size: 0.78rem;
+  color: var(--ea-muted);
+}
+
 .campaigns-progress__row {
   display: flex;
   justify-content: space-between;

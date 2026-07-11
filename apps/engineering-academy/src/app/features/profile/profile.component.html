@@ -64,11 +64,28 @@
     </section>
 
     <section class="campaigns-progress ea-panel">
-      <h2>Campaigns</h2>
-      @for (entry of campaignStats(); track entry.campaign.id) {
-        <div class="campaigns-progress__row">
-          <a [routerLink]="['/campaigns', entry.campaign.id]">{{ entry.campaign.title }}</a>
-          <span>{{ entry.progress | percent }}</span>
+      <h2>Campaigns by path</h2>
+      @for (group of pathGroups(); track group.track.id) {
+        <div
+          class="campaigns-progress__path"
+          [attr.data-track]="group.track.id"
+          [style.--ea-path-accent]="group.track.accent"
+        >
+          <div class="campaigns-progress__path-head">
+            <a class="campaigns-progress__path-title" [routerLink]="['/paths', group.track.id]">
+              <span aria-hidden="true">{{ group.track.emblem }}</span>
+              {{ group.track.title }}
+            </a>
+            <span class="campaigns-progress__path-count">
+              {{ group.campaignsDone }}/{{ group.campaignsTotal }} · {{ group.ratio | percent }}
+            </span>
+          </div>
+          @for (entry of group.campaigns; track entry.campaign.id) {
+            <div class="campaigns-progress__row">
+              <a [routerLink]="['/campaigns', entry.campaign.id]">{{ entry.campaign.title }}</a>
+              <span>{{ entry.progress | percent }}</span>
+            </div>
+          }
         </div>
       }
     </section>

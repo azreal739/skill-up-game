@@ -10,6 +10,7 @@
 
 .hub__sub {
   color: var(--ea-muted);
+  max-width: 46rem;
 }
 
 .recommended {
@@ -31,169 +32,177 @@
   max-width: 38rem;
 }
 
-.track {
+/* ---- Path summary cards ---- */
+
+.paths {
   display: grid;
-  gap: 0.9rem;
-
-  & + .track {
-    margin-top: 1.6rem;
-  }
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  gap: 1.25rem;
 }
 
-.track__header {
-  display: grid;
-  gap: 0.15rem;
-  padding-bottom: 0.55rem;
-  border-bottom: 1px solid var(--ea-border);
-}
-
-.track__title {
-  margin: 0;
-  font-size: 1.15rem;
-  letter-spacing: 0.02em;
-}
-
-// The team's real learnings get a distinct violet accent.
-.track[data-track='field-notes'] .track__title {
-  color: var(--ea-accent-2);
-}
-
-.track__tagline {
-  margin: 0;
-  font-size: 0.85rem;
-  color: var(--ea-muted);
-}
-
-.campaigns {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr));
-  gap: 1rem;
-}
-
-.campaign {
+.path {
+  --ea-path-accent: var(--ea-accent);
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 0.9rem;
+  padding: 1.4rem;
+  text-decoration: none;
+  color: var(--ea-text);
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--ea-path-accent) 32%, var(--ea-border));
+  animation: path-in 0.5s ease both;
 
-  &--locked {
-    opacity: 0.55;
+  /* A soft wash of the path's accent along the top edge. */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--ea-path-accent), transparent 85%);
   }
 
   &--complete {
-    border-color: rgba(52, 211, 153, 0.4);
+    border-color: color-mix(in srgb, var(--ea-success) 45%, var(--ea-border));
   }
 }
 
-.campaign__header {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 0.6rem;
-}
-
-.campaign__title {
-  min-width: 0;
-  margin: 0;
-  overflow-wrap: break-word;
-  font-size: 1.15rem;
-  line-height: 1.3;
-  text-align: left;
-}
-
-.campaign__header .ea-chip {
-  white-space: nowrap;
-}
-
-.campaign__done {
-  color: var(--ea-success);
-  border-color: rgba(52, 211, 153, 0.5);
-}
-
-.campaign__subtitle {
-  font-family: var(--ea-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ea-accent-2);
-}
-
-.campaign__description {
-  color: var(--ea-muted);
-  font-size: 0.88rem;
-  line-height: 1.6;
-  flex: 1;
-}
-
-.campaign__tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-}
-
-.campaign__footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-top: 0.4rem;
-}
-
-.campaign__progress {
-  flex: 1;
-  min-width: 0;
-}
-
-.campaign__bar {
-  height: 6px;
-  border-radius: 3px;
-  background: rgba(255, 255, 255, 0.08);
-  overflow: hidden;
-}
-
-.campaign__fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--ea-accent), var(--ea-accent-2));
-  transition: width 0.4s ease;
-}
-
-.campaign__percent {
-  display: block;
-  margin-top: 0.3rem;
-  font-family: var(--ea-mono);
-  font-size: 0.7rem;
-  color: var(--ea-muted);
-}
-
-.campaign__locked-note {
-  font-size: 0.8rem;
-  color: var(--ea-muted);
-}
-
-/* Interactive card lift — transform/box-shadow only, GPU-friendly. */
-.campaign:not(.campaign--locked) {
+/* GPU-friendly lift on hover/focus, matching the campaign cards. */
+.path {
   transition: transform 0.18s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 
-  &:hover {
+  &:hover,
+  &:focus-visible {
     transform: translateY(-3px);
-    border-color: rgba(34, 211, 238, 0.4);
+    border-color: color-mix(in srgb, var(--ea-path-accent) 55%, var(--ea-border));
     box-shadow:
       0 22px 48px rgba(2, 6, 18, 0.5),
-      0 0 32px rgba(34, 211, 238, 0.08),
+      0 0 34px color-mix(in srgb, var(--ea-path-accent) 22%, transparent),
       inset 0 1px 0 rgba(255, 255, 255, 0.06);
   }
 }
 
-.campaign__emblem {
-  flex-shrink: 0;
-  margin-right: 0.2rem;
+.path__top {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.85rem;
 }
 
-/* Cards materialise in sequence when the hub opens. */
-.campaign {
-  animation: card-in 0.45s ease both;
+.path__emblem {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 14px;
+  font-size: 1.5rem;
+  background: color-mix(in srgb, var(--ea-path-accent) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ea-path-accent) 40%, transparent);
 }
 
-@keyframes card-in {
+.path__title {
+  margin: 0;
+  font-size: 1.3rem;
+  color: var(--ea-path-accent);
+}
+
+.path__tagline {
+  margin: 0.1rem 0 0;
+  font-size: 0.82rem;
+  color: var(--ea-muted);
+}
+
+.path__done {
+  color: var(--ea-success);
+  border-color: rgba(52, 211, 153, 0.5);
+  white-space: nowrap;
+}
+
+.path__blurb {
+  margin: 0;
+  color: var(--ea-muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  flex: 1;
+}
+
+.path__bar {
+  position: relative;
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.path__fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--ea-path-accent), color-mix(in srgb, var(--ea-path-accent) 40%, #fff));
+  transition: width 0.4s ease;
+}
+
+.path__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--ea-muted);
+
+  strong {
+    color: var(--ea-text);
+    font-family: var(--ea-mono);
+  }
+}
+
+.path__stat--pct {
+  margin-left: auto;
+  font-family: var(--ea-mono);
+  color: var(--ea-path-accent);
+}
+
+.path__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.2rem;
+}
+
+.path__next {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 0.85rem;
+}
+
+.path__next-label {
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ea-muted);
+}
+
+.path__next-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.path__next--done {
+  color: var(--ea-success);
+  justify-content: center;
+}
+
+/* The CTA is presentational (the whole card is the link). */
+.path__cta {
+  white-space: nowrap;
+  border-color: color-mix(in srgb, var(--ea-path-accent) 45%, var(--ea-border));
+  color: var(--ea-path-accent);
+  pointer-events: none;
+}
+
+@keyframes path-in {
   from {
     opacity: 0;
     transform: translateY(10px);
@@ -202,32 +211,5 @@
   to {
     opacity: 1;
     transform: none;
-  }
-}
-
-/* Slow light sweep across progress bars — the platform is always working. */
-.campaign__bar {
-  position: relative;
-  overflow: hidden;
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 34px;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
-    animation: bar-sheen 3.2s ease-in-out infinite;
-  }
-}
-
-@keyframes bar-sheen {
-  0% {
-    left: -34px;
-  }
-
-  60%,
-  100% {
-    left: 100%;
   }
 }

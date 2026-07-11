@@ -1,0 +1,252 @@
+.path-view {
+  --ea-path-accent: var(--ea-accent);
+  display: grid;
+  gap: 1.25rem;
+}
+
+.path-view__back {
+  justify-self: start;
+  color: var(--ea-muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+
+  &:hover {
+    color: var(--ea-path-accent);
+  }
+}
+
+/* ---- Path header ---- */
+
+.path-view__header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1.1rem;
+  align-items: start;
+  position: relative;
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--ea-path-accent) 32%, var(--ea-border));
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--ea-path-accent), transparent 85%);
+  }
+}
+
+.path-view__emblem {
+  display: grid;
+  place-items: center;
+  width: 3.6rem;
+  height: 3.6rem;
+  border-radius: 16px;
+  font-size: 1.9rem;
+  background: color-mix(in srgb, var(--ea-path-accent) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ea-path-accent) 40%, transparent);
+}
+
+.path-view__title {
+  margin: 0.15rem 0 0;
+  font-size: 1.7rem;
+  color: var(--ea-path-accent);
+}
+
+.path-view__blurb {
+  margin: 0.4rem 0 0.9rem;
+  color: var(--ea-muted);
+  max-width: 48rem;
+  line-height: 1.6;
+}
+
+.path-view__bar {
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.path-view__fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--ea-path-accent), color-mix(in srgb, var(--ea-path-accent) 40%, #fff));
+  transition: width 0.4s ease;
+}
+
+.path-view__stats {
+  display: block;
+  margin-top: 0.45rem;
+  font-size: 0.82rem;
+  color: var(--ea-muted);
+
+  strong {
+    color: var(--ea-text);
+    font-family: var(--ea-mono);
+  }
+}
+
+/* ---- Per-path recommended mission ---- */
+
+.path-view__recommended {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+  border-color: color-mix(in srgb, var(--ea-path-accent) 35%, var(--ea-border));
+}
+
+.path-view__rec-title {
+  margin: 0.25rem 0;
+  font-size: 1.2rem;
+}
+
+.path-view__rec-summary {
+  color: var(--ea-muted);
+  max-width: 42rem;
+}
+
+.path-view__missing {
+  display: grid;
+  gap: 0.8rem;
+  justify-items: start;
+}
+
+/* ---- Campaign cards (shared shape with the hub's original grid) ---- */
+
+.campaigns {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr));
+  gap: 1rem;
+}
+
+.campaign {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  animation: card-in 0.45s ease both;
+
+  &--locked {
+    opacity: 0.55;
+  }
+
+  &--complete {
+    border-color: rgba(52, 211, 153, 0.4);
+  }
+}
+
+.campaign:not(.campaign--locked) {
+  transition: transform 0.18s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--ea-path-accent) 45%, var(--ea-border));
+    box-shadow:
+      0 22px 48px rgba(2, 6, 18, 0.5),
+      0 0 32px color-mix(in srgb, var(--ea-path-accent) 14%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+}
+
+.campaign__header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.campaign__emblem {
+  flex-shrink: 0;
+  margin-right: 0.2rem;
+}
+
+.campaign__title {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: break-word;
+  font-size: 1.15rem;
+  line-height: 1.3;
+  text-align: left;
+}
+
+.campaign__header .ea-chip {
+  white-space: nowrap;
+}
+
+.campaign__done {
+  color: var(--ea-success);
+  border-color: rgba(52, 211, 153, 0.5);
+}
+
+.campaign__subtitle {
+  font-family: var(--ea-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ea-accent-2);
+}
+
+.campaign__description {
+  color: var(--ea-muted);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  flex: 1;
+}
+
+.campaign__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.campaign__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.4rem;
+}
+
+.campaign__progress {
+  flex: 1;
+  min-width: 0;
+}
+
+.campaign__bar {
+  position: relative;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.campaign__fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--ea-accent), var(--ea-accent-2));
+  transition: width 0.4s ease;
+}
+
+.campaign__percent {
+  display: block;
+  margin-top: 0.3rem;
+  font-family: var(--ea-mono);
+  font-size: 0.7rem;
+  color: var(--ea-muted);
+}
+
+.campaign__locked-note {
+  font-size: 0.8rem;
+  color: var(--ea-muted);
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
