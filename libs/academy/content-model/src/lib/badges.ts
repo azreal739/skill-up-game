@@ -136,6 +136,12 @@ export const BADGES: readonly BadgeDefinition[] = [
     description: 'Completed the Performance field notes — measured first, cut where the numbers pointed.',
     icon: '⚡',
   },
+  {
+    id: 'component-composer',
+    title: 'Component Composer',
+    description: 'Completed the Component Architecture field notes — parts with contracts, composed to outlive their pages.',
+    icon: '🧱',
+  },
   // Programmatic achievements (Review Loop spec 08) — awarded by
   // GameStateService from play history, not by content rewards.
   {
