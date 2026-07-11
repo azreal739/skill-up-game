@@ -298,3 +298,15 @@
 .path[data-track='field-notes'] .path__emblem {
   border-radius: 6px;
 }
+
+/* Dance Academy — a spotlight glow over a faint parquet floor. */
+.path[data-track='dance-judging'] {
+  background-image:
+    radial-gradient(120% 80% at 50% -20%, color-mix(in srgb, var(--ea-path-accent) 12%, transparent), transparent 55%),
+    repeating-linear-gradient(45deg, transparent 0 20px, color-mix(in srgb, var(--ea-path-accent) 5%, transparent) 20px 21px);
+  background-repeat: no-repeat, repeat;
+}
+
+.path[data-track='dance-judging'] .path__emblem {
+  border-radius: 40%;
+}

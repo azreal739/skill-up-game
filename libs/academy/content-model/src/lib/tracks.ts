@@ -9,7 +9,7 @@ import { z } from 'zod';
  * - `field-notes` — DMM Field Notes: real lessons captured from the team's
  *   own skill-up sessions and past work, replayed as campaigns.
  */
-export const campaignTrackSchema = z.enum(['mission-control', 'field-notes']);
+export const campaignTrackSchema = z.enum(['mission-control', 'field-notes', 'dance-judging']);
 export type CampaignTrack = z.infer<typeof campaignTrackSchema>;
 
 export interface TrackDefinition {
@@ -60,6 +60,15 @@ export const TRACKS: readonly TrackDefinition[] = [
       "Real lessons captured from the team's own skill-up sessions, replayed as campaigns. The mistakes are real, and so is what they taught us.",
     emblem: '📓',
     accent: '#a78bfa',
+  },
+  {
+    id: 'dance-judging',
+    title: 'Dance Academy — Judge Path',
+    tagline: 'UCWDC Judge Level 1 — train your eye for the floor.',
+    blurb:
+      'Step off the engineering floor and onto the dance floor. Learn to judge couples and line dancing the way a certified panel does — timing, rhythm, motion, character, signature figures and spatial structure — one dance at a time.',
+    emblem: '💃',
+    accent: '#fb7185',
   },
 ] as const;
 
