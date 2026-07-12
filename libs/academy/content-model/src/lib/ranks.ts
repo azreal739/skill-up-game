@@ -3,7 +3,7 @@
  *
  * - RANKS — the Mission Operator ladder, in granular I/II/III tiers so a
  *   promotion is earned, not tripped over. The top tier sits at ~90% of the
- *   maximum earnable XP (~37.9k across all campaigns, perfect and hint-free),
+ *   maximum earnable XP (~43.9k across all campaigns, perfect and hint-free),
  *   so Mission Sovereign III is a completionist's badge of honour.
  * - LEVELS — game-flavoured operator codenames on a faster cadence, so the
  *   player levels up regularly even while the next rank tier is far away.
@@ -30,9 +30,9 @@ export const RANKS: readonly Rank[] = [
   { id: 'principal-1', title: 'Nexus Overseer I', minXp: 14200 },
   { id: 'principal-2', title: 'Nexus Overseer II', minXp: 16800 },
   { id: 'principal-3', title: 'Nexus Overseer III', minXp: 19600 },
-  { id: 'distinguished-1', title: 'Mission Sovereign I', minXp: 24000 },
-  { id: 'distinguished-2', title: 'Mission Sovereign II', minXp: 29000 },
-  { id: 'distinguished-3', title: 'Mission Sovereign III', minXp: 34000 },
+  { id: 'distinguished-1', title: 'Mission Sovereign I', minXp: 30000 },
+  { id: 'distinguished-2', title: 'Mission Sovereign II', minXp: 34500 },
+  { id: 'distinguished-3', title: 'Mission Sovereign III', minXp: 39500 },
 ] as const;
 
 export function rankForXp(xp: number): Rank {
