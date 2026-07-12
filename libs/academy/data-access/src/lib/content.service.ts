@@ -41,6 +41,7 @@ import {
   judgeWcsPack,
   judgeChaChaPack,
   judgeMockTheoryPack,
+  judgeFinalCertPack,
   helpTopics,
 } from '@academy/content';
 import { z } from 'zod';
@@ -89,6 +90,7 @@ export class ContentService {
       judgeWcsPack,
       judgeChaChaPack,
       judgeMockTheoryPack,
+      judgeFinalCertPack,
     ].map((pack) => this.validatePack(pack));
     this.topics = helpTopics.map((topic) => this.validateTopic(topic));
 
