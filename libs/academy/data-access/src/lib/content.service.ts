@@ -39,6 +39,7 @@ import {
   judgeWaltzPack,
   judgeNightclubPack,
   judgeWcsPack,
+  judgeChaChaPack,
   helpTopics,
 } from '@academy/content';
 import { z } from 'zod';
@@ -85,6 +86,7 @@ export class ContentService {
       judgeWaltzPack,
       judgeNightclubPack,
       judgeWcsPack,
+      judgeChaChaPack,
     ].map((pack) => this.validatePack(pack));
     this.topics = helpTopics.map((topic) => this.validateTopic(topic));
 

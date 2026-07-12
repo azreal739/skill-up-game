@@ -27,4 +27,5 @@ export * from './lib/judge-core-fundamentals/campaign';
 export * from './lib/judge-waltz/campaign';
 export * from './lib/judge-nightclub/campaign';
 export * from './lib/judge-wcs/campaign';
+export * from './lib/judge-cha-cha/campaign';
 export * from './lib/help-topics';
