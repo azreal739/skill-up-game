@@ -1240,6 +1240,14 @@ export const helpTopics: HelpTopic[] = [
       'West Coast Swing is in 4/4, danced in six- and eight-count patterns made of walks and triples, with a back-beat emphasis. Its MOTION is a hybrid: smooth glide combined with rhythmic check steps, using EXTENSION and COMPRESSION of the connection, and every pattern SETTLES on an anchor at the end. CHARACTER is cool, grounded and conversational — a hybrid of smooth and rhythm identities. SIGNATURE FIGURES include the push (sugar push), pass and whip. SPATIAL STRUCTURE is the SLOT: a narrow lane, kept parallel to the audience, in which the follower travels back and forth. A brief, purposeful direction change (as in a whip) is allowed as long as the couple re-establishes the slot; the fault is permanently abandoning it. Common faults a judge watches for: a weak or missing anchor settle, no extension/compression, and wandering off the slot.',
   },
   {
+    id: 'dance.triple-two',
+    title: 'Judging the Triple Two',
+    tags: ['dance', 'judging', 'triple-two'],
+    summary: 'Triple Two: 4/4 slow-slow-triple-triple, whole-body shape with opposite shaping, romantic, progressive on a curved path.',
+    content:
+      'Triple Two is in 4/4 with a slow-slow-triple-triple rhythm — two heel-flat walking steps followed by two ball-flat triple steps. Its defining MOTION is shape through the whole body, with the successive triples taking OPPOSITE shape (one shaping one way, the next the other), producing continuous, soft, romantic movement. CHARACTER is smooth, soft and romantic. SIGNATURE FIGURES include loops, laces and weaves. SPATIAL STRUCTURE is PROGRESSIVE but on a CURVED path — the couple travels the floor while weaving, rather than in the straight diagonals of a Waltz. Common faults a judge watches for: a rushed or uneven triple, triples that shape the SAME way instead of opposite, and travel that stalls or straightens out instead of flowing on the curve.',
+  },
+  {
     id: 'dance.cha-cha',
     title: 'Judging the Cha Cha',
     tags: ['dance', 'judging', 'cha-cha'],
