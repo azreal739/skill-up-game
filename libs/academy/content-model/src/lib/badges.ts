@@ -197,6 +197,12 @@ export const BADGES: readonly BadgeDefinition[] = [
     description: 'Completed the Nightclub module — slow-quick-quick, base-driven sway, and contained romantic geometry.',
     icon: '🌙',
   },
+  {
+    id: 'wcs-judge',
+    title: 'West Coast Swing Judge',
+    description: 'Completed the West Coast Swing module — the slot, anchor, and push/pass/whip read with confidence.',
+    icon: '🎸',
+  },
   // Programmatic achievements (Review Loop spec 08) — awarded by
   // GameStateService from play history, not by content rewards.
   {

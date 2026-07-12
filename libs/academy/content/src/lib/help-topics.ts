@@ -1231,4 +1231,12 @@ export const helpTopics: HelpTopic[] = [
     content:
       'Nightclub (Nightclub Two Step) is in 4/4 time with a slow-quick-quick rhythm and ball-flat footwork. Its defining MOTION is a soft sway and counter-sway generated from the BASE (feet, ankles, legs) rather than tilted from the upper body — a common fault is faking the look by tipping the torso. CHARACTER is soft, fluid and romantic. SIGNATURE FIGURES include diamonds, passes and rotations. SPATIAL STRUCTURE is NON-PROGRESSIVE: the couple holds a contained geometric area — diamonds, squares, circles — parallel to the audience edge, creating volume and depth without travelling around the floor. The classic spatial fault is a Nightclub that travels continuously around the room like a progressive dance.',
   },
+  {
+    id: 'dance.west-coast-swing',
+    title: 'Judging the West Coast Swing',
+    tags: ['dance', 'judging', 'west-coast-swing'],
+    summary: 'WCS: 4/4 six- and eight-count patterns in a slot, anchored, with push/pass/whip and a hybrid smooth-rhythm feel.',
+    content:
+      'West Coast Swing is in 4/4, danced in six- and eight-count patterns made of walks and triples, with a back-beat emphasis. Its MOTION is a hybrid: smooth glide combined with rhythmic check steps, using EXTENSION and COMPRESSION of the connection, and every pattern SETTLES on an anchor at the end. CHARACTER is cool, grounded and conversational — a hybrid of smooth and rhythm identities. SIGNATURE FIGURES include the push (sugar push), pass and whip. SPATIAL STRUCTURE is the SLOT: a narrow lane, kept parallel to the audience, in which the follower travels back and forth. A brief, purposeful direction change (as in a whip) is allowed as long as the couple re-establishes the slot; the fault is permanently abandoning it. Common faults a judge watches for: a weak or missing anchor settle, no extension/compression, and wandering off the slot.',
+  },
 ];
