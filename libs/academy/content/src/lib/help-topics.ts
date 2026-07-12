@@ -1239,4 +1239,12 @@ export const helpTopics: HelpTopic[] = [
     content:
       'West Coast Swing is in 4/4, danced in six- and eight-count patterns made of walks and triples, with a back-beat emphasis. Its MOTION is a hybrid: smooth glide combined with rhythmic check steps, using EXTENSION and COMPRESSION of the connection, and every pattern SETTLES on an anchor at the end. CHARACTER is cool, grounded and conversational — a hybrid of smooth and rhythm identities. SIGNATURE FIGURES include the push (sugar push), pass and whip. SPATIAL STRUCTURE is the SLOT: a narrow lane, kept parallel to the audience, in which the follower travels back and forth. A brief, purposeful direction change (as in a whip) is allowed as long as the couple re-establishes the slot; the fault is permanently abandoning it. Common faults a judge watches for: a weak or missing anchor settle, no extension/compression, and wandering off the slot.',
   },
+  {
+    id: 'dance.cha-cha',
+    title: 'Judging the Cha Cha',
+    tags: ['dance', 'judging', 'cha-cha'],
+    summary: 'Cha Cha: 4/4 with a 4&5 / 8&9 chasse, Cuban motion, cheeky character, controlled non-progressive travel.',
+    content:
+      'Cha Cha is in 4/4, counted 2 3 4&1 (often taught as 1 2 3 4&5 6 7 8&) where the CHASSE — the quick 4&5 (and 8&) — is its rhythmic signature, with strong emphasis on the "&" counts. MUSICAL accents fall on 1 and 5, DANCE accents on 2 and 6. Its MOTION is Cuban action (hip movement created through the bending and straightening of the knees) — a flat, sharper action is only appropriate to certain music; using the wrong motion for the song is a classic fault. CHARACTER is fiery, flirtatious and cheeky. SIGNATURE FIGURES include basics, breaks (New Yorkers), and rotations (spot turns). SPATIAL STRUCTURE is controlled and largely non-progressive: the couple works a contained area with only limited travel, floorcraft-aware. Common faults a judge watches for: a crushed or mistimed chasse, Cuban motion that is faked or absent, and travelling too much for the style.',
+  },
 ];

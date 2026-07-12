@@ -203,6 +203,12 @@ export const BADGES: readonly BadgeDefinition[] = [
     description: 'Completed the West Coast Swing module — the slot, anchor, and push/pass/whip read with confidence.',
     icon: '🎸',
   },
+  {
+    id: 'chacha-judge',
+    title: 'Cha Cha Judge',
+    description: 'Completed the Cha Cha module — the 4&5 chasse, Cuban motion, and cheeky character judged with an eye.',
+    icon: '💃',
+  },
   // Programmatic achievements (Review Loop spec 08) — awarded by
   // GameStateService from play history, not by content rewards.
   {
