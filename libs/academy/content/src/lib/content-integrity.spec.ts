@@ -38,6 +38,7 @@ import { judgeWaltzPack } from './judge-waltz/campaign';
 import { judgeNightclubPack } from './judge-nightclub/campaign';
 import { judgeWcsPack } from './judge-wcs/campaign';
 import { judgeChaChaPack } from './judge-cha-cha/campaign';
+import { judgeMockTheoryPack } from './judge-mock-theory/campaign';
 import { helpTopics } from './help-topics';
 
 /**
@@ -76,6 +77,7 @@ describe('content integrity', () => {
     judgeNightclubPack,
     judgeWcsPack,
     judgeChaChaPack,
+    judgeMockTheoryPack,
   ];
 
   it('validates every campaign pack against the Zod schema', () => {
@@ -213,6 +215,7 @@ describe('content integrity', () => {
       'judge-nightclub': 'judge-waltz',
       'judge-wcs': 'judge-nightclub',
       'judge-cha-cha': 'judge-wcs',
+      'judge-mock-theory': 'judge-cha-cha',
     };
     for (const pack of packs) {
       expect(pack.campaign.requiredCampaignId)

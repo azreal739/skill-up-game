@@ -209,6 +209,18 @@ export const BADGES: readonly BadgeDefinition[] = [
     description: 'Completed the Cha Cha module — the 4&5 chasse, Cuban motion, and cheeky character judged with an eye.',
     icon: '💃',
   },
+  {
+    id: 'theory-certified',
+    title: 'Theory Certified',
+    description: 'Passed the Mock Theory Exam — timing, rhythm, motion, character, figures and structure across every dance.',
+    icon: '📖',
+  },
+  {
+    id: 'apprentice-judge',
+    title: 'Apprentice Judge',
+    description: 'Passed the Final Certification Assessment — the full Judge Path, dance by dance, complete.',
+    icon: '🏅',
+  },
   // Programmatic achievements (Review Loop spec 08) — awarded by
   // GameStateService from play history, not by content rewards.
   {

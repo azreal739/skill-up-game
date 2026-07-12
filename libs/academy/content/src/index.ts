@@ -28,4 +28,5 @@ export * from './lib/judge-waltz/campaign';
 export * from './lib/judge-nightclub/campaign';
 export * from './lib/judge-wcs/campaign';
 export * from './lib/judge-cha-cha/campaign';
+export * from './lib/judge-mock-theory/campaign';
 export * from './lib/help-topics';
