@@ -1223,4 +1223,12 @@ export const helpTopics: HelpTopic[] = [
     content:
       'The Waltz is in 3/4 time, counted 1 2 3 4 5 6 across two bars, with the MUSICAL accents on 1 and 4 and the couple’s DANCE accents typically on 2 and 5. Its defining MOTION is rise and fall — a smooth vertical swing through each figure — with swing and sway (pendulum, metronomic and rotational). CHARACTER is elegant, formal and regal. SIGNATURE FIGURES include the box, twinkle, diamond and fallaway. SPATIAL STRUCTURE is progressive: the couple travels counter-clockwise around the line of dance, moving on diagonals with streamlining, not circling on the spot. Common faults a judge watches for: correct 3/4 timing but weak or absent rise and fall, a thin figure vocabulary, and travel that fails to progress along the line of dance.',
   },
+  {
+    id: 'dance.nightclub',
+    title: 'Judging the Nightclub',
+    tags: ['dance', 'judging', 'nightclub'],
+    summary: 'Nightclub: 4/4 slow-quick-quick, base-driven sway, romantic character, non-progressive geometry.',
+    content:
+      'Nightclub (Nightclub Two Step) is in 4/4 time with a slow-quick-quick rhythm and ball-flat footwork. Its defining MOTION is a soft sway and counter-sway generated from the BASE (feet, ankles, legs) rather than tilted from the upper body — a common fault is faking the look by tipping the torso. CHARACTER is soft, fluid and romantic. SIGNATURE FIGURES include diamonds, passes and rotations. SPATIAL STRUCTURE is NON-PROGRESSIVE: the couple holds a contained geometric area — diamonds, squares, circles — parallel to the audience edge, creating volume and depth without travelling around the floor. The classic spatial fault is a Nightclub that travels continuously around the room like a progressive dance.',
+  },
 ];

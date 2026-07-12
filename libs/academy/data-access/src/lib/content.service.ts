@@ -37,6 +37,7 @@ import {
   aiAssistedEngineeringPack,
   judgeCoreFundamentalsPack,
   judgeWaltzPack,
+  judgeNightclubPack,
   helpTopics,
 } from '@academy/content';
 import { z } from 'zod';
@@ -81,6 +82,7 @@ export class ContentService {
       aiAssistedEngineeringPack,
       judgeCoreFundamentalsPack,
       judgeWaltzPack,
+      judgeNightclubPack,
     ].map((pack) => this.validatePack(pack));
     this.topics = helpTopics.map((topic) => this.validateTopic(topic));
 
