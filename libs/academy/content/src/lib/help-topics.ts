@@ -1263,4 +1263,12 @@ export const helpTopics: HelpTopic[] = [
     content:
       'Cha Cha is in 4/4, counted 2 3 4&1 (often taught as 1 2 3 4&5 6 7 8&) where the CHASSE — the quick 4&5 (and 8&) — is its rhythmic signature, with strong emphasis on the "&" counts. MUSICAL accents fall on 1 and 5, DANCE accents on 2 and 6. Its MOTION is Cuban action (hip movement created through the bending and straightening of the knees) — a flat, sharper action is only appropriate to certain music; using the wrong motion for the song is a classic fault. CHARACTER is fiery, flirtatious and cheeky. SIGNATURE FIGURES include basics, breaks (New Yorkers), and rotations (spot turns). SPATIAL STRUCTURE is controlled and largely non-progressive: the couple works a contained area with only limited travel, floorcraft-aware. Common faults a judge watches for: a crushed or mistimed chasse, Cuban motion that is faked or absent, and travelling too much for the style.',
   },
+  {
+    id: 'dance.east-coast-swing',
+    title: 'Judging the East Coast Swing',
+    tags: ['dance', 'judging', 'east-coast-swing'],
+    summary: 'East Coast Swing: 4/4 with triple-step or single/double variants, lively bounce, accent on even beats, playful character, circular non-progressive travel.',
+    content:
+      'East Coast Swing is in 4/4, most commonly counted triple-step, triple-step, rock-step (1&2 3&4 5-6) — with single-time (tap-step) and double-time (six-count) variants a judge must recognise as the SAME dance in different gears rather than as faults. Its rhythmic signature is the springy TRIPLE and the ROCK STEP that resolves each basic, with the DANCE accent landing on the even beats (the "back" of the rock). Its defining MOTION is a lively, bouncy pulse — a grounded down-up bounce from the knees and ankles that keeps the couple light and swinging, plus a hip swing and hip release on the triples. CHARACTER is lively, energetic, playful and fun — the most openly joyful of the swing family. SIGNATURE FIGURES include passes, rotations (underarm turns), and Lindy-derived patterns. SPATIAL STRUCTURE is CIRCULAR and NON-PROGRESSIVE: the couple works around a shared central point, rotating and exchanging places, rather than travelling along a line of dance. Common faults a judge watches for: a flat, bounce-less swing that loses the lift, triples crushed into two steps or dropped to single-time when the music calls for triples, a missing or mistimed rock step, and a couple that travels around the room like a progressive dance instead of holding the circular spot.',
+  },
 ];
