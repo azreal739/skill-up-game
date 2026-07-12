@@ -222,6 +222,12 @@ export const BADGES: readonly BadgeDefinition[] = [
     icon: '🤠',
   },
   {
+    id: 'ecs-judge',
+    title: 'East Coast Swing Judge',
+    description: 'Completed the East Coast Swing module — triples and rock steps, lively bounce, and circular non-progressive swing read on sight.',
+    icon: '🎷',
+  },
+  {
     id: 'theory-certified',
     title: 'Theory Certified',
     description: 'Passed the Mock Theory Exam — timing, rhythm, motion, character, figures and structure across every dance.',

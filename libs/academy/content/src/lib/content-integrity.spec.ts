@@ -40,6 +40,7 @@ import { judgeWcsPack } from './judge-wcs/campaign';
 import { judgeChaChaPack } from './judge-cha-cha/campaign';
 import { judgeTripleTwoPack } from './judge-triple-two/campaign';
 import { judgePolkaPack } from './judge-polka/campaign';
+import { judgeEastCoastSwingPack } from './judge-east-coast-swing/campaign';
 import { judgeMockTheoryPack } from './judge-mock-theory/campaign';
 import { judgeFinalCertPack } from './judge-final-cert/campaign';
 import { helpTopics } from './help-topics';
@@ -82,6 +83,7 @@ describe('content integrity', () => {
     judgeChaChaPack,
     judgeTripleTwoPack,
     judgePolkaPack,
+    judgeEastCoastSwingPack,
     judgeMockTheoryPack,
     judgeFinalCertPack,
   ];
@@ -223,7 +225,8 @@ describe('content integrity', () => {
       'judge-cha-cha': 'judge-wcs',
       'judge-triple-two': 'judge-cha-cha',
       'judge-polka': 'judge-triple-two',
-      'judge-mock-theory': 'judge-polka',
+      'judge-east-coast-swing': 'judge-polka',
+      'judge-mock-theory': 'judge-east-coast-swing',
       'judge-final-cert': 'judge-mock-theory',
     };
     for (const pack of packs) {
