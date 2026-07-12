@@ -1215,4 +1215,12 @@ export const helpTopics: HelpTopic[] = [
     content:
       'A defensible judgement is built, not felt. First identify the dance being claimed, then watch through each of the six lenses in turn rather than reacting to overall impression. Separate what is genuinely wrong from what is merely to your personal taste. When comparing couples, hold every couple to the same criteria in the same order, and be able to state the concrete reason one placed above another — "stronger timing and clearer signature figures", not "I liked them more". Record notes as you go: a score you can explain is a score you can stand behind on a panel.',
   },
+  {
+    id: 'dance.waltz',
+    title: 'Judging the Waltz',
+    tags: ['dance', 'judging', 'waltz'],
+    summary: 'Waltz: 3/4 time, rise and fall, regal character, and progressive diagonal travel.',
+    content:
+      'The Waltz is in 3/4 time, counted 1 2 3 4 5 6 across two bars, with the MUSICAL accents on 1 and 4 and the couple’s DANCE accents typically on 2 and 5. Its defining MOTION is rise and fall — a smooth vertical swing through each figure — with swing and sway (pendulum, metronomic and rotational). CHARACTER is elegant, formal and regal. SIGNATURE FIGURES include the box, twinkle, diamond and fallaway. SPATIAL STRUCTURE is progressive: the couple travels counter-clockwise around the line of dance, moving on diagonals with streamlining, not circling on the spot. Common faults a judge watches for: correct 3/4 timing but weak or absent rise and fall, a thin figure vocabulary, and travel that fails to progress along the line of dance.',
+  },
 ];

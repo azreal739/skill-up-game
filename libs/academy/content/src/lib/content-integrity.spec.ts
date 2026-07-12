@@ -34,6 +34,7 @@ import { ngProductionDebuggingPack } from './ng-production-debugging/campaign';
 import { feSystemDesignPack } from './fe-system-design/campaign';
 import { aiAssistedEngineeringPack } from './ai-assisted-engineering/campaign';
 import { judgeCoreFundamentalsPack } from './judge-core-fundamentals/campaign';
+import { judgeWaltzPack } from './judge-waltz/campaign';
 import { helpTopics } from './help-topics';
 
 /**
@@ -68,6 +69,7 @@ describe('content integrity', () => {
     feSystemDesignPack,
     aiAssistedEngineeringPack,
     judgeCoreFundamentalsPack,
+    judgeWaltzPack,
   ];
 
   it('validates every campaign pack against the Zod schema', () => {
@@ -201,6 +203,7 @@ describe('content integrity', () => {
       'ai-assisted-engineering': 'fe-system-design',
       // dance-judging (Dance Academy — Judge Path)
       'judge-core-fundamentals': undefined,
+      'judge-waltz': 'judge-core-fundamentals',
     };
     for (const pack of packs) {
       expect(pack.campaign.requiredCampaignId)

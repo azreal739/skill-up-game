@@ -185,6 +185,12 @@ export const BADGES: readonly BadgeDefinition[] = [
     description: 'Completed Core Judging Fundamentals — the six lenses every dance is judged through.',
     icon: '⚖️',
   },
+  {
+    id: 'waltz-judge',
+    title: 'Waltz Judge',
+    description: 'Completed the Waltz module — 3/4 time, rise and fall, and regal character read on sight.',
+    icon: '🎩',
+  },
   // Programmatic achievements (Review Loop spec 08) — awarded by
   // GameStateService from play history, not by content rewards.
   {
