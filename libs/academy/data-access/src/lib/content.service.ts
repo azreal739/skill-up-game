@@ -41,6 +41,7 @@ import {
   judgeWcsPack,
   judgeChaChaPack,
   judgeTripleTwoPack,
+  judgePolkaPack,
   judgeMockTheoryPack,
   judgeFinalCertPack,
   helpTopics,
@@ -91,6 +92,7 @@ export class ContentService {
       judgeWcsPack,
       judgeChaChaPack,
       judgeTripleTwoPack,
+      judgePolkaPack,
       judgeMockTheoryPack,
       judgeFinalCertPack,
     ].map((pack) => this.validatePack(pack));
