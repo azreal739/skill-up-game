@@ -191,6 +191,12 @@ export const BADGES: readonly BadgeDefinition[] = [
     description: 'Completed the Waltz module — 3/4 time, rise and fall, and regal character read on sight.',
     icon: '🎩',
   },
+  {
+    id: 'nightclub-judge',
+    title: 'Nightclub Judge',
+    description: 'Completed the Nightclub module — slow-quick-quick, base-driven sway, and contained romantic geometry.',
+    icon: '🌙',
+  },
   // Programmatic achievements (Review Loop spec 08) — awarded by
   // GameStateService from play history, not by content rewards.
   {

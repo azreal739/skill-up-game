@@ -25,4 +25,5 @@ export * from './lib/fe-system-design/campaign';
 export * from './lib/ai-assisted-engineering/campaign';
 export * from './lib/judge-core-fundamentals/campaign';
 export * from './lib/judge-waltz/campaign';
+export * from './lib/judge-nightclub/campaign';
 export * from './lib/help-topics';

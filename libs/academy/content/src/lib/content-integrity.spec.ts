@@ -35,6 +35,7 @@ import { feSystemDesignPack } from './fe-system-design/campaign';
 import { aiAssistedEngineeringPack } from './ai-assisted-engineering/campaign';
 import { judgeCoreFundamentalsPack } from './judge-core-fundamentals/campaign';
 import { judgeWaltzPack } from './judge-waltz/campaign';
+import { judgeNightclubPack } from './judge-nightclub/campaign';
 import { helpTopics } from './help-topics';
 
 /**
@@ -70,6 +71,7 @@ describe('content integrity', () => {
     aiAssistedEngineeringPack,
     judgeCoreFundamentalsPack,
     judgeWaltzPack,
+    judgeNightclubPack,
   ];
 
   it('validates every campaign pack against the Zod schema', () => {
@@ -204,6 +206,7 @@ describe('content integrity', () => {
       // dance-judging (Dance Academy — Judge Path)
       'judge-core-fundamentals': undefined,
       'judge-waltz': 'judge-core-fundamentals',
+      'judge-nightclub': 'judge-waltz',
     };
     for (const pack of packs) {
       expect(pack.campaign.requiredCampaignId)
