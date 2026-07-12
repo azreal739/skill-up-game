@@ -39,6 +39,7 @@ import { judgeNightclubPack } from './judge-nightclub/campaign';
 import { judgeWcsPack } from './judge-wcs/campaign';
 import { judgeChaChaPack } from './judge-cha-cha/campaign';
 import { judgeTripleTwoPack } from './judge-triple-two/campaign';
+import { judgePolkaPack } from './judge-polka/campaign';
 import { judgeMockTheoryPack } from './judge-mock-theory/campaign';
 import { judgeFinalCertPack } from './judge-final-cert/campaign';
 import { helpTopics } from './help-topics';
@@ -80,6 +81,7 @@ describe('content integrity', () => {
     judgeWcsPack,
     judgeChaChaPack,
     judgeTripleTwoPack,
+    judgePolkaPack,
     judgeMockTheoryPack,
     judgeFinalCertPack,
   ];
@@ -220,7 +222,8 @@ describe('content integrity', () => {
       'judge-wcs': 'judge-nightclub',
       'judge-cha-cha': 'judge-wcs',
       'judge-triple-two': 'judge-cha-cha',
-      'judge-mock-theory': 'judge-triple-two',
+      'judge-polka': 'judge-triple-two',
+      'judge-mock-theory': 'judge-polka',
       'judge-final-cert': 'judge-mock-theory',
     };
     for (const pack of packs) {

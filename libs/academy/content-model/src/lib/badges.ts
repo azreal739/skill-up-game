@@ -216,6 +216,12 @@ export const BADGES: readonly BadgeDefinition[] = [
     icon: '🌀',
   },
   {
+    id: 'polka-judge',
+    title: 'Polka Judge',
+    description: 'Completed the Polka module — 1&2 lilt, up/down pulse, and aggressive progressive travel.',
+    icon: '🤠',
+  },
+  {
     id: 'theory-certified',
     title: 'Theory Certified',
     description: 'Passed the Mock Theory Exam — timing, rhythm, motion, character, figures and structure across every dance.',

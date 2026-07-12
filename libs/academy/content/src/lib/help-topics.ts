@@ -1240,6 +1240,14 @@ export const helpTopics: HelpTopic[] = [
       'West Coast Swing is in 4/4, danced in six- and eight-count patterns made of walks and triples, with a back-beat emphasis. Its MOTION is a hybrid: smooth glide combined with rhythmic check steps, using EXTENSION and COMPRESSION of the connection, and every pattern SETTLES on an anchor at the end. CHARACTER is cool, grounded and conversational — a hybrid of smooth and rhythm identities. SIGNATURE FIGURES include the push (sugar push), pass and whip. SPATIAL STRUCTURE is the SLOT: a narrow lane, kept parallel to the audience, in which the follower travels back and forth. A brief, purposeful direction change (as in a whip) is allowed as long as the couple re-establishes the slot; the fault is permanently abandoning it. Common faults a judge watches for: a weak or missing anchor settle, no extension/compression, and wandering off the slot.',
   },
   {
+    id: 'dance.polka',
+    title: 'Judging the Polka',
+    tags: ['dance', 'judging', 'polka'],
+    summary: 'Polka: 4/4 or 2/4 with a 1&2 3&4 lilt, ball-ball-ball-flat, up/down pulse, energetic country character, aggressive progressive travel.',
+    content:
+      'Polka is in 4/4 or 2/4 with a 1&2 3&4 structure — a bright, lilting triple feel on a ball-ball-ball-flat action. Its defining MOTION is a springy up/down PULSE (a lilt), with a slight forward poise driving the couple down the floor. CHARACTER is energetic, bright and country — the most up-tempo, exuberant of the smooth-travelling dances. SIGNATURE FIGURES include skips, gallops, rotating chasses and weaves. SPATIAL STRUCTURE is aggressively PROGRESSIVE: the couple covers the floor with strong forward travel and rotation, more driving than the Waltz. Common faults a judge watches for: a flat, pulse-less Polka (no lilt), an under-powered travel that fails to drive down the floor, and heavy landings that kill the springy up/down feel.',
+  },
+  {
     id: 'dance.triple-two',
     title: 'Judging the Triple Two',
     tags: ['dance', 'judging', 'triple-two'],
