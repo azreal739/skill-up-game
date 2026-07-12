@@ -210,6 +210,12 @@ export const BADGES: readonly BadgeDefinition[] = [
     icon: '💃',
   },
   {
+    id: 'triple-two-judge',
+    title: 'Triple Two Judge',
+    description: 'Completed the Triple Two module — slow-slow-triple-triple, opposite shape, and curved progressive travel.',
+    icon: '🌀',
+  },
+  {
     id: 'theory-certified',
     title: 'Theory Certified',
     description: 'Passed the Mock Theory Exam — timing, rhythm, motion, character, figures and structure across every dance.',

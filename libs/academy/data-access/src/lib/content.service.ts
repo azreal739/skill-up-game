@@ -40,6 +40,7 @@ import {
   judgeNightclubPack,
   judgeWcsPack,
   judgeChaChaPack,
+  judgeTripleTwoPack,
   judgeMockTheoryPack,
   judgeFinalCertPack,
   helpTopics,
@@ -89,6 +90,7 @@ export class ContentService {
       judgeNightclubPack,
       judgeWcsPack,
       judgeChaChaPack,
+      judgeTripleTwoPack,
       judgeMockTheoryPack,
       judgeFinalCertPack,
     ].map((pack) => this.validatePack(pack));
