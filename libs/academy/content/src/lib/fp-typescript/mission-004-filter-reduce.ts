@@ -118,39 +118,51 @@ export const fnFp004FilterReduce: MissionDefinition = {
         },
         {
           id: 'b',
-          label: 'It only breaks on an empty array; otherwise the behaviour is identical.',
-          isCorrect: false,
+          label:
+            'It does not compile: without a seed the accumulator is inferred as Cart, so sum + cart.total is a type error — and in plain JavaScript it would also throw on an empty array.',
+          isCorrect: true,
           feedback:
-            'The empty-array TypeError is real, but not alone — the first cart is also consumed as the accumulator.',
+            'Seedless reduce uses the first ELEMENT as the accumulator, so TypeScript infers sum as Cart and rejects Cart + number on the spot. The 0 seed fixes the accumulator type AND the empty-array TypeError in one argument.',
         },
         {
           id: 'c',
           label:
-            'The accumulator starts as a Cart object, so the sum becomes object-plus-number garbage — and an empty array throws.',
-          isCorrect: true,
+            'It compiles, and at runtime the sum becomes object-plus-number garbage because the accumulator starts as a Cart.',
+          isCorrect: false,
           feedback:
-            'Both failures at once: a Cart as the starting “sum”, and a TypeError the day carts is empty.',
+            'That is what untyped JavaScript would do — but TypeScript catches this one at compile time, because + cannot be applied to Cart and number.',
         },
         {
           id: 'd',
-          label: 'TypeScript rejects seedless reduce entirely, so this cannot compile.',
+          label: 'It only breaks on an empty array; otherwise the behaviour is identical.',
           isCorrect: false,
           feedback:
-            'Seedless reduce is legal — the compiler infers Cart as the accumulator and the + produces the garbage.',
+            'The empty-array TypeError is real, but this code never gets that far — the Cart-typed accumulator fails to compile first.',
         },
       ],
       hints: [
-        { level: 1, title: 'Direction', content: 'Without a seed, what is the accumulator on iteration one?' },
+        {
+          level: 1,
+          title: 'Direction',
+          content:
+            'Without a seed, what is the accumulator on iteration one — and what type does the compiler infer for it?',
+        },
         {
           level: 2,
           title: 'Concept',
-          content: 'Seedless reduce uses element[0] as the initial accumulator and starts from element[1].',
+          content:
+            'Seedless reduce uses element[0] as the initial accumulator and starts from element[1]. The seed argument sets both the starting value and the accumulator type.',
         },
-        { level: 3, title: 'Specific clue', content: 'The accumulator here is a Cart, and Cart + number is nonsense.' },
+        {
+          level: 3,
+          title: 'Specific clue',
+          content: 'sum is inferred as Cart. Can Cart + number compile?',
+        },
         {
           level: 4,
           title: 'Guided solution',
-          content: 'Choose the double failure: wrong accumulator type AND the empty-array TypeError.',
+          content:
+            'Choose the compile-error option — the seed is what makes the accumulator a number (and saves the empty-array case too).',
         },
       ],
       rewards: [{ type: 'xp', amount: 25, label: 'Seed defended' }],
