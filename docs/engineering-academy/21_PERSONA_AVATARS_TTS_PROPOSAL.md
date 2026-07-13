@@ -205,5 +205,9 @@ Why this fits *this* app:
    sentence), next-block `prefetch()` during playback, post-ready warm-up
    generation, and WebGPU/fp32 device selection for deployments without the
    bundled q8 model (local packages stay WASM/q8 for the offline guarantee).
-4. Optional later: per-persona portrait art, per-block "replay voice"
-   button, persistent (IndexedDB) audio cache.
+4. **Voice check + resilience + persistence — ✅ DONE (2026-07-13):**
+   calibration ends with Mission Control audibly speaking the check line;
+   briefings started during engine warm-up wait for readiness instead of
+   staying silent; generated narration persists across sessions in
+   IndexedDB (`SpeechAudioCache`, pruned at 300 lines).
+5. Optional later: per-persona portrait art, per-block "replay voice" button.
