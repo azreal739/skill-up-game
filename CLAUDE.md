@@ -61,7 +61,10 @@ GameStateService, MissionSessionService, persistence) → `ui` / `challenges`
 
 - Branch: `claude/skill-up-game-review-x5t6o3`; reset it from `origin/main` per PR.
 - Pure content PRs: create AND merge autonomously after green build/test/lint +
-  a Playwright smoke. Engine/logic changes: ask for review first.
+  a Playwright smoke. Engine/logic changes: proposal → user go-ahead → build on
+  the branch → **open an MR and wait for the user's review/merge call** (2026-07-13:
+  approval to build ≠ approval to merge; one MR per branch is fine when the work
+  shares a branch).
 - `git config user.email noreply@anthropic.com`, `user.name Claude`. The stop
   hook flags GitHub's own merge commits (`noreply@github.com`) as unverified —
   that is a false positive; never rewrite commits already on main.
@@ -132,6 +135,25 @@ and a per-path terminology re-skin (e.g. "Judge Points").
   `PersonaAvatarComponent` (ui): five SVG mentor busts with talking/idle CSS
   states in mentor-dialogue; content-integrity guard rejects unregistered
   briefing speakers; reduced-motion safe.
+- **All of this session's work is MERGED to main** (PR #73 the bulk, #74 + #75
+  follow-up fixes below). The user also has a **live web deploy** at
+  `engineering-academy.azreal739gmail-com.chatgpt.site` (built/deployed via
+  Codex from main) — it has no bundled model, so voice there downloads from
+  HuggingFace on first enable.
+- **Voice fix (PR #74, merged):** transformers.js 3.8's onnxruntime loads the
+  unified **jsep** wasm build even for the plain wasm backend — the assets glob
+  must ship all four `ort-wasm-simd-threaded*` files or the engine dies with
+  "no available backend found" (exactly what happened on the first web deploy).
+- **Voice latency pass (PR #75, merged):** worker streams audio **per
+  sentence** (kokoro `stream()` + `TextSplitterStream`); dialogue **prefetches
+  the next block** while the current one plays (`EaSpeechPlayer.prefetch?`);
+  a **warm-up** generation right after 'ready' absorbs session-compile cost;
+  **device selection** — bundled q8 model present (local package) → WASM/q8
+  offline guarantee; no bundle + real WebGPU adapter (web deploys) → fp32 on
+  GPU (~10× faster, ~330MB one-time download), fallback WASM/q8. Perf ranking:
+  GPU machine hosted ≫ CPU; GPU-less machines: local package beats hosted
+  (launchers send COOP/COEP → threaded wasm; chatgpt.site host doesn't).
+  Pending: user listen-test feedback (speed + sentence-seam quality).
 - **Mentor narration (Kokoro-82M TTS) — SHIPPED (user approved Option A):**
   `SpeechService` + `speech.worker.ts` (data-access, kokoro-js WASM q8, npm
   install needs `--ignore-scripts` for onnxruntime-node's postinstall);
