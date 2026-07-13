@@ -234,6 +234,12 @@ export const BADGES: readonly BadgeDefinition[] = [
     icon: '🤠',
   },
   {
+    id: 'samba-judge',
+    title: 'Samba Judge',
+    description: 'Completed the Samba module — the syncopated 1-a-2, the knee-driven Samba bounce, festive carnival character, and progressive travel read on sight.',
+    icon: '🥁',
+  },
+  {
     id: 'theory-certified',
     title: 'Theory Certified',
     description: 'Passed the Mock Theory Exam — timing, rhythm, motion, character, figures and structure across every dance.',
