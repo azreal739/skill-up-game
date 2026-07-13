@@ -75,9 +75,66 @@ weakening, the guardrails.
 
 ## Part 2 — Text-to-speech
 
-### Recommended: Web Speech API (`speechSynthesis`), opt-in
+> **Revised after user feedback (2026-07-13):** system voices via the Web
+> Speech API were judged not good enough — the user wants a small open
+> neural TTS model running locally in the background. The recommendation
+> below is now **Kokoro-82M in the browser**; the original Web Speech
+> analysis is kept at the end as the zero-cost fallback engine.
+
+### Recommended: Kokoro-82M via `kokoro-js` (local neural TTS, opt-in)
+
+[Kokoro](https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX) is an
+82M-parameter Apache-2.0 TTS model whose naturalness benchmarks at the top of
+the small-model class — near-human prosody, versus Piper's fast-but-robotic
+output and far above OS system voices. `kokoro-js` (by the transformers.js
+author) runs it 100% client-side: WebGPU when available (~10 s of speech
+generated in ~1 s), WASM/CPU fallback (~1–2× realtime). The quantized model
+is ~86 MB, cached in IndexedDB after first load.
+
+Why it fits:
+
+- **Fully offline** once the model is present — works in the family package
+  with zero accounts/keys/network.
+- **Real per-persona voices**: Kokoro ships ~50 distinct voices, so each
+  persona gets its own actual voice (e.g. Mission Control = calm male,
+  Team Lead = warm female, Head Judge = British male) instead of rate/pitch
+  tricks on one system voice.
+- **Quality**: independent 2026 comparisons grade Kokoro A/A- for
+  naturalness vs Piper C+; it is the consensus "best small local TTS".
+
+Trade-offs to decide before building:
+
+1. **Package size.** Bundling the model in the local zip: ~1 MB → ~90 MB.
+   Alternative: keep the zip small and download the model once when voice is
+   first enabled (needs internet that one time; cached in IndexedDB after).
+2. **Old hardware.** Without WebGPU, generation is roughly realtime on CPU —
+   mitigated by generating each block *during* the typewriter animation and
+   caching generated audio (IndexedDB) so every replay is instant.
+3. **A real dependency** (`kokoro-js` + transformers.js/onnxruntime-web,
+   ~1–2 MB JS), lazy-loaded only when voice is enabled so the initial bundle
+   budget is untouched.
+
+Alternative if speed on weak machines trumps quality: **Piper** (~75 MB,
+WASM-only, 3–5× faster than realtime on plain CPU, works in every browser,
+noticeably more mechanical). Same architecture slot either way.
+
+### Engine shape (revised)
+
+- `SpeechService` in `data-access` defines a small engine interface;
+  `KokoroEngine` is the primary implementation, running generation in a **web
+  worker**, speaking one briefing block per utterance, cancelling on skip,
+  navigation and destroy, and caching generated audio per `(voice, text)` in
+  IndexedDB. The Web Speech API engine (below) remains as a no-download
+  fallback for devices that can't run the model.
+- Settings: `voiceEnabled` (default **off**), persona→voice map in
+  `personas.ts` (`voiceHint` becomes a concrete Kokoro voice id).
+- Avatar sync: the avatar's `talking` state keys off actual audio playback
+  when voice is on, off the typewriter when it's off.
+
+### Fallback engine: Web Speech API (`speechSynthesis`), opt-in
 
 The browser's built-in `speechSynthesis` reads each block aloud as it types.
+(Original recommendation, now demoted to fallback — kept for reference.)
 
 Why this fits *this* app:
 
@@ -124,14 +181,14 @@ Why this fits *this* app:
 - Some Chromium/Linux setups have no local voices at all → the toggle shows
   "no voices available on this device" and stays off, app unaffected.
 
-## Suggested build order (each step independently shippable)
+## Build order (updated)
 
-1. **Persona registry + SVG avatars with talking/idle states** — pure UI,
-   biggest visible win, no save-schema change. (~1 PR)
-2. **SpeechService + voice toggle in settings** — the TTS core, opt-in,
-   settings-schema addition + tests. (~1 PR)
-3. Optional later: per-persona portrait art, per-block "replay voice" button,
-   pre-generated premium audio for the intro missions only.
-
-Steps 1–2 respect all existing guardrails: reduced-motion kill switch, OnPush,
-no new dependencies, bundle budgets untouched.
+1. **Persona registry + SVG avatars with talking/idle states** — ✅ **DONE**
+   (shipped 2026-07-13: `personas.ts`, `PersonaAvatarComponent`, integrated
+   into mentor-dialogue with a content-integrity speaker guard).
+2. **Kokoro TTS** — `SpeechService` + `KokoroEngine` (worker, per-block
+   generation, IndexedDB audio cache), `voiceEnabled` setting (default off),
+   persona→voice map, Web Speech fallback engine. Blocked on the user
+   deciding trade-off #1 (bundle model into the ~90 MB package vs
+   download-once-on-enable) — do not start without that call.
+3. Optional later: per-persona portrait art, per-block "replay voice" button.
