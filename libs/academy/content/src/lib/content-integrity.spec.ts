@@ -45,6 +45,7 @@ import { judgeTwoStepPack } from './judge-two-step/campaign';
 import { judgeSambaPack } from './judge-samba/campaign';
 import { judgeStreetPack } from './judge-street/campaign';
 import { judgeStagePack } from './judge-stage/campaign';
+import { judgeComparativePack } from './judge-comparative/campaign';
 import { judgeMockTheoryPack } from './judge-mock-theory/campaign';
 import { judgeFinalCertPack } from './judge-final-cert/campaign';
 import { helpTopics } from './help-topics';
@@ -92,6 +93,7 @@ describe('content integrity', () => {
     judgeSambaPack,
     judgeStreetPack,
     judgeStagePack,
+    judgeComparativePack,
     judgeMockTheoryPack,
     judgeFinalCertPack,
   ];
@@ -238,7 +240,8 @@ describe('content integrity', () => {
       'judge-samba': 'judge-two-step',
       'judge-street': 'judge-samba',
       'judge-stage': 'judge-street',
-      'judge-mock-theory': 'judge-stage',
+      'judge-comparative': 'judge-stage',
+      'judge-mock-theory': 'judge-comparative',
       'judge-final-cert': 'judge-mock-theory',
     };
     for (const pack of packs) {

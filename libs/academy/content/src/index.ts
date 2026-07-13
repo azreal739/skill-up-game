@@ -35,6 +35,7 @@ export * from './lib/judge-two-step/campaign';
 export * from './lib/judge-samba/campaign';
 export * from './lib/judge-street/campaign';
 export * from './lib/judge-stage/campaign';
+export * from './lib/judge-comparative/campaign';
 export * from './lib/judge-mock-theory/campaign';
 export * from './lib/judge-final-cert/campaign';
 export * from './lib/help-topics';
