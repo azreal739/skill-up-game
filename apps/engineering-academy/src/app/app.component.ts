@@ -1,7 +1,7 @@
 import { Component, effect, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { TRACKS } from '@academy/content-model';
-import { AudioService, GameStateService } from '@academy/data-access';
+import { AudioService, GameStateService, SpeechService } from '@academy/data-access';
 import { WaveBackgroundComponent } from './shared/wave-background/wave-background.component';
 
 @Component({
@@ -87,6 +87,7 @@ import { WaveBackgroundComponent } from './shared/wave-background/wave-backgroun
 export class AppComponent {
   protected readonly gameState = inject(GameStateService);
   private readonly audio = inject(AudioService);
+  private readonly speech = inject(SpeechService);
   private interacted = false;
 
   /** Paths listed in the Campaigns nav dropdown (iterated, so extensible). */
@@ -114,6 +115,24 @@ export class AppComponent {
       // Text scale must land on the root element: rem-based sizes (which is
       // most of the UI) resolve against <html>, not <body>.
       document.documentElement.style.fontSize = `${settings.textScale * 100}%`;
+    });
+
+    // Keep the narration engine in step with the voice setting: warm it up
+    // on boot for returning voice users, tear it down when switched off.
+    // Edge-detected: settings() re-emits on every state write, and enable()
+    // must only fire on an actual toggle (it retries from the error state).
+    let voiceWasEnabled: boolean | undefined;
+    effect(() => {
+      const voiceEnabled = this.gameState.settings().voiceEnabled;
+      if (voiceEnabled === voiceWasEnabled) {
+        return;
+      }
+      voiceWasEnabled = voiceEnabled;
+      if (voiceEnabled) {
+        this.speech.enable();
+      } else {
+        this.speech.disable();
+      }
     });
   }
 

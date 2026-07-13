@@ -6,6 +6,8 @@ import {
   withViewTransitions,
 } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { SpeechService } from '@academy/data-access';
+import { EA_SPEECH_PLAYER } from '@academy/ui';
 import { appRoutes } from './app.routes';
 import { environment } from '../environments/environment';
 
@@ -24,5 +26,8 @@ export const appConfig: ApplicationConfig = {
       ...(environment.useHashRouting ? [withHashLocation()] : [])
     ),
     provideAnimationsAsync(),
+    // Mentor narration: the presentational dialogue speaks through this port
+    // when the voice setting is on; without it briefings just type silently.
+    { provide: EA_SPEECH_PLAYER, useExisting: SpeechService },
   ],
 };

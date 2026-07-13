@@ -6,3 +6,4 @@ export * from './lib/persona-avatar/persona-avatar.component';
 export * from './lib/badge-chip/badge-chip.component';
 export * from './lib/icon/icon.component';
 export * from './lib/count-up/count-up.component';
+export * from './lib/mentor-dialogue/speech-player';

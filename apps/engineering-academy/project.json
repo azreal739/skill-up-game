@@ -30,6 +30,11 @@
             "glob": "**/*",
             "input": "apps/engineering-academy/public",
             "output": ""
+          },
+          {
+            "glob": "ort-wasm-simd-threaded.{mjs,wasm}",
+            "input": "node_modules/onnxruntime-web/dist",
+            "output": "assets/tts/ort"
           }
         ],
         "styles": [

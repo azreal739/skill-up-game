@@ -186,9 +186,19 @@ Why this fits *this* app:
 1. **Persona registry + SVG avatars with talking/idle states** — ✅ **DONE**
    (shipped 2026-07-13: `personas.ts`, `PersonaAvatarComponent`, integrated
    into mentor-dialogue with a content-integrity speaker guard).
-2. **Kokoro TTS** — `SpeechService` + `KokoroEngine` (worker, per-block
-   generation, IndexedDB audio cache), `voiceEnabled` setting (default off),
-   persona→voice map, Web Speech fallback engine. Blocked on the user
-   deciding trade-off #1 (bundle model into the ~90 MB package vs
-   download-once-on-enable) — do not start without that call.
-3. Optional later: per-persona portrait art, per-block "replay voice" button.
+2. **Kokoro TTS** — ✅ **DONE** (user chose Option A, shipped 2026-07-13):
+   `SpeechService` + `speech.worker.ts` in data-access (WASM q8, per-block
+   generation queue, in-session audio cache, fetch interception serving
+   `/assets/tts/model/` first with HuggingFace fallback for dev/web),
+   `EA_SPEECH_PLAYER` port in ui so mentor-dialogue stays presentational,
+   `voiceEnabled` setting (default off, back-compat default in schema),
+   persona→`voiceId` map, transmission-style "bringing voice systems online"
+   overlay with mentor banter + real progress, COOP/COEP headers in both
+   launchers (wasm threads), packaging script bundles model+voices
+   (`--skip-tts` for the small zip). NOTE: model files could not be
+   downloaded in the dev sandbox (HF blocked) — run
+   `node tools/package-academy-local.mjs` on a normal machine to produce
+   the fully-offline ~90 MB package; end-to-end audio still needs a
+   listen-test there.
+3. Optional later: per-persona portrait art, per-block "replay voice"
+   button, persistent (IndexedDB) audio cache, WebGPU device support.

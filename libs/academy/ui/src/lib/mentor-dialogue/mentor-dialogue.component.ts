@@ -6,12 +6,14 @@ import {
   OnDestroy,
   SimpleChanges,
   computed,
+  inject,
   signal,
 } from '@angular/core';
 
 import { NarrativeBlock } from '@academy/content-model';
 
 import { PersonaAvatarComponent } from '../persona-avatar/persona-avatar.component';
+import { EA_SPEECH_PLAYER } from './speech-player';
 
 /** Ms before a block starts typing — the "incoming transmission" beat. */
 const INCOMING_MS = 500;
@@ -93,7 +95,14 @@ export class MentorDialogueComponent implements OnChanges, OnDestroy {
     () => this.live && !this.instant && this.revealedCount() < (this.blocks?.length ?? 0)
   );
 
+  /** Optional narration engine (provided by the app; absent = silent). */
+  private readonly player = inject(EA_SPEECH_PLAYER, { optional: true });
+
   private timer: ReturnType<typeof setTimeout> | null = null;
+  /** Invalidates pending timers/speech continuations on skip/restart. */
+  private runId = 0;
+  /** Resolves when the active block's narration finishes (or immediately). */
+  private speechDone: Promise<void> = Promise.resolve();
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['blocks'] || changes['live'] || changes['instant']) {
@@ -102,20 +111,26 @@ export class MentorDialogueComponent implements OnChanges, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.runId++;
     this.clearTimer();
+    this.player?.cancel();
   }
 
   skip(): void {
     if (!this.animating()) {
       return;
     }
+    this.runId++;
     this.clearTimer();
+    this.player?.cancel();
     this.revealedCount.set(this.blocks.length);
     this.typed.set('');
   }
 
   private restart(): void {
+    this.runId++;
     this.clearTimer();
+    this.player?.cancel();
     if (!this.live || this.instant) {
       this.revealedCount.set(this.blocks?.length ?? 0);
       return;
@@ -128,26 +143,39 @@ export class MentorDialogueComponent implements OnChanges, OnDestroy {
     if (this.revealedCount() >= this.blocks.length) {
       return;
     }
+    const run = this.runId;
     this.incoming.set(true);
     this.typed.set('');
     this.timer = setTimeout(() => {
       this.incoming.set(false);
-      this.typeFrom(0);
+      const block = this.blocks[this.revealedCount()];
+      // Narration runs alongside the typewriter; the block only settles when
+      // both are done, so the avatar keeps talking to the end of the line.
+      this.speechDone =
+        this.player?.active() && block
+          ? this.player.speak(block.speaker, block.text).catch(() => undefined)
+          : Promise.resolve();
+      this.typeFrom(0, run);
     }, INCOMING_MS);
   }
 
-  private typeFrom(position: number): void {
+  private typeFrom(position: number, run: number): void {
     const text = this.blocks[this.revealedCount()]?.text ?? '';
     if (position >= text.length) {
       this.timer = setTimeout(() => {
-        this.revealedCount.update((count) => count + 1);
-        this.beginBlock();
+        void this.speechDone.then(() => {
+          if (run !== this.runId) {
+            return;
+          }
+          this.revealedCount.update((count) => count + 1);
+          this.beginBlock();
+        });
       }, BLOCK_GAP_MS);
       return;
     }
     const next = Math.min(position + CHARS_PER_TICK, text.length);
     this.typed.set(text.slice(0, next));
-    this.timer = setTimeout(() => this.typeFrom(next), TICK_MS);
+    this.timer = setTimeout(() => this.typeFrom(next, run), TICK_MS);
   }
 
   private clearTimer(): void {

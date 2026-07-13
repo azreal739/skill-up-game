@@ -30,6 +30,9 @@ $mime = @{
   '.ttf'   = 'font/ttf'
   '.txt'   = 'text/plain; charset=utf-8'
   '.map'   = 'application/json'
+  '.wasm'  = 'application/wasm'
+  '.onnx'  = 'application/octet-stream'
+  '.bin'   = 'application/octet-stream'
 }
 
 $listener = New-Object System.Net.HttpListener
@@ -78,8 +81,15 @@ while ($listener.IsListening) {
       $resolved = (Resolve-Path $file).Path
     }
     # Anything unknown (or a path-traversal attempt) falls back to the app
-    # shell; the game routes via the URL hash so this is always safe.
+    # shell; the game routes via the URL hash so this is always safe. Assets
+    # are the exception: the voice engine probes for optional model files
+    # and must see a real 404, not a 200 full of index.html.
     if (-not $resolved -or -not $resolved.StartsWith($root)) {
+      if ($relative.StartsWith('assets/')) {
+        $response.StatusCode = 404
+        $response.OutputStream.Close()
+        continue
+      }
       $resolved = Join-Path $root 'index.html'
     }
     $bytes = [System.IO.File]::ReadAllBytes($resolved)
@@ -89,6 +99,10 @@ while ($listener.IsListening) {
     $response.ContentType = $type
     $response.ContentLength64 = $bytes.Length
     $response.AddHeader('Cache-Control', 'no-cache')
+    # Cross-origin isolation lets the on-device voice engine use
+    # multithreaded WebAssembly (everything served here is same-origin).
+    $response.AddHeader('Cross-Origin-Opener-Policy', 'same-origin')
+    $response.AddHeader('Cross-Origin-Embedder-Policy', 'require-corp')
     $response.OutputStream.Write($bytes, 0, $bytes.Length)
   } catch {
     try { $response.StatusCode = 500 } catch {}

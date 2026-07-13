@@ -19,5 +19,14 @@ describe('personas', () => {
     expect(unknown.id).toBe('operator');
     expect(unknown.speaker).toBe('Guest Star');
     expect(unknown.accent).toBeTruthy();
+    expect(unknown.voiceId).toBeTruthy();
+  });
+
+  it('gives every persona a Kokoro voice id', () => {
+    // Ids follow Kokoro's <lang+gender>_<name> shape; the local-package
+    // script must bundle a .bin for each (tools/package-academy-local.mjs).
+    for (const persona of PERSONAS) {
+      expect(persona.voiceId).withContext(persona.id).toMatch(/^[ab][fm]_[a-z]+$/);
+    }
   });
 });

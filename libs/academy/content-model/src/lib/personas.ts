@@ -17,19 +17,27 @@ export interface PersonaDefinition {
   speaker: string;
   /** Tint for the persona's avatar. */
   accent: string;
+  /**
+   * Kokoro TTS voice for this persona (best available grade per role fit —
+   * the two most talkative mentors get the A-grade voices). Voice ids must
+   * exist in the Kokoro-82M voice set; the bundled-voice list in
+   * tools/package-academy-local.mjs must cover every id used here.
+   */
+  voiceId: string;
 }
 
 export const PERSONAS: readonly PersonaDefinition[] = [
-  { id: 'mission-control', speaker: 'Mission Control', accent: '#5eead4' },
-  { id: 'senior-dev', speaker: 'Senior Dev', accent: '#8ab4ff' },
-  { id: 'team-lead', speaker: 'Team Lead', accent: '#fcd34d' },
-  { id: 'mentor-judge', speaker: 'Mentor Judge', accent: '#e9a3f5' },
-  { id: 'head-judge', speaker: 'Head Judge', accent: '#fda4af' },
+  { id: 'mission-control', speaker: 'Mission Control', accent: '#5eead4', voiceId: 'am_michael' },
+  { id: 'senior-dev', speaker: 'Senior Dev', accent: '#8ab4ff', voiceId: 'am_fenrir' },
+  { id: 'team-lead', speaker: 'Team Lead', accent: '#fcd34d', voiceId: 'af_bella' },
+  { id: 'mentor-judge', speaker: 'Mentor Judge', accent: '#e9a3f5', voiceId: 'af_heart' },
+  { id: 'head-judge', speaker: 'Head Judge', accent: '#fda4af', voiceId: 'bm_george' },
 ];
 
 const GENERIC_PERSONA: Omit<PersonaDefinition, 'speaker'> = {
   id: 'operator',
   accent: '#9fb2c8',
+  voiceId: 'af_sarah',
 };
 
 /** Resolve a speaker string to its persona (generic operator if unknown). */

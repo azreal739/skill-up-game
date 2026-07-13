@@ -54,6 +54,36 @@
   </section>
 
   <section class="group ea-panel">
+    <h2>Mentor voice</h2>
+    <p class="group__note">
+      Mission briefings read aloud by your mentors — each with their own voice, generated
+      entirely on this computer. The first activation prepares the voice systems once;
+      after that it starts instantly.
+    </p>
+
+    <label class="row">
+      <span class="row__label">Voice narration</span>
+      <input
+        type="checkbox"
+        [checked]="gameState.settings().voiceEnabled"
+        (change)="onVoiceToggle($event)"
+      />
+    </label>
+
+    @switch (speech.status()) {
+      @case ('ready') {
+        <p class="voice-status" role="status">Voice systems online.</p>
+      }
+      @case ('error') {
+        <p class="voice-status voice-status--error" role="status">
+          The voice systems could not start on this device — briefings will type silently.
+          <button type="button" class="ea-btn" (click)="retryVoice()">Try again</button>
+        </p>
+      }
+    }
+  </section>
+
+  <section class="group ea-panel">
     <h2>Accessibility</h2>
 
     <label class="row">
@@ -113,3 +143,7 @@
     </button>
   </section>
 </div>
+
+@if (speech.status() === 'loading') {
+  <ea-voice-setup-overlay />
+}

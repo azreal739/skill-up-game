@@ -35,6 +35,9 @@ my %mime = (
   ttf   => 'font/ttf',
   txt   => 'text/plain; charset=utf-8',
   map   => 'application/json',
+  wasm  => 'application/wasm',
+  onnx  => 'application/octet-stream',
+  bin   => 'application/octet-stream',
 );
 
 my $server = IO::Socket::INET->new(
@@ -77,8 +80,13 @@ sub handle {
   my @parts = grep { length && $_ ne '.' && $_ ne '..' } split m{/+}, $path;
   my $file = File::Spec->catfile($root, @parts);
   # Anything unknown falls back to the app shell; the game routes via the
-  # URL hash so this is always safe.
-  $file = File::Spec->catfile($root, 'index.html') unless -f $file;
+  # URL hash so this is always safe. Assets are the exception: the voice
+  # engine probes for optional model files and must see a real 404, not
+  # a 200 full of index.html.
+  if (!-f $file) {
+    return respond($client, 404, 'text/plain', 'Not found') if $path =~ m{^/assets/};
+    $file = File::Spec->catfile($root, 'index.html');
+  }
 
   my ($ext) = $file =~ /\.([A-Za-z0-9]+)$/;
   my $type = $mime{ lc($ext // '') } || 'application/octet-stream';
@@ -93,6 +101,10 @@ sub handle {
     "Content-Type: $type",
     'Content-Length: ' . length($body),
     'Cache-Control: no-cache',
+    # Cross-origin isolation lets the on-device voice engine use
+    # multithreaded WebAssembly (everything served here is same-origin).
+    'Cross-Origin-Opener-Policy: same-origin',
+    'Cross-Origin-Embedder-Policy: require-corp',
     'Connection: close',
     '', '';
   print {$client} $header;

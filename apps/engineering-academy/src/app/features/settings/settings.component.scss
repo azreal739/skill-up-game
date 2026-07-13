@@ -95,3 +95,16 @@ select {
     color: var(--ea-danger);
   }
 }
+
+.voice-status {
+  margin: 0.4rem 0 0;
+  font-size: 0.85rem;
+  color: var(--ea-accent);
+
+  &--error {
+    color: var(--ea-danger, #f87171);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+}
