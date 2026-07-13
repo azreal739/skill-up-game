@@ -67,3 +67,59 @@ GameStateService, MissionSessionService, persistence) → `ui` / `challenges`
   that is a false positive; never rewrite commits already on main.
 - Verify visually with screenshots; respect the reduced-motion setting in any
   new animation (global kill switch on `html/body.ea-reduced-motion`).
+- Active development branch has also been `claude/engineering-academy-enhancements-t0g5is`
+  (reset from `origin/main` per PR, force-with-lease over already-merged history).
+
+## Project status / history (keep current for the next session)
+
+**Engineering Academy is feature-complete against its spec pack.** Built so far:
+
+- **Engine — Technical Debt Review Loop (MR1–MR4, merged):** first attempt is
+  locked (no brute-force retry); a wrong first attempt earns 0 challenge XP,
+  applies its consequence once, and creates a **Technical Debt** backlog item;
+  players remediate later in **Academy Review Mode** (~40% XP back, never
+  restores perfect-mission eligibility). Save is `playerStateSchema`
+  (`version: 2`, migrated from v1); `GameStateService` is the single writer.
+  Features: `backlog`, `review/:debtItemId`, `notes`, learning-dashboard
+  `profile`, richer results screens, programmatic badges.
+- **Track/Path system:** two tracks in `content-model/src/lib/tracks.ts` for
+  engineering (`mission-control` story sims, `field-notes` DMM learnings) plus
+  **`dance-judging`**. Path overview at `/paths/:trackId`, nav "Campaigns"
+  dropdown, profile grouped by path. Each track is its own linear
+  `requiredCampaignId` chain.
+- **Rank rename:** RANKS are the futuristic **Mission Operator** ladder (ids kept
+  as junior-*/…/distinguished-*). LEVELS re-themed. Top tier (`distinguished-3`,
+  "Mission Sovereign III") anchored at ~90% of max earnable XP; current tiers
+  **38000 / 44000 / 50000**, max earnable **≈55.8k** (final — curriculum
+  complete). Rebalance in `ranks.ts` + `ranks.spec.ts` only if the anchor guard
+  fails.
+- **Dance Academy — Judge Path (`dance-judging` track) — COMPLETE.** 13
+  specialist modules + 2 exams, each shipped as its own verified auto-merged
+  content PR (this session: #66–#71). Unlock chain, in order:
+  `judge-core-fundamentals → judge-waltz → judge-nightclub → judge-wcs →
+  judge-cha-cha → judge-triple-two → judge-polka → judge-east-coast-swing →
+  judge-two-step → judge-samba → judge-street → judge-stage → judge-comparative
+  → judge-mock-theory → judge-final-cert`. Dances judged through six lenses
+  (timing/rhythm/motion/character/signature-figures/spatial-structure); Street &
+  Stage are solo/era families; Comparative Judging is the placement skill. All
+  reuse the 3 challenge types — no new framework. Spec pack extracted at
+  `/tmp/.../scratchpad/dance-path/Dance_Academy_Judge_Path_Full_Spec` (re-extract
+  from the uploaded zip if gone).
+- **Bundle budgets** (`apps/engineering-academy/project.json`) grew with content:
+  initial `maximumWarning: 3.25MB` / `maximumError: 3.75MB`. Bump as needed.
+
+Deferred (NOT built — would be engine work, ask for review first): fully
+interactive challenge types (animated diagrams, metronome timing, mock-sheet UI)
+and a per-path terminology re-skin (e.g. "Judge Points").
+
+## Next up (new session): build & package for local sharing
+
+Goal: let the user run Engineering Academy **locally on family machines** (their
+Jnrs' and husband's) to play the game — a shareable local build, not a hosted
+deploy. Starting points: the app is a static Angular SPA — `npx nx build
+engineering-academy` emits `dist/apps/engineering-academy`. It uses
+`localStorage` only (no backend), so any static file server works, but the SPA
+needs a fallback rewrite to `index.html` for its routes. Consider: a documented
+`serve dist` recipe, a tiny bundled static server, and/or checking `baseHref`
+for file-path vs served hosting. Confirm target OSes and how non-technical
+family members will launch it before choosing an approach.
