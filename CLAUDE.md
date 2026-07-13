@@ -163,6 +163,10 @@ and a per-path terminology re-skin (e.g. "Judge Points").
   'loading' and `speak()` parks on `waitForReady()` (60s cap), so the block
   holds until the engine is hot, then speaks. Worker guards generate-before-
   init with a clean audio-error.
+- **Narration persistence + hygiene (merged):** `SpeechAudioCache`
+  (data-access) keeps generated wavs in IndexedDB across sessions (pruned at
+  300 lines, failure-silent; karma tests hit real IndexedDB). Component-style
+  budget warning bumped to 12kB (mission-player scss was permanently warning).
 - **Mentor narration (Kokoro-82M TTS) — SHIPPED (user approved Option A):**
   `SpeechService` + `speech.worker.ts` (data-access, kokoro-js WASM q8, npm
   install needs `--ignore-scripts` for onnxruntime-node's postinstall);
