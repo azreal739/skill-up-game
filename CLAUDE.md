@@ -128,8 +128,21 @@ and a per-path terminology re-skin (e.g. "Judge Points").
   error found and fixed — `fp-004-c2` (fp-typescript) claimed seedless
   `reduce` over `Cart[]` compiles to runtime garbage; in TS it's a TS2365
   compile error. Everything else accurate. 120/120 tests, lint, build green.
-- **Persona avatars + TTS proposal (docs only, awaiting user review):**
-  `docs/engineering-academy/21_PERSONA_AVATARS_TTS_PROPOSAL.md` — inline SVG
-  avatars with talking/idle states driven by mentor-dialogue typing signals,
-  plus an opt-in Web Speech API `SpeechService` (per-persona rate/pitch,
-  default off, no bundle impact). Do not implement without user go-ahead.
+- **Persona avatars — SHIPPED:** `personas.ts` registry (content-model) +
+  `PersonaAvatarComponent` (ui): five SVG mentor busts with talking/idle CSS
+  states in mentor-dialogue; content-integrity guard rejects unregistered
+  briefing speakers; reduced-motion safe.
+- **Mentor narration (Kokoro-82M TTS) — SHIPPED (user approved Option A):**
+  `SpeechService` + `speech.worker.ts` (data-access, kokoro-js WASM q8, npm
+  install needs `--ignore-scripts` for onnxruntime-node's postinstall);
+  `EA_SPEECH_PLAYER` token keeps ui presentational; `voiceEnabled` setting
+  (schema-defaulted, saves stay v2); "bringing voice systems online"
+  calibration overlay in Settings with mentor banter + progress; worker
+  intercepts kokoro's hardcoded HF URLs → `/assets/tts/model/` first (HTML
+  responses = missing), HF fallback for dev/web; launchers send COOP/COEP +
+  404 under /assets/. `node tools/package-academy-local.mjs` bundles model +
+  6 persona voices (~90MB zip; `--skip-tts` for small zip that downloads
+  once on first enable). **HF is blocked in this sandbox** — the full-model
+  zip must be produced on a normal machine, and real audio still needs a
+  listen-test there. See `21_PERSONA_AVATARS_TTS_PROPOSAL.md` build-order
+  for deferred bits (IndexedDB audio cache, WebGPU).
