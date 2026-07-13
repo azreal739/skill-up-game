@@ -3,6 +3,7 @@ import { Injectable, OnDestroy, inject, signal } from '@angular/core';
 import { personaForSpeaker } from '@academy/content-model';
 
 import { GameStateService } from './game-state.service';
+import { SpeechAudioCache } from './speech-audio-cache';
 
 export type SpeechStatus = 'off' | 'loading' | 'ready' | 'error';
 
@@ -34,6 +35,8 @@ export class SpeechService implements OnDestroy {
   private readonly requests = new Map<number, ChunkHandler>();
   /** Generated audio per voice+text — replaying a line is instant. */
   private readonly cache = new Map<string, Blob[]>();
+  /** …and persisted across sessions, so reloads never regenerate a line. */
+  private readonly audioCache = new SpeechAudioCache();
   /** In-flight generations (speak or prefetch), awaitable by later speaks. */
   private readonly inFlight = new Map<string, Promise<Blob[] | null>>();
   private current: { audio: HTMLAudioElement; url: string; finish: () => void } | null = null;
@@ -129,25 +132,21 @@ export class SpeechService implements OnDestroy {
       return;
     }
 
-    const pending = this.inFlight.get(key);
-    if (pending) {
-      // A prefetch already started this line — stream-play is lost, but the
-      // generation is typically well underway; play when it lands.
-      const chunks = await pending;
-      if (chunks && token === this.playToken) {
-        await this.playChunks(chunks, token);
-      }
-      return;
-    }
-
-    // Fresh generation: play each sentence as it arrives.
+    // Resolve the line (persistent cache → in-flight prefetch → fresh
+    // generation). A fresh generation streams: sentences play as they land.
+    let streamed = false;
     let playback: Promise<void> = Promise.resolve();
-    await this.generate(key, speaker, text, (blob) => {
+    const chunks = await this.ensureChunks(key, speaker, text, (blob) => {
+      streamed = true;
       if (token === this.playToken) {
         playback = playback.then(() => this.playBlob(blob, token));
       }
     });
-    await playback;
+    if (streamed) {
+      await playback;
+    } else if (chunks && token === this.playToken) {
+      await this.playChunks(chunks, token);
+    }
   }
 
   /**
@@ -164,7 +163,7 @@ export class SpeechService implements OnDestroy {
     if (this.cache.has(key) || this.inFlight.has(key)) {
       return;
     }
-    void this.generate(key, speaker, text);
+    void this.ensureChunks(key, speaker, text);
   }
 
   /** Stop current playback and invalidate any in-flight speak(). */
@@ -184,7 +183,34 @@ export class SpeechService implements OnDestroy {
   }
 
   /**
-   * Run one generation in the worker, filling the cache; resolves with the
+   * Resolve a line's audio, deduped per key: persistent cache first, then a
+   * fresh generation. `onChunk` observes sentences live only on the
+   * generation path — a cache hit resolves with the full chunk list instead.
+   */
+  private ensureChunks(
+    key: string,
+    speaker: string,
+    text: string,
+    onChunk?: (blob: Blob) => void
+  ): Promise<Blob[] | null> {
+    const pending = this.inFlight.get(key);
+    if (pending) {
+      return pending;
+    }
+    const task = (async () => {
+      const stored = await this.audioCache.load(key);
+      if (stored) {
+        this.cache.set(key, stored);
+        return stored;
+      }
+      return this.generate(key, speaker, text, onChunk);
+    })().finally(() => this.inFlight.delete(key));
+    this.inFlight.set(key, task);
+    return task;
+  }
+
+  /**
+   * Run one generation in the worker, filling both caches; resolves with the
    * chunks when done (null on failure). `onChunk` observes sentences live.
    */
   private generate(
@@ -193,7 +219,7 @@ export class SpeechService implements OnDestroy {
     text: string,
     onChunk?: (blob: Blob) => void
   ): Promise<Blob[] | null> {
-    const task = new Promise<Blob[] | null>((resolve) => {
+    return new Promise<Blob[] | null>((resolve) => {
       if (!this.worker) {
         resolve(null);
         return;
@@ -209,6 +235,7 @@ export class SpeechService implements OnDestroy {
         onDone: () => {
           if (chunks.length) {
             this.cache.set(key, chunks);
+            void this.audioCache.save(key, chunks);
           }
           resolve(chunks.length ? chunks : null);
         },
@@ -223,9 +250,7 @@ export class SpeechService implements OnDestroy {
         voice: personaForSpeaker(speaker).voiceId,
         text,
       });
-    }).finally(() => this.inFlight.delete(key));
-    this.inFlight.set(key, task);
-    return task;
+    });
   }
 
   private async playChunks(chunks: readonly Blob[], token: number): Promise<void> {
