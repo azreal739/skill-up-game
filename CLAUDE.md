@@ -112,14 +112,24 @@ Deferred (NOT built — would be engine work, ask for review first): fully
 interactive challenge types (animated diagrams, metronome timing, mock-sheet UI)
 and a per-path terminology re-skin (e.g. "Judge Points").
 
-## Next up (new session): build & package for local sharing
+## Done this session (branch `claude/engineering-academy-build-audit-wqabi2`)
 
-Goal: let the user run Engineering Academy **locally on family machines** (their
-Jnrs' and husband's) to play the game — a shareable local build, not a hosted
-deploy. Starting points: the app is a static Angular SPA — `npx nx build
-engineering-academy` emits `dist/apps/engineering-academy`. It uses
-`localStorage` only (no backend), so any static file server works, but the SPA
-needs a fallback rewrite to `index.html` for its routes. Consider: a documented
-`serve dist` recipe, a tiny bundled static server, and/or checking `baseHref`
-for file-path vs served hosting. Confirm target OSes and how non-technical
-family members will launch it before choosing an approach.
+- **Shareable local package (built + verified):** `node
+  tools/package-academy-local.mjs` → `dist/EngineeringAcademy-local.zip`
+  (~1 MB). Uses a `shareable` build configuration (hash routing via
+  `environment.useHashRouting` + `baseHref: './'`), zero-dependency
+  double-click launchers for Windows (PowerShell HttpListener) / macOS+Linux
+  (core-Perl server) on fixed port **8377** (keeps the localStorage save
+  origin stable), SPA fallback + MIME handling, family README. Verified
+  end-to-end with Playwright from the unzipped artifact. Also fixed a
+  pre-existing `>>` vs `>>>` NaN bug in `campaign-emblem.component.ts`.
+- **Full content audit of both engineering tracks (25 packs, ~38.6k lines):**
+  every challenge's correct answers, feedback, and hints checked. One factual
+  error found and fixed — `fp-004-c2` (fp-typescript) claimed seedless
+  `reduce` over `Cart[]` compiles to runtime garbage; in TS it's a TS2365
+  compile error. Everything else accurate. 120/120 tests, lint, build green.
+- **Persona avatars + TTS proposal (docs only, awaiting user review):**
+  `docs/engineering-academy/21_PERSONA_AVATARS_TTS_PROPOSAL.md` — inline SVG
+  avatars with talking/idle states driven by mentor-dialogue typing signals,
+  plus an opt-in Web Speech API `SpeechService` (per-persona rate/pitch,
+  default off, no bundle impact). Do not implement without user go-ahead.
