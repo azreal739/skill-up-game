@@ -108,7 +108,9 @@ function buildTraces(id: string): Trace[] {
   const directions = [0, 60, 120, 180, 240, 300];
   const traces: Trace[] = [];
   for (let i = 0; i < 4; i++) {
-    const dir = directions[(seed >> (i * 4)) % 6];
+    // Unsigned shift: the hash has its high bit set for some ids, and a
+    // signed >> would yield a negative index (undefined direction -> NaN).
+    const dir = directions[(seed >>> (i * 4)) % 6];
     const elbow = ((seed >> (i * 4 + 2)) & 1 ? 30 : -30) * (((seed >> (i * 4 + 3)) & 1) + 1);
     const a1 = ((dir - 90) * Math.PI) / 180;
     const a2 = ((dir + elbow - 90) * Math.PI) / 180;
