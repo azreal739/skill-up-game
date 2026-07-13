@@ -31,6 +31,7 @@ export * from './lib/judge-cha-cha/campaign';
 export * from './lib/judge-triple-two/campaign';
 export * from './lib/judge-polka/campaign';
 export * from './lib/judge-east-coast-swing/campaign';
+export * from './lib/judge-two-step/campaign';
 export * from './lib/judge-mock-theory/campaign';
 export * from './lib/judge-final-cert/campaign';
 export * from './lib/help-topics';
