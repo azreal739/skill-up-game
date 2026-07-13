@@ -4,6 +4,7 @@
   "scripts": {
     "start": "nx serve skill-up-game",
     "start:academy": "nx serve engineering-academy",
+    "build:academy:site": "nx build engineering-academy && node apps/engineering-academy/build-sites.mjs",
     "build": "nx run-many -t build",
     "watch": "nx build skill-up-game --watch --configuration development",
     "test": "nx run-many -t test -- --watch=false",

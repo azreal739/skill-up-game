@@ -2,6 +2,7 @@
 
 # Compiled output
 /dist
+/apps/engineering-academy/dist
 /tmp
 /out-tsc
 /bazel-out
