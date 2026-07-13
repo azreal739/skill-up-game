@@ -246,6 +246,12 @@ export const BADGES: readonly BadgeDefinition[] = [
     icon: '🕺',
   },
   {
+    id: 'stage-judge',
+    title: 'Stage Judge',
+    description: 'Completed the Stage module — era styles from Charleston to Broadway judged for authenticity, technical vocabulary and theatrical performance.',
+    icon: '🎭',
+  },
+  {
     id: 'theory-certified',
     title: 'Theory Certified',
     description: 'Passed the Mock Theory Exam — timing, rhythm, motion, character, figures and structure across every dance.',
