@@ -51,7 +51,7 @@ export class SettingsComponent {
 
   retryVoice(): void {
     this.audio.play('click');
-    this.speech.enable();
+    this.speech.enable({ voiceCheck: true });
   }
 
   exportProgress(): void {

@@ -154,6 +154,15 @@ and a per-path terminology re-skin (e.g. "Judge Points").
   GPU machine hosted ≫ CPU; GPU-less machines: local package beats hosted
   (launchers send COOP/COEP → threaded wasm; chatgpt.site host doesn't).
   Pending: user listen-test feedback (speed + sentence-seam quality).
+- **Voice check + late-ready fix (follow-up MR):** calibration now ends with
+  Mission Control audibly speaking `VOICE_CHECK_LINE` (`speech-shared.ts`)
+  before the overlay closes — only on user-initiated enables
+  (`enable({voiceCheck})`; boot warms silently, no surprise audio). And the
+  reported "DMM Field Notes audio not playing": briefings that start while
+  the engine is still booting no longer skip narration — `active()` includes
+  'loading' and `speak()` parks on `waitForReady()` (60s cap), so the block
+  holds until the engine is hot, then speaks. Worker guards generate-before-
+  init with a clean audio-error.
 - **Mentor narration (Kokoro-82M TTS) — SHIPPED (user approved Option A):**
   `SpeechService` + `speech.worker.ts` (data-access, kokoro-js WASM q8, npm
   install needs `--ignore-scripts` for onnxruntime-node's postinstall);

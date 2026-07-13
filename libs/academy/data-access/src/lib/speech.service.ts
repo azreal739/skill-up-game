@@ -45,14 +45,30 @@ export class SpeechService implements OnDestroy {
   readonly progress = signal(0);
   /** True during the post-download warm-up phase of loading. */
   readonly warming = signal(false);
+  /** True while the calibration screen's audible voice check is playing. */
+  readonly voiceCheck = signal(false);
 
-  /** True when the engine can speak right now. */
+  /** speak() calls parked while the engine finishes loading. */
+  private readyWaiters: Array<() => void> = [];
+  /** Cap on how long a briefing line waits for the engine to finish loading. */
+  private static readonly READY_WAIT_MS = 60_000;
+
+  /**
+   * True when narration is worth requesting: engine ready, or still loading —
+   * speak() waits for readiness so briefings that start during the boot
+   * warm-up get voice instead of typing through in silence.
+   */
   active(): boolean {
-    return this.status() === 'ready';
+    const status = this.status();
+    return status === 'ready' || status === 'loading';
   }
 
-  /** Boot the engine (idempotent). Retries from the 'error' state. */
-  enable(): void {
+  /**
+   * Boot the engine (idempotent). Retries from the 'error' state. Pass
+   * `voiceCheck: true` on a user-initiated enable so calibration ends with
+   * the check line spoken aloud (never on app boot — no surprise audio).
+   */
+  enable(options: { voiceCheck?: boolean } = {}): void {
     if (this.status() === 'error') {
       this.teardownWorker();
     }
@@ -65,12 +81,14 @@ export class SpeechService implements OnDestroy {
     this.status.set('loading');
     this.progress.set(0);
     this.warming.set(false);
+    this.voiceCheck.set(false);
     this.worker = new Worker(new URL('./speech.worker', import.meta.url), { type: 'module' });
     this.worker.onmessage = ({ data }) => this.onWorkerMessage(data);
     this.worker.onerror = () => {
       this.status.set('error');
+      this.settleReadyWaiters();
     };
-    this.worker.postMessage({ type: 'init' });
+    this.worker.postMessage({ type: 'init', voiceCheck: options.voiceCheck ?? false });
   }
 
   /** Stop speaking and unload the engine. */
@@ -80,6 +98,8 @@ export class SpeechService implements OnDestroy {
     this.status.set('off');
     this.progress.set(0);
     this.warming.set(false);
+    this.voiceCheck.set(false);
+    this.settleReadyWaiters();
   }
 
   /**
@@ -90,6 +110,14 @@ export class SpeechService implements OnDestroy {
   async speak(speaker: string, text: string): Promise<void> {
     if (!this.active() || !text.trim()) {
       return;
+    }
+    if (this.status() === 'loading') {
+      // Engine still booting (e.g. a briefing opened right after page load):
+      // hold this line until it's ready rather than skipping it silently.
+      await this.waitForReady();
+      if (this.status() !== 'ready') {
+        return;
+      }
     }
     this.cancel();
     const token = ++this.playToken;
@@ -127,6 +155,8 @@ export class SpeechService implements OnDestroy {
    * for the NEXT block while the current one plays, hiding generation time.
    */
   prefetch(speaker: string, text: string): void {
+    // During 'loading' this still queues usefully: the worker processes it
+    // right after init, so the audio is ready the moment the engine is.
     if (!this.active() || !text.trim()) {
       return;
     }
@@ -182,7 +212,10 @@ export class SpeechService implements OnDestroy {
           }
           resolve(chunks.length ? chunks : null);
         },
-        onError: () => resolve(null),
+        onError: () => {
+          console.warn(`Voice line failed (${speaker}): "${text.slice(0, 60)}…"`);
+          resolve(null);
+        },
       });
       this.worker.postMessage({
         type: 'generate',
@@ -232,6 +265,25 @@ export class SpeechService implements OnDestroy {
     return `${personaForSpeaker(speaker).voiceId}|${text}`;
   }
 
+  /** Resolves when loading settles (ready/error/off) or the cap elapses. */
+  private waitForReady(): Promise<void> {
+    return new Promise((resolve) => {
+      const timer = setTimeout(() => resolve(), SpeechService.READY_WAIT_MS);
+      this.readyWaiters.push(() => {
+        clearTimeout(timer);
+        resolve();
+      });
+    });
+  }
+
+  private settleReadyWaiters(): void {
+    const waiters = this.readyWaiters;
+    this.readyWaiters = [];
+    for (const release of waiters) {
+      release();
+    }
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private onWorkerMessage(message: any): void {
     switch (message.type) {
@@ -242,16 +294,38 @@ export class SpeechService implements OnDestroy {
         this.progress.set(100);
         this.warming.set(true);
         break;
-      case 'ready':
+      case 'ready': {
         this.progress.set(100);
         this.warming.set(false);
-        this.status.set('ready');
         console.info(`Voice engine ready (${message.device})`);
+        const finishReady = () => {
+          this.voiceCheck.set(false);
+          // Only complete if the user didn't toggle off mid-check.
+          if (this.status() === 'loading') {
+            this.status.set('ready');
+            this.settleReadyWaiters();
+          }
+        };
+        const warmupWav: ArrayBuffer | undefined = message.warmupWav;
+        if (warmupWav) {
+          // Audible voice check: speak the calibration line before the setup
+          // overlay (bound to status === 'loading') closes.
+          this.voiceCheck.set(true);
+          const token = ++this.playToken;
+          void this.playBlob(new Blob([warmupWav], { type: 'audio/wav' }), token).then(
+            finishReady
+          );
+        } else {
+          finishReady();
+        }
         break;
+      }
       case 'init-error':
         console.error('Voice engine failed to initialise:', message.message);
         this.warming.set(false);
+        this.voiceCheck.set(false);
         this.status.set('error');
+        this.settleReadyWaiters();
         break;
       case 'audio-chunk':
         this.requests.get(message.id)?.onChunk(message.wav);

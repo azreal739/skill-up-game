@@ -7,7 +7,10 @@ import { InjectionToken } from '@angular/core';
  * silently as before.
  */
 export interface EaSpeechPlayer {
-  /** True when narration should play right now (enabled + engine ready). */
+  /**
+   * True when narration is worth requesting: engine ready, or still warming
+   * up (in which case speak() holds the line until it's ready).
+   */
   active(): boolean;
   /** Speak a block in its persona's voice; resolves when playback ends. */
   speak(speaker: string, text: string): Promise<void>;
