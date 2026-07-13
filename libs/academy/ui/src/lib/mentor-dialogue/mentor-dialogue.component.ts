@@ -11,6 +11,8 @@ import {
 
 import { NarrativeBlock } from '@academy/content-model';
 
+import { PersonaAvatarComponent } from '../persona-avatar/persona-avatar.component';
+
 /** Ms before a block starts typing — the "incoming transmission" beat. */
 const INCOMING_MS = 500;
 /** Ms per typed tick and characters revealed per tick. */
@@ -28,7 +30,7 @@ const BLOCK_GAP_MS = 350;
 @Component({
   selector: 'ea-mentor-dialogue',
   standalone: true,
-  imports: [],
+  imports: [PersonaAvatarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div
@@ -40,24 +42,30 @@ const BLOCK_GAP_MS = 350;
       @for (block of blocks; track $index) {
         @if ($index < revealedCount()) {
           <div class="dialogue__block dialogue__block--settled">
-            <span class="dialogue__speaker">{{ block.speaker }}</span>
-            <p class="dialogue__text">{{ block.text }}</p>
+            <ea-persona-avatar [speaker]="block.speaker" />
+            <div class="dialogue__body">
+              <span class="dialogue__speaker">{{ block.speaker }}</span>
+              <p class="dialogue__text">{{ block.text }}</p>
+            </div>
           </div>
         } @else if ($index === revealedCount() && animating()) {
           <div class="dialogue__block dialogue__block--active">
-            <span class="dialogue__speaker">
-              {{ block.speaker }}
-              <span class="dialogue__signal" aria-hidden="true">▮ transmitting</span>
-            </span>
-            <!-- Screen readers get the full text at once; the animation is decoration. -->
-            <p class="ea-visually-hidden">{{ block.text }}</p>
-            <p class="dialogue__text" aria-hidden="true">
-              @if (incoming()) {
-                <span class="dialogue__incoming">incoming transmission…</span>
-              } @else {
-                {{ typed() }}<span class="dialogue__cursor">▊</span>
-              }
-            </p>
+            <ea-persona-avatar [speaker]="block.speaker" [talking]="!incoming()" />
+            <div class="dialogue__body">
+              <span class="dialogue__speaker">
+                {{ block.speaker }}
+                <span class="dialogue__signal" aria-hidden="true">▮ transmitting</span>
+              </span>
+              <!-- Screen readers get the full text at once; the animation is decoration. -->
+              <p class="ea-visually-hidden">{{ block.text }}</p>
+              <p class="dialogue__text" aria-hidden="true">
+                @if (incoming()) {
+                  <span class="dialogue__incoming">incoming transmission…</span>
+                } @else {
+                  {{ typed() }}<span class="dialogue__cursor">▊</span>
+                }
+              </p>
+            </div>
           </div>
         }
       }
