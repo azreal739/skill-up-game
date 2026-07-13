@@ -252,6 +252,12 @@ export const BADGES: readonly BadgeDefinition[] = [
     icon: '🎭',
   },
   {
+    id: 'comparative-judge',
+    title: 'Comparative Judge',
+    description: 'Completed the Comparative Judging module — placing a field relative to each other, resolving ties, and defending a consistent, fair placement order.',
+    icon: '🥇',
+  },
+  {
     id: 'theory-certified',
     title: 'Theory Certified',
     description: 'Passed the Mock Theory Exam — timing, rhythm, motion, character, figures and structure across every dance.',

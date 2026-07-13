@@ -1216,6 +1216,14 @@ export const helpTopics: HelpTopic[] = [
       'A defensible judgement is built, not felt. First identify the dance being claimed, then watch through each of the six lenses in turn rather than reacting to overall impression. Separate what is genuinely wrong from what is merely to your personal taste. When comparing couples, hold every couple to the same criteria in the same order, and be able to state the concrete reason one placed above another — "stronger timing and clearer signature figures", not "I liked them more". Record notes as you go: a score you can explain is a score you can stand behind on a panel.',
   },
   {
+    id: 'judging.comparative',
+    title: 'Comparative Judging and Placement',
+    tags: ['dance', 'judging', 'comparative'],
+    summary: 'Comparative judging places a field relative to each other — comparing on the same criteria, keeping the order consistent, breaking ties fairly and defending the placement.',
+    content:
+      'Comparative judging is placing a FIELD relative to each other, not scoring one performance in isolation. Every entry is held to the SAME six lenses in the same way, so a placement rests on concrete differences — "stronger timing and clearer figures", not "I liked them more". Weigh strengths against weaknesses across the lenses rather than letting one dazzling moment or one slip decide the whole. When entries dance DIFFERENT dances, judge each against ITS OWN criteria first, then place on overall quality of execution — never penalise a couple for the dance they were assigned. A placement order must be CONSISTENT (transitive): if A places above B and B above C, then A must place above C — a cycle (A>B>C>A) is an error to catch and fix. Break genuine ties with a declared, defensible criterion (for example, the lens the event weights most), applied equally to both, rather than a coin-flip or personal taste. Guard against bias: flashiness, crowd reaction, reputation and personal preference must not override the criteria. The test of a placement is always the same — can you state the concrete, criteria-based reason each entry placed where it did?',
+  },
+  {
     id: 'dance.waltz',
     title: 'Judging the Waltz',
     tags: ['dance', 'judging', 'waltz'],

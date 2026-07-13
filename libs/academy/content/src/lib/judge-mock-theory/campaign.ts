@@ -23,7 +23,7 @@ export const judgeMockTheoryPack: CampaignPack = {
       'Before the practical certification, sit the theory paper. Revise the time signatures, rhythms, motions, characters, signature figures and spatial structures of every dance you have judged, then apply them to real questions — capped by a full mock paper.',
     track: 'dance-judging',
     difficulty: 'advanced',
-    requiredCampaignId: 'judge-stage',
+    requiredCampaignId: 'judge-comparative',
     tags: ['dance', 'judging'],
     missions: [
       'judge-theory-001-intro',
