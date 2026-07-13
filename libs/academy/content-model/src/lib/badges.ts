@@ -228,6 +228,12 @@ export const BADGES: readonly BadgeDefinition[] = [
     icon: '🎷',
   },
   {
+    id: 'two-step-judge',
+    title: 'Two Step Judge',
+    description: 'Completed the Two Step module — quick-quick-slow-slow timing, a smooth gliding drive, and progressive travel down the line of dance read on sight.',
+    icon: '🤠',
+  },
+  {
     id: 'theory-certified',
     title: 'Theory Certified',
     description: 'Passed the Mock Theory Exam — timing, rhythm, motion, character, figures and structure across every dance.',
