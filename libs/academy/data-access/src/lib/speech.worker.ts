@@ -20,6 +20,7 @@
  *   in:  { type: 'init' }
  *   in:  { type: 'generate', id: number, voice: string, text: string }
  *   out: { type: 'progress', progress: number }        // 0..100 while loading
+ *   out: { type: 'warming' }                            // download done, warm-up running
  *   out: { type: 'ready', device: string } | { type: 'init-error', message: string }
  *   out: { type: 'audio-chunk', id: number, wav: ArrayBuffer }  // one per sentence
  *   out: { type: 'audio-done', id: number }
@@ -126,6 +127,12 @@ async function init(): Promise<void> {
   try {
     const { model, device } = await loadModel();
     tts = model;
+    // Warm up INSIDE the calibration phase: the first generation pays one-off
+    // session-compilation costs, so spend them while the "bringing voice
+    // systems online" screen is still up — when 'ready' lands and the screen
+    // closes, the first real briefing line starts fast.
+    postMessage({ type: 'warming' });
+    await tts.generate('Voice systems calibrated and online.', { voice: 'af_heart' });
     postMessage({ type: 'ready', device });
   } catch (error) {
     postMessage({ type: 'init-error', message: String(error) });
