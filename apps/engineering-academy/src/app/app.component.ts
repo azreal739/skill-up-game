@@ -127,9 +127,13 @@ export class AppComponent {
       if (voiceEnabled === voiceWasEnabled) {
         return;
       }
+      // First run = app boot (restoring a saved setting): warm silently. A
+      // later flip is the user toggling in Settings: end calibration with
+      // the audible voice check.
+      const isBoot = voiceWasEnabled === undefined;
       voiceWasEnabled = voiceEnabled;
       if (voiceEnabled) {
-        this.speech.enable();
+        this.speech.enable({ voiceCheck: !isBoot });
       } else {
         this.speech.disable();
       }

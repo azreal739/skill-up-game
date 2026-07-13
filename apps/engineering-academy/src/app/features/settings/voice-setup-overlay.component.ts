@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { NarrativeBlock } from '@academy/content-model';
-import { SpeechService } from '@academy/data-access';
-import { MentorDialogueComponent } from '@academy/ui';
+import { SpeechService, VOICE_CHECK_LINE, VOICE_CHECK_SPEAKER } from '@academy/data-access';
+import { MentorDialogueComponent, PersonaAvatarComponent } from '@academy/ui';
 
 /**
  * The one-time "getting things ready" screen while the on-device voice model
@@ -13,7 +13,7 @@ import { MentorDialogueComponent } from '@academy/ui';
 @Component({
   selector: 'ea-voice-setup-overlay',
   standalone: true,
-  imports: [MentorDialogueComponent],
+  imports: [MentorDialogueComponent, PersonaAvatarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="setup" role="dialog" aria-modal="true" aria-labelledby="voice-setup-title">
@@ -23,12 +23,25 @@ import { MentorDialogueComponent } from '@academy/ui';
 
         <ea-mentor-dialogue [blocks]="banter" [live]="true" [instant]="instant" />
 
+        @if (speech.voiceCheck()) {
+          <!-- The audible voice check: Mission Control actually says this. -->
+          <div class="setup__check">
+            <ea-persona-avatar [speaker]="checkSpeaker" [talking]="true" />
+            <div>
+              <span class="setup__check-speaker">{{ checkSpeaker }}</span>
+              <p class="setup__check-text">{{ checkLine }}</p>
+            </div>
+          </div>
+        }
+
         <div class="setup__meter" role="progressbar" aria-label="Voice systems loading"
           [attr.aria-valuenow]="speech.progress()" aria-valuemin="0" aria-valuemax="100">
           <div class="setup__meter-fill" [style.width.%]="speech.progress()"></div>
         </div>
         <p class="setup__pct" role="status">
-          @if (speech.warming()) {
+          @if (speech.voiceCheck()) {
+            voice check — you should hear Mission Control…
+          } @else if (speech.warming()) {
             calibrating the mentors' voices…
           } @else {
             {{ speech.progress() }}%
@@ -95,11 +108,37 @@ import { MentorDialogueComponent } from '@academy/ui';
         color: var(--ea-muted);
         line-height: 1.5;
       }
+
+      .setup__check {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.85rem;
+        border-left: 3px solid var(--ea-accent-2);
+        padding: 0.35rem 0 0.35rem 1rem;
+      }
+
+      .setup__check-speaker {
+        display: block;
+        margin-bottom: 0.25rem;
+        font-family: var(--ea-mono);
+        font-size: 0.68rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ea-accent-2);
+      }
+
+      .setup__check-text {
+        margin: 0;
+        color: var(--ea-text);
+        line-height: 1.65;
+      }
     `,
   ],
 })
 export class VoiceSetupOverlayComponent {
   protected readonly speech = inject(SpeechService);
+  protected readonly checkSpeaker = VOICE_CHECK_SPEAKER;
+  protected readonly checkLine = VOICE_CHECK_LINE;
 
   /** Respect reduced motion: render the banter statically. */
   protected get instant(): boolean {

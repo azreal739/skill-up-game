@@ -17,15 +17,19 @@
  * first sentence instead of after the whole block.
  *
  * Protocol (worker ⇄ SpeechService):
- *   in:  { type: 'init' }
+ *   in:  { type: 'init', voiceCheck?: boolean }
  *   in:  { type: 'generate', id: number, voice: string, text: string }
  *   out: { type: 'progress', progress: number }        // 0..100 while loading
  *   out: { type: 'warming' }                            // download done, warm-up running
- *   out: { type: 'ready', device: string } | { type: 'init-error', message: string }
+ *   out: { type: 'ready', device: string, warmupWav?: ArrayBuffer }
+ *        | { type: 'init-error', message: string }
  *   out: { type: 'audio-chunk', id: number, wav: ArrayBuffer }  // one per sentence
  *   out: { type: 'audio-done', id: number }
  *   out: { type: 'audio-error', id: number, message: string }
  */
+import { personaForSpeaker } from '@academy/content-model';
+
+import { VOICE_CHECK_LINE, VOICE_CHECK_SPEAKER } from './speech-shared';
 
 const MODEL_ID = 'onnx-community/Kokoro-82M-v1.0-ONNX';
 const HF_BASE = `https://huggingface.co/${MODEL_ID}/resolve/main/`;
@@ -64,7 +68,7 @@ interface GenerateRequest {
   text: string;
 }
 
-type InboundMessage = { type: 'init' } | GenerateRequest;
+type InboundMessage = { type: 'init'; voiceCheck?: boolean } | GenerateRequest;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let tts: any = null;
@@ -123,7 +127,7 @@ async function loadModel(): Promise<{ model: unknown; device: string }> {
   return { model: await attempt('wasm', 'q8'), device: 'wasm' };
 }
 
-async function init(): Promise<void> {
+async function init(voiceCheck: boolean): Promise<void> {
   try {
     const { model, device } = await loadModel();
     tts = model;
@@ -132,14 +136,28 @@ async function init(): Promise<void> {
     // systems online" screen is still up — when 'ready' lands and the screen
     // closes, the first real briefing line starts fast.
     postMessage({ type: 'warming' });
-    await tts.generate('Voice systems calibrated and online.', { voice: 'af_heart' });
-    postMessage({ type: 'ready', device });
+    const warmup = await tts.generate(VOICE_CHECK_LINE, {
+      voice: personaForSpeaker(VOICE_CHECK_SPEAKER).voiceId,
+    });
+    if (voiceCheck) {
+      // The user just flipped the toggle: hand the warm-up line back so the
+      // calibration screen can play it as an audible voice check.
+      const wav = warmup.toWav() as ArrayBuffer;
+      postMessage({ type: 'ready', device, warmupWav: wav }, { transfer: [wav] });
+    } else {
+      postMessage({ type: 'ready', device });
+    }
   } catch (error) {
     postMessage({ type: 'init-error', message: String(error) });
   }
 }
 
 async function generate(request: GenerateRequest): Promise<void> {
+  if (!tts) {
+    // Lines queued while loading land here if init failed — report cleanly.
+    postMessage({ type: 'audio-error', id: request.id, message: 'engine not initialised' });
+    return;
+  }
   try {
     const { TextSplitterStream } = await import('kokoro-js');
     // Feed the block through the splitter so audio streams per sentence.
@@ -159,7 +177,7 @@ async function generate(request: GenerateRequest): Promise<void> {
 addEventListener('message', (event: MessageEvent<InboundMessage>) => {
   const message = event.data;
   if (message.type === 'init') {
-    queue = queue.then(init);
+    queue = queue.then(() => init(message.voiceCheck ?? false));
   } else if (message.type === 'generate') {
     queue = queue.then(() => generate(message));
   }

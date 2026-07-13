@@ -8,3 +8,4 @@ export * from './lib/academy-review.service';
 export * from './lib/learning-analytics.service';
 export * from './lib/audio.service';
 export * from './lib/speech.service';
+export * from './lib/speech-shared';
