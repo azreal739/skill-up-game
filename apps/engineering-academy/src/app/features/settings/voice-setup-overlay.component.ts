@@ -27,7 +27,13 @@ import { MentorDialogueComponent } from '@academy/ui';
           [attr.aria-valuenow]="speech.progress()" aria-valuemin="0" aria-valuemax="100">
           <div class="setup__meter-fill" [style.width.%]="speech.progress()"></div>
         </div>
-        <p class="setup__pct">{{ speech.progress() }}%</p>
+        <p class="setup__pct" role="status">
+          @if (speech.warming()) {
+            calibrating the mentors' voices…
+          } @else {
+            {{ speech.progress() }}%
+          }
+        </p>
 
         <p class="setup__note">
           Everything installs onto this computer — after this, the mentors speak instantly

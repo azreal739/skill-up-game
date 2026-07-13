@@ -43,6 +43,8 @@ export class SpeechService implements OnDestroy {
   readonly status = signal<SpeechStatus>('off');
   /** Model download/init progress, 0–100, meaningful while status is 'loading'. */
   readonly progress = signal(0);
+  /** True during the post-download warm-up phase of loading. */
+  readonly warming = signal(false);
 
   /** True when the engine can speak right now. */
   active(): boolean {
@@ -62,6 +64,7 @@ export class SpeechService implements OnDestroy {
     }
     this.status.set('loading');
     this.progress.set(0);
+    this.warming.set(false);
     this.worker = new Worker(new URL('./speech.worker', import.meta.url), { type: 'module' });
     this.worker.onmessage = ({ data }) => this.onWorkerMessage(data);
     this.worker.onerror = () => {
@@ -76,6 +79,7 @@ export class SpeechService implements OnDestroy {
     this.teardownWorker();
     this.status.set('off');
     this.progress.set(0);
+    this.warming.set(false);
   }
 
   /**
@@ -234,16 +238,19 @@ export class SpeechService implements OnDestroy {
       case 'progress':
         this.progress.set(message.progress);
         break;
+      case 'warming':
+        this.progress.set(100);
+        this.warming.set(true);
+        break;
       case 'ready':
         this.progress.set(100);
+        this.warming.set(false);
         this.status.set('ready');
         console.info(`Voice engine ready (${message.device})`);
-        // Warm-up: the first generation pays one-off session-compilation
-        // costs; spend them now so the first real line starts fast.
-        this.prefetch('Mission Control', 'Voice systems calibrated and online.');
         break;
       case 'init-error':
         console.error('Voice engine failed to initialise:', message.message);
+        this.warming.set(false);
         this.status.set('error');
         break;
       case 'audio-chunk':
