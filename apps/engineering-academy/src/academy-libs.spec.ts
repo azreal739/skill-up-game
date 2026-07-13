@@ -7,6 +7,7 @@ import '../../../libs/academy/content-model/src/lib/scoring.spec';
 import '../../../libs/academy/content-model/src/lib/evaluation.spec';
 import '../../../libs/academy/content-model/src/lib/ranks.spec';
 import '../../../libs/academy/content-model/src/lib/meters.spec';
+import '../../../libs/academy/content-model/src/lib/personas.spec';
 import '../../../libs/academy/content/src/lib/content-integrity.spec';
 import '../../../libs/academy/data-access/src/lib/persistence.service.spec';
 import '../../../libs/academy/data-access/src/lib/game-state.service.spec';

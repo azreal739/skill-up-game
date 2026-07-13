@@ -86,4 +86,18 @@ describe('PersistenceService', () => {
     expect(loaded?.technicalDebtItems).toEqual([]);
     expect(loaded?.notes).toEqual([]);
   });
+
+  it('loads a v2 save written before the voiceEnabled setting existed', () => {
+    const state = createPlayerState('Avery');
+    const legacySettings = { ...state.settings } as Record<string, unknown>;
+    delete legacySettings['voiceEnabled'];
+    localStorage.setItem(
+      'engineering-academy:save',
+      JSON.stringify({ ...state, settings: legacySettings })
+    );
+
+    const loaded = service.load();
+    expect(loaded).not.toBeNull();
+    expect(loaded?.settings.voiceEnabled).toBeFalse();
+  });
 });

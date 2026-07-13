@@ -30,6 +30,11 @@
             "glob": "**/*",
             "input": "apps/engineering-academy/public",
             "output": ""
+          },
+          {
+            "glob": "ort-wasm-simd-threaded.{mjs,wasm}",
+            "input": "node_modules/onnxruntime-web/dist",
+            "output": "assets/tts/ort"
           }
         ],
         "styles": [
@@ -56,6 +61,28 @@
           "optimization": false,
           "extractLicenses": false,
           "sourceMap": true
+        },
+        "shareable": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "3.25MB",
+              "maximumError": "3.75MB"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "8kB",
+              "maximumError": "16kB"
+            }
+          ],
+          "outputHashing": "all",
+          "baseHref": "./",
+          "fileReplacements": [
+            {
+              "replace": "apps/engineering-academy/src/environments/environment.ts",
+              "with": "apps/engineering-academy/src/environments/environment.shareable.ts"
+            }
+          ]
         }
       },
       "defaultConfiguration": "production"

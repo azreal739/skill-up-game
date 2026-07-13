@@ -1,15 +1,18 @@
 import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { AudioService, GameStateService } from '@academy/data-access';
+import { AudioService, GameStateService, SpeechService } from '@academy/data-access';
+import { VoiceSetupOverlayComponent } from './voice-setup-overlay.component';
 
 @Component({
   selector: 'ea-settings',
   standalone: true,
+  imports: [VoiceSetupOverlayComponent],
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],
 })
 export class SettingsComponent {
   protected readonly gameState = inject(GameStateService);
+  protected readonly speech = inject(SpeechService);
   private readonly audio = inject(AudioService);
   private readonly router = inject(Router);
 
@@ -36,6 +39,19 @@ export class SettingsComponent {
   onTextScale(event: Event): void {
     const select = event.target as HTMLSelectElement;
     this.gameState.updateSettings({ textScale: Number(select.value) });
+  }
+
+  onVoiceToggle(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    // The AppComponent effect reacts to this setting and starts/stops the
+    // engine; the loading overlay below tracks its progress.
+    this.gameState.updateSettings({ voiceEnabled: input.checked });
+    this.audio.play('click');
+  }
+
+  retryVoice(): void {
+    this.audio.play('click');
+    this.speech.enable();
   }
 
   exportProgress(): void {

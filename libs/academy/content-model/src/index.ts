@@ -1,5 +1,6 @@
 export * from './lib/tracks';
 export * from './lib/types';
+export * from './lib/personas';
 export * from './lib/schemas';
 export * from './lib/evaluation';
 export * from './lib/scoring';

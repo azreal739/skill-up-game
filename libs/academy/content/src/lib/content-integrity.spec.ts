@@ -6,6 +6,7 @@ import {
   campaignPackSchema,
   helpTopicSchema,
   missionScore,
+  personaForSpeaker,
   trackById,
 } from '@academy/content-model';
 import { foundationsPack } from './foundations/campaign';
@@ -148,6 +149,21 @@ describe('content integrity', () => {
               .withContext(`${challenge.id} → ${link.topicId}`)
               .toBeTrue();
           }
+        }
+      }
+    }
+  });
+
+  it('speaks only through registered personas', () => {
+    // Keeps briefing speakers in sync with the avatar cast (personas.ts) —
+    // unknown speakers render a generic avatar, so a typo here would ship
+    // silently without this guard.
+    for (const pack of packs) {
+      for (const mission of pack.missions) {
+        for (const block of mission.briefing) {
+          expect(personaForSpeaker(block.speaker).id)
+            .withContext(`${mission.id} speaker "${block.speaker}"`)
+            .not.toBe('operator');
         }
       }
     }

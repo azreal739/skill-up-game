@@ -1,0 +1,58 @@
+:host {
+  display: block;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+// Occasional idle blink (opacity keeps SVG transform quirks out of it).
+.avatar__eyes {
+  animation: avatar-blink 4.8s infinite;
+}
+
+.avatar__mouth {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.avatar--talking {
+  filter: drop-shadow(0 0 5px currentColor);
+
+  .avatar__mouth {
+    animation: avatar-talk 0.24s ease-in-out infinite alternate;
+  }
+
+  // No mid-sentence blinking; keep the eyes on the player.
+  .avatar__eyes {
+    animation: none;
+  }
+}
+
+@keyframes avatar-blink {
+  0%,
+  93%,
+  100% {
+    opacity: 1;
+  }
+
+  95%,
+  97% {
+    opacity: 0.1;
+  }
+}
+
+@keyframes avatar-talk {
+  from {
+    transform: scaleY(0.45);
+  }
+
+  to {
+    transform: scaleY(2.1);
+  }
+}
