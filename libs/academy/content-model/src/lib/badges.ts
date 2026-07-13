@@ -240,6 +240,12 @@ export const BADGES: readonly BadgeDefinition[] = [
     icon: '🥁',
   },
   {
+    id: 'street-judge',
+    title: 'Street Judge',
+    description: 'Completed the Street module — popping, locking, waacking and voguing judged on musicality, isolation and style-appropriate performance.',
+    icon: '🕺',
+  },
+  {
     id: 'theory-certified',
     title: 'Theory Certified',
     description: 'Passed the Mock Theory Exam — timing, rhythm, motion, character, figures and structure across every dance.',

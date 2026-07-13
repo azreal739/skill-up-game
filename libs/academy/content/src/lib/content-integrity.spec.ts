@@ -43,6 +43,7 @@ import { judgePolkaPack } from './judge-polka/campaign';
 import { judgeEastCoastSwingPack } from './judge-east-coast-swing/campaign';
 import { judgeTwoStepPack } from './judge-two-step/campaign';
 import { judgeSambaPack } from './judge-samba/campaign';
+import { judgeStreetPack } from './judge-street/campaign';
 import { judgeMockTheoryPack } from './judge-mock-theory/campaign';
 import { judgeFinalCertPack } from './judge-final-cert/campaign';
 import { helpTopics } from './help-topics';
@@ -88,6 +89,7 @@ describe('content integrity', () => {
     judgeEastCoastSwingPack,
     judgeTwoStepPack,
     judgeSambaPack,
+    judgeStreetPack,
     judgeMockTheoryPack,
     judgeFinalCertPack,
   ];
@@ -232,7 +234,8 @@ describe('content integrity', () => {
       'judge-east-coast-swing': 'judge-polka',
       'judge-two-step': 'judge-east-coast-swing',
       'judge-samba': 'judge-two-step',
-      'judge-mock-theory': 'judge-samba',
+      'judge-street': 'judge-samba',
+      'judge-mock-theory': 'judge-street',
       'judge-final-cert': 'judge-mock-theory',
     };
     for (const pack of packs) {
