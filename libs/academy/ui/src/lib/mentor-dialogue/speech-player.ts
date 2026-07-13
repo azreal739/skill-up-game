@@ -11,6 +11,8 @@ export interface EaSpeechPlayer {
   active(): boolean;
   /** Speak a block in its persona's voice; resolves when playback ends. */
   speak(speaker: string, text: string): Promise<void>;
+  /** Optionally pre-generate an upcoming block's audio (never plays it). */
+  prefetch?(speaker: string, text: string): void;
   /** Stop playback immediately (skip, navigation, destroy). */
   cancel(): void;
 }

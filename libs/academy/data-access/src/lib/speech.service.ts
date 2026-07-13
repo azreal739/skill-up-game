@@ -6,11 +6,24 @@ import { GameStateService } from './game-state.service';
 
 export type SpeechStatus = 'off' | 'loading' | 'ready' | 'error';
 
+interface ChunkHandler {
+  onChunk(wav: ArrayBuffer): void;
+  onDone(): void;
+  onError(): void;
+}
+
 /**
  * On-device neural narration (Kokoro-82M via kokoro-js). The model runs in a
- * web worker; this service owns the worker lifecycle, one-at-a-time playback,
- * an in-memory audio cache, and the status/progress signals the voice-setup
- * screen renders. Everything is opt-in: nothing loads until `enable()`.
+ * web worker; this service owns the worker lifecycle, playback, and the
+ * status/progress signals the voice-setup screen renders.
+ *
+ * Latency design: the worker streams audio sentence by sentence, so playback
+ * starts after the first sentence; finished lines are cached for the session;
+ * `prefetch()` lets the dialogue generate the NEXT line while the current one
+ * plays (the worker queue is serial, so prefetches naturally fill playback
+ * gaps); and a warm-up generation runs right after the engine loads so the
+ * first real line doesn't pay the one-off session-compilation cost.
+ * Everything is opt-in: nothing loads until `enable()`.
  */
 @Injectable({ providedIn: 'root' })
 export class SpeechService implements OnDestroy {
@@ -18,11 +31,13 @@ export class SpeechService implements OnDestroy {
 
   private worker: Worker | null = null;
   private requestId = 0;
-  private readonly pendingWavs = new Map<number, (wav: ArrayBuffer | null) => void>();
-  /** Generated audio per voice+text — replaying a briefing is instant. */
-  private readonly cache = new Map<string, Blob>();
+  private readonly requests = new Map<number, ChunkHandler>();
+  /** Generated audio per voice+text — replaying a line is instant. */
+  private readonly cache = new Map<string, Blob[]>();
+  /** In-flight generations (speak or prefetch), awaitable by later speaks. */
+  private readonly inFlight = new Map<string, Promise<Blob[] | null>>();
   private current: { audio: HTMLAudioElement; url: string; finish: () => void } | null = null;
-  /** Bumped by cancel(); an in-flight speak() aborts when its token is stale. */
+  /** Bumped by cancel(); an in-flight speak() stops playing when stale. */
   private playToken = 0;
 
   readonly status = signal<SpeechStatus>('off');
@@ -74,22 +89,48 @@ export class SpeechService implements OnDestroy {
     }
     this.cancel();
     const token = ++this.playToken;
+    const key = this.keyFor(speaker, text);
 
-    const voiceId = personaForSpeaker(speaker).voiceId;
-    const key = `${voiceId}|${text}`;
-    let blob = this.cache.get(key);
-    if (!blob) {
-      const wav = await this.requestWav(voiceId, text);
-      if (!wav) {
-        return;
+    const ready = this.cache.get(key);
+    if (ready) {
+      await this.playChunks(ready, token);
+      return;
+    }
+
+    const pending = this.inFlight.get(key);
+    if (pending) {
+      // A prefetch already started this line — stream-play is lost, but the
+      // generation is typically well underway; play when it lands.
+      const chunks = await pending;
+      if (chunks && token === this.playToken) {
+        await this.playChunks(chunks, token);
       }
-      blob = new Blob([wav], { type: 'audio/wav' });
-      this.cache.set(key, blob);
+      return;
     }
-    if (token !== this.playToken) {
-      return; // cancelled while generating
+
+    // Fresh generation: play each sentence as it arrives.
+    let playback: Promise<void> = Promise.resolve();
+    await this.generate(key, speaker, text, (blob) => {
+      if (token === this.playToken) {
+        playback = playback.then(() => this.playBlob(blob, token));
+      }
+    });
+    await playback;
+  }
+
+  /**
+   * Generate a line into the cache without playing it. Called by the dialogue
+   * for the NEXT block while the current one plays, hiding generation time.
+   */
+  prefetch(speaker: string, text: string): void {
+    if (!this.active() || !text.trim()) {
+      return;
     }
-    await this.play(blob, token);
+    const key = this.keyFor(speaker, text);
+    if (this.cache.has(key) || this.inFlight.has(key)) {
+      return;
+    }
+    void this.generate(key, speaker, text);
   }
 
   /** Stop current playback and invalidate any in-flight speak(). */
@@ -108,7 +149,58 @@ export class SpeechService implements OnDestroy {
     this.disable();
   }
 
-  private play(blob: Blob, token: number): Promise<void> {
+  /**
+   * Run one generation in the worker, filling the cache; resolves with the
+   * chunks when done (null on failure). `onChunk` observes sentences live.
+   */
+  private generate(
+    key: string,
+    speaker: string,
+    text: string,
+    onChunk?: (blob: Blob) => void
+  ): Promise<Blob[] | null> {
+    const task = new Promise<Blob[] | null>((resolve) => {
+      if (!this.worker) {
+        resolve(null);
+        return;
+      }
+      const id = ++this.requestId;
+      const chunks: Blob[] = [];
+      this.requests.set(id, {
+        onChunk: (wav) => {
+          const blob = new Blob([wav], { type: 'audio/wav' });
+          chunks.push(blob);
+          onChunk?.(blob);
+        },
+        onDone: () => {
+          if (chunks.length) {
+            this.cache.set(key, chunks);
+          }
+          resolve(chunks.length ? chunks : null);
+        },
+        onError: () => resolve(null),
+      });
+      this.worker.postMessage({
+        type: 'generate',
+        id,
+        voice: personaForSpeaker(speaker).voiceId,
+        text,
+      });
+    }).finally(() => this.inFlight.delete(key));
+    this.inFlight.set(key, task);
+    return task;
+  }
+
+  private async playChunks(chunks: readonly Blob[], token: number): Promise<void> {
+    for (const blob of chunks) {
+      if (token !== this.playToken) {
+        return;
+      }
+      await this.playBlob(blob, token);
+    }
+  }
+
+  private playBlob(blob: Blob, token: number): Promise<void> {
     return new Promise((resolve) => {
       if (token !== this.playToken) {
         resolve();
@@ -132,16 +224,8 @@ export class SpeechService implements OnDestroy {
     });
   }
 
-  private requestWav(voice: string, text: string): Promise<ArrayBuffer | null> {
-    return new Promise((resolve) => {
-      if (!this.worker) {
-        resolve(null);
-        return;
-      }
-      const id = ++this.requestId;
-      this.pendingWavs.set(id, resolve);
-      this.worker.postMessage({ type: 'generate', id, voice, text });
-    });
+  private keyFor(speaker: string, text: string): string {
+    return `${personaForSpeaker(speaker).voiceId}|${text}`;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -153,19 +237,26 @@ export class SpeechService implements OnDestroy {
       case 'ready':
         this.progress.set(100);
         this.status.set('ready');
+        console.info(`Voice engine ready (${message.device})`);
+        // Warm-up: the first generation pays one-off session-compilation
+        // costs; spend them now so the first real line starts fast.
+        this.prefetch('Mission Control', 'Voice systems calibrated and online.');
         break;
       case 'init-error':
         console.error('Voice engine failed to initialise:', message.message);
         this.status.set('error');
         break;
-      case 'audio':
-        this.pendingWavs.get(message.id)?.(message.wav);
-        this.pendingWavs.delete(message.id);
+      case 'audio-chunk':
+        this.requests.get(message.id)?.onChunk(message.wav);
+        break;
+      case 'audio-done':
+        this.requests.get(message.id)?.onDone();
+        this.requests.delete(message.id);
         break;
       case 'audio-error':
         console.error('Voice generation failed:', message.message);
-        this.pendingWavs.get(message.id)?.(null);
-        this.pendingWavs.delete(message.id);
+        this.requests.get(message.id)?.onError();
+        this.requests.delete(message.id);
         break;
     }
   }
@@ -173,9 +264,9 @@ export class SpeechService implements OnDestroy {
   private teardownWorker(): void {
     this.worker?.terminate();
     this.worker = null;
-    for (const resolve of this.pendingWavs.values()) {
-      resolve(null);
+    for (const handler of this.requests.values()) {
+      handler.onError();
     }
-    this.pendingWavs.clear();
+    this.requests.clear();
   }
 }

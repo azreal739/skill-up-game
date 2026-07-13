@@ -200,5 +200,10 @@ Why this fits *this* app:
    `node tools/package-academy-local.mjs` on a normal machine to produce
    the fully-offline ~90 MB package; end-to-end audio still needs a
    listen-test there.
-3. Optional later: per-persona portrait art, per-block "replay voice"
-   button, persistent (IndexedDB) audio cache, WebGPU device support.
+3. **Latency pass — ✅ DONE (2026-07-13):** sentence-streaming playback
+   (kokoro `stream()` + TextSplitterStream — audio starts after the first
+   sentence), next-block `prefetch()` during playback, post-ready warm-up
+   generation, and WebGPU/fp32 device selection for deployments without the
+   bundled q8 model (local packages stay WASM/q8 for the offline guarantee).
+4. Optional later: per-persona portrait art, per-block "replay voice"
+   button, persistent (IndexedDB) audio cache.
