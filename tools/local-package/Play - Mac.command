@@ -1,7 +1,13 @@
 #!/bin/sh
 # Engineering Academy — double-click to play (macOS).
-# First time only: right-click this file and choose "Open" (Gatekeeper).
+# If macOS blocks the first launch ("could not verify"), see README.txt —
+# either run it once via Terminal (type: sh, then drag this file in) or use
+# System Settings > Privacy & Security > "Open Anyway".
 DIR="$(cd "$(dirname "$0")" && pwd)"
+
+# Once we ARE running, clear the download-quarantine flag from the whole
+# package (best effort) so every future launch is a plain double-click.
+/usr/bin/xattr -dr com.apple.quarantine "$DIR" 2>/dev/null || true
 PORT=8377
 URL="http://localhost:$PORT/"
 

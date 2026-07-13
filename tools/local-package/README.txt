@@ -12,9 +12,29 @@ HOW TO START
              "More info" then "Run anyway" — it only does that because
              the file was downloaded.)
 
-  Mac:      the FIRST time, right-click "Play - Mac.command" and choose
-            "Open", then click "Open" in the warning dialog.
-            After that you can just double-click it.
+  Mac:      double-click "Play - Mac.command".
+            The FIRST time, macOS will likely block it ("Apple could not
+            verify..."). That's normal for downloaded files. Unlock it
+            ONCE, either way below — after that it's always a plain
+            double-click:
+
+            Easiest — via Terminal:
+              1. Open Terminal (press Cmd+Space, type "Terminal", Return).
+              2. Type   sh   followed by a space (don't press Return yet).
+              3. Drag "Play - Mac.command" from this folder onto the
+                 Terminal window, then press Return.
+              The game starts, and the file is unlocked for the future.
+
+            Or — via System Settings (macOS 15 and newer):
+              1. Double-click "Play - Mac.command", click "Done"
+                 (NOT "Move to Trash") in the warning.
+              2. Open System Settings > Privacy & Security, scroll down
+                 to the Security section.
+              3. Next to the note about "Play - Mac.command", click
+                 "Open Anyway", then confirm with "Open Anyway" again.
+
+            (On macOS 14 or older you can instead right-click the file
+             and choose "Open", then "Open" in the dialog.)
 
   Linux:    run  sh "Play - Linux.sh"  from a terminal (or double-click
             if your file manager allows executing scripts).
@@ -40,7 +60,8 @@ TROUBLESHOOTING
 
   * Browser opens but page says "can't connect": wait 2 seconds and
     refresh — the server may still be starting.
-  * Nothing happens on double-click (Mac): right-click > Open (see above).
+  * Mac says it "could not verify" the file: one-time unlock, see the
+    Mac section above (Terminal method is quickest).
   * Want a different port? You can't — progress is tied to port 8377.
   * The game window closed but console still open: just browse to
     http://localhost:8377 again, no need to restart.
