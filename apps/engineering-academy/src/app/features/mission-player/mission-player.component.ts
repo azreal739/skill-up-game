@@ -153,6 +153,22 @@ export class MissionPlayerComponent implements OnDestroy {
   }
 
   /**
+   * The whole mission brief as a spoken sequence: Mission Control announces
+   * the title/summary, then each mentor reads their own briefing block.
+   * Memoised so the popup's play button gets a stable array reference.
+   */
+  protected readonly briefingLines = computed(() => {
+    const mission = this.mission();
+    if (!mission) {
+      return [];
+    }
+    return [
+      { speaker: 'Mission Control', text: `${mission.title}. ${mission.summary}` },
+      ...mission.briefing.map((block) => ({ speaker: block.speaker, text: block.text })),
+    ];
+  });
+
+  /**
    * The post-answer debrief as the Senior Dev reads it: the challenge's
    * success/failure line, then the feedback for every option the player
    * chose or should have chosen (mirrors what the option list displays).

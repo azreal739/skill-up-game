@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core';
 
-import { EA_SPEECH_PLAYER, EaSpeechPhase } from '../mentor-dialogue/speech-player';
+import { EA_SPEECH_PLAYER, EaSpeechLine, EaSpeechPhase } from '../mentor-dialogue/speech-player';
 
 /**
  * Reusable "read this aloud" control: idle (speaker icon) → generating
@@ -62,8 +62,13 @@ import { EA_SPEECH_PLAYER, EaSpeechPhase } from '../mentor-dialogue/speech-playe
 })
 export class VoiceButtonComponent {
   /** Persona whose voice reads the text (registry speaker string). */
-  @Input({ required: true }) speaker!: string;
-  @Input({ required: true }) text!: string;
+  @Input() speaker = '';
+  @Input() text = '';
+  /**
+   * Sequence mode: speak these lines back to back (each in its persona's
+   * voice) instead of the single speaker/text pair — e.g. a whole briefing.
+   */
+  @Input() lines: readonly EaSpeechLine[] | null = null;
   /** Optional visible label next to the idle icon (e.g. "Listen"). */
   @Input() label = '';
 
@@ -71,7 +76,13 @@ export class VoiceButtonComponent {
 
   protected phase(): EaSpeechPhase | null {
     const now = this.player?.nowPlaying?.();
-    return now && now.speaker === this.speaker && now.text === this.text ? now.phase : null;
+    if (!now) {
+      return null;
+    }
+    const mine = this.lines
+      ? this.lines.some((line) => line.speaker === now.speaker && line.text === now.text)
+      : now.speaker === this.speaker && now.text === this.text;
+    return mine ? now.phase : null;
   }
 
   protected ariaLabel(): string {
@@ -106,7 +117,11 @@ export class VoiceButtonComponent {
         player.cancel();
         break;
       default:
-        void player.speak(this.speaker, this.text);
+        if (this.lines) {
+          void player.speakAll?.(this.lines);
+        } else {
+          void player.speak(this.speaker, this.text);
+        }
     }
   }
 }

@@ -9,6 +9,12 @@ export interface EaNowPlaying {
   phase: EaSpeechPhase;
 }
 
+/** One narratable line: a persona speaker plus what they say. */
+export interface EaSpeechLine {
+  speaker: string;
+  text: string;
+}
+
 /**
  * Port the mentor dialogue uses to narrate briefing blocks aloud. The ui lib
  * stays presentational: the app provides `SpeechService` (data-access) under
@@ -25,6 +31,12 @@ export interface EaSpeechPlayer {
   speak(speaker: string, text: string): Promise<void>;
   /** Optionally pre-generate an upcoming block's audio (never plays it). */
   prefetch?(speaker: string, text: string): void;
+  /**
+   * Speak a sequence of lines (e.g. a whole briefing) back to back, each in
+   * its own persona's voice; resolves when the last line finishes or the
+   * sequence is cancelled.
+   */
+  speakAll?(lines: readonly EaSpeechLine[]): Promise<void>;
   /** Stop playback immediately (skip, navigation, destroy). */
   cancel(): void;
   /**
