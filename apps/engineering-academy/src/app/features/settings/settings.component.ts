@@ -1,3 +1,4 @@
+import { DecimalPipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { AudioService, GameStateService, SpeechService } from '@academy/data-access';
@@ -6,7 +7,7 @@ import { VoiceSetupOverlayComponent } from './voice-setup-overlay.component';
 @Component({
   selector: 'ea-settings',
   standalone: true,
-  imports: [VoiceSetupOverlayComponent],
+  imports: [DecimalPipe, VoiceSetupOverlayComponent],
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],
 })
@@ -52,6 +53,13 @@ export class SettingsComponent {
   retryVoice(): void {
     this.audio.play('click');
     this.speech.enable({ voiceCheck: true });
+  }
+
+  onVoiceSpeed(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.gameState.updateSettings({ voiceSpeed: Number(input.value) });
+    // Hear the new pace immediately, in Mission Control's voice.
+    void this.speech.speak('Mission Control', `Narration speed set to ${input.value}.`);
   }
 
   exportProgress(): void {
