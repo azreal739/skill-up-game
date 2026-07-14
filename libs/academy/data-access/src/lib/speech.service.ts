@@ -20,10 +20,10 @@ interface ChunkHandler {
  *
  * Latency design: the worker streams audio sentence by sentence, so playback
  * starts after the first sentence; finished lines are cached for the session;
- * `prefetch()` lets the dialogue generate the NEXT line while the current one
- * plays (the worker queue is serial, so prefetches naturally fill playback
- * gaps); and a warm-up generation runs right after the engine loads so the
- * first real line doesn't pay the one-off session-compilation cost.
+ * `speakAll()` starts the requested line first, then generates later lines
+ * while it plays (the worker queue is serial, so ordering is important); and
+ * a warm-up generation runs right after the engine loads so the first real
+ * line doesn't pay the one-off session-compilation cost.
  * Everything is opt-in: nothing loads until `enable()`.
  */
 @Injectable({ providedIn: 'root' })
@@ -145,10 +145,28 @@ export class SpeechService implements OnDestroy {
           return;
         }
       }
-      for (const line of playable.slice(1)) {
-        this.prefetch(line.speaker, line.text);
+      const [first, ...remaining] = playable;
+      let prefetched = false;
+      const prefetchRemaining = () => {
+        if (prefetched || token !== this.playToken) {
+          return;
+        }
+        prefetched = true;
+        for (const line of remaining) {
+          this.prefetch(line.speaker, line.text);
+        }
+      };
+
+      // Do not put background work ahead of the line the player asked to
+      // hear. Once its audio is ready, the serial worker can safely fill its
+      // queue with later lines while the first one is playing.
+      await this.speakLine(first.speaker, first.text, token, prefetchRemaining);
+      if (token !== this.playToken) {
+        return;
       }
-      for (const line of playable) {
+      prefetchRemaining();
+
+      for (const line of remaining) {
         if (token !== this.playToken) {
           return;
         }
@@ -162,8 +180,20 @@ export class SpeechService implements OnDestroy {
   }
 
   /** One line of a speak sequence; assumes the engine is ready. */
-  private async speakLine(speaker: string, text: string, token: number): Promise<void> {
+  private async speakLine(
+    speaker: string,
+    text: string,
+    token: number,
+    onPlaybackStart?: () => void
+  ): Promise<void> {
     const key = this.keyFor(speaker, text);
+    let playbackStarted = false;
+    const markPlaybackStarted = () => {
+      if (!playbackStarted) {
+        playbackStarted = true;
+        onPlaybackStart?.();
+      }
+    };
     const setPhase = (phase: 'generating' | 'playing' | 'paused') => {
       if (token === this.playToken) {
         this.nowPlayingState.set({ speaker, text, phase });
@@ -172,6 +202,7 @@ export class SpeechService implements OnDestroy {
 
     const ready = this.cache.get(key);
     if (ready) {
+      markPlaybackStarted();
       setPhase('playing');
       await this.playChunks(ready, token);
       return;
@@ -185,6 +216,7 @@ export class SpeechService implements OnDestroy {
     const chunks = await this.ensureChunks(key, speaker, text, (blob) => {
       if (!streamed) {
         streamed = true;
+        markPlaybackStarted();
         setPhase('playing');
       }
       if (token === this.playToken) {
@@ -194,6 +226,7 @@ export class SpeechService implements OnDestroy {
     if (streamed) {
       await playback;
     } else if (chunks && token === this.playToken) {
+      markPlaybackStarted();
       setPhase('playing');
       await this.playChunks(chunks, token);
     }
