@@ -1,0 +1,38 @@
+.route-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  gap: 0.6rem;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at center,
+    color-mix(in srgb, var(--ea-bg, #070b14) 55%, transparent),
+    transparent 60%
+  );
+  animation: route-loader-in 0.18s ease-out;
+}
+
+.route-loader__canvas {
+  width: 120px;
+  height: 120px;
+}
+
+.route-loader__label {
+  font-family: var(--ea-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ea-muted);
+}
+
+@keyframes route-loader-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}

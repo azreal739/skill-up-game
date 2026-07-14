@@ -3,11 +3,18 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { TRACKS } from '@academy/content-model';
 import { AudioService, GameStateService, SpeechService } from '@academy/data-access';
 import { WaveBackgroundComponent } from './shared/wave-background/wave-background.component';
+import { RouteLoaderComponent } from './shared/route-loader/route-loader.component';
 
 @Component({
   selector: 'ea-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, WaveBackgroundComponent],
+  imports: [
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
+    WaveBackgroundComponent,
+    RouteLoaderComponent,
+  ],
   template: `
     <ea-wave-background />
     <a class="ea-visually-hidden" href="#ea-main">Skip to content</a>
@@ -81,6 +88,7 @@ import { WaveBackgroundComponent } from './shared/wave-background/wave-backgroun
     <main id="ea-main" (click)="onFirstInteraction()">
       <router-outlet />
     </main>
+    <ea-route-loader />
   `,
   styleUrls: ['./app.component.scss'],
 })
