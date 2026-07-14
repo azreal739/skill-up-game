@@ -73,6 +73,10 @@
                 <h3 class="notes__item-title">
                   @if (note.pinned) { <span class="notes__pin-mark" aria-label="Pinned">📌</span> }
                   {{ note.title }}
+                  <ea-voice-button
+                    speaker="Academy Archivist"
+                    [text]="note.body ? note.title + '. ' + note.body : note.title"
+                  />
                 </h3>
               </div>
             </div>
