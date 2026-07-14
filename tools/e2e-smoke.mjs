@@ -63,7 +63,11 @@ try {
   await page.locator('input[name="name"]').fill('Smoke Test');
   await page.getByRole('button', { name: 'Report for duty' }).click();
   await page.waitForTimeout(500);
-  check('enrolment completes', await page.locator('text=Smoke Test').count() >= 0);
+  check(
+    'enrolment completes',
+    new URL(page.url()).pathname === '/campaigns' &&
+      (await page.getByRole('heading', { name: 'Choose your path', exact: true }).isVisible())
+  );
 
   // Briefing: avatars + settled replay buttons (visible only if voice on —
   // here voice is off, so buttons must be ABSENT while avatars render).

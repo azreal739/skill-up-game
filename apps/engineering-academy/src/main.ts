@@ -10,20 +10,20 @@ import { AppComponent } from './app/app.component';
  * reload once so the worker takes control. Best-effort: any failure just
  * means single-threaded voice generation, never a broken app.
  */
-async function ensureCrossOriginIsolation(): Promise<void> {
+async function ensureCrossOriginIsolation(): Promise<boolean> {
   if (
     window.crossOriginIsolated ||
     !window.isSecureContext ||
     !('serviceWorker' in navigator) ||
     sessionStorage.getItem('ea-coi-attempted')
   ) {
-    return;
+    return false;
   }
   try {
     sessionStorage.setItem('ea-coi-attempted', '1');
     const registration = await navigator.serviceWorker.register('coi-sw.js');
     if (navigator.serviceWorker.controller) {
-      return; // Already controlled; headers apply from the next load anyway.
+      return false; // Already controlled; headers apply from the next load anyway.
     }
     await new Promise<void>((resolve) => {
       const worker = registration.installing ?? registration.waiting;
@@ -39,11 +39,20 @@ async function ensureCrossOriginIsolation(): Promise<void> {
       setTimeout(resolve, 3000); // Never hold the app hostage.
     });
     location.reload();
+    return true;
   } catch {
     // Isolation is an optimisation only.
+    return false;
   }
 }
 
-void ensureCrossOriginIsolation();
+async function startApplication(): Promise<void> {
+  // Do not expose an interactive app that can be torn down by the first-load
+  // service-worker reload a moment later.
+  if (await ensureCrossOriginIsolation()) {
+    return;
+  }
+  await bootstrapApplication(AppComponent, appConfig);
+}
 
-bootstrapApplication(AppComponent, appConfig).catch((err) => console.error(err));
+void startApplication().catch((err) => console.error(err));

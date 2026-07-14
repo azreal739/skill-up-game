@@ -141,14 +141,6 @@ export class MentorDialogueComponent implements OnChanges, OnDestroy {
       this.revealedCount.set(this.blocks?.length ?? 0);
       return;
     }
-    // Queue the WHOLE briefing for generation up front: the worker processes
-    // it in order while early blocks play, so later blocks start gap-free
-    // even on CPU-only machines. Dedupe in the player makes this idempotent.
-    if (this.player?.active()) {
-      for (const block of this.blocks ?? []) {
-        this.player.prefetch?.(block.speaker, block.text);
-      }
-    }
     this.revealedCount.set(0);
     this.beginBlock();
   }
@@ -169,12 +161,6 @@ export class MentorDialogueComponent implements OnChanges, OnDestroy {
         this.player?.active() && block
           ? this.player.speak(block.speaker, block.text).catch(() => undefined)
           : Promise.resolve();
-      // Generate the NEXT block's audio while this one plays, so it starts
-      // without a gap.
-      const next = this.blocks[this.revealedCount() + 1];
-      if (next && this.player?.active()) {
-        this.player.prefetch?.(next.speaker, next.text);
-      }
       this.typeFrom(0, run);
     }, INCOMING_MS);
   }
