@@ -153,6 +153,15 @@ export class MissionPlayerComponent implements OnDestroy {
   }
 
   /**
+   * The whole hint as the Senior Dev speaks it: their framing aside, then the
+   * hint's level/title, then the hint content — the full section, not just
+   * the clue text.
+   */
+  protected spokenHint(hint: { level: number; title: string; content: string }): string {
+    return `${this.seniorDevLine(hint.level)} Hint ${hint.level}, ${hint.title}. ${hint.content}`;
+  }
+
+  /**
    * The whole mission brief as a spoken sequence: Mission Control announces
    * the title/summary, then each mentor reads their own briefing block.
    * Memoised so the popup's play button gets a stable array reference.
