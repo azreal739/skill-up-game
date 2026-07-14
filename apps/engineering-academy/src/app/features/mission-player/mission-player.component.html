@@ -35,7 +35,14 @@
           <p class="ea-eyebrow">{{ isBoss() ? 'Critical Engagement' : 'Mission Briefing' }}</p>
           <h1 class="briefing__title">
             {{ mission.title }}
-            <ea-voice-button [lines]="briefingLines()" label="Play briefing" />
+            @if (gameState.settings().reducedMotion) {
+              <!-- No transmission in reduced motion — play the whole briefing as voice. -->
+              <ea-voice-button [lines]="briefingLines()" label="Play briefing" />
+            } @else {
+              <button type="button" class="briefing__replay" (click)="dlg.replay()">
+                ↻ Replay briefing
+              </button>
+            }
           </h1>
           <div class="briefing__meta">
             <span class="ea-chip" [class.ea-chip--boss]="isBoss()">{{ mission.difficulty }}</span>
@@ -43,8 +50,10 @@
           </div>
 
           <ea-mentor-dialogue
+            #dlg
             [blocks]="mission.briefing"
             [live]="true"
+            [introLine]="briefingIntro()"
             [instant]="gameState.settings().reducedMotion"
           />
 

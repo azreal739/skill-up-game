@@ -906,3 +906,21 @@
     filter: none;
   }
 }
+
+.briefing__replay {
+  border: 1px solid var(--ea-border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ea-muted);
+  font-family: var(--ea-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  padding: 0.28rem 0.7rem;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--ea-text);
+    border-color: var(--ea-accent);
+  }
+}

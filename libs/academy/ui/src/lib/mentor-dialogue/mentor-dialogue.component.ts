@@ -42,6 +42,23 @@ const BLOCK_GAP_MS = 350;
       (click)="skip()"
       [attr.title]="animating() ? 'Click to show the full transmission' : null"
     >
+      @if (introActive()) {
+        <!-- Spoken intro (title/summary) plays before the transmission —
+             the persona blocks don't start typing until it finishes. -->
+        <div class="dialogue__block dialogue__block--active">
+          <ea-persona-avatar [speaker]="introLine!.speaker" [talking]="true" />
+          <div class="dialogue__body">
+            <span class="dialogue__speaker">
+              {{ introLine!.speaker }}
+              <span class="dialogue__signal" aria-hidden="true">▮ receiving briefing</span>
+            </span>
+            <p class="dialogue__text" aria-hidden="true">
+              <span class="dialogue__incoming">briefing incoming…</span>
+            </p>
+          </div>
+        </div>
+      }
+
       @for (block of blocks; track $index) {
         @if ($index < revealedCount()) {
           <div class="dialogue__block dialogue__block--settled">
@@ -56,7 +73,7 @@ const BLOCK_GAP_MS = 350;
               <p class="dialogue__text">{{ block.text }}</p>
             </div>
           </div>
-        } @else if ($index === revealedCount() && animating()) {
+        } @else if ($index === revealedCount() && animating() && !introActive()) {
           <div class="dialogue__block dialogue__block--active">
             <ea-persona-avatar [speaker]="block.speaker" [talking]="!incoming()" />
             <div class="dialogue__body">
@@ -91,11 +108,20 @@ export class MentorDialogueComponent implements OnChanges, OnDestroy {
   @Input() live = false;
   /** Render everything immediately (reduced motion). */
   @Input() instant = false;
+  /**
+   * Optional spoken preamble (e.g. mission title + summary). When narration
+   * is active in live mode, it is spoken first and the transmission holds
+   * until it finishes — so the typewriter only starts at the persona voices.
+   * Ignored when voice is off or in instant mode.
+   */
+  @Input() introLine: { speaker: string; text: string } | null = null;
 
   /** Blocks fully revealed; the block at this index is the one typing. */
   protected readonly revealedCount = signal(0);
   protected readonly typed = signal('');
   protected readonly incoming = signal(false);
+  /** True while the spoken intro plays, before the transmission begins. */
+  protected readonly introActive = signal(false);
 
   protected readonly animating = computed(
     () => this.live && !this.instant && this.revealedCount() < (this.blocks?.length ?? 0)
@@ -119,7 +145,13 @@ export class MentorDialogueComponent implements OnChanges, OnDestroy {
   ngOnDestroy(): void {
     this.runId++;
     this.clearTimer();
+    this.introActive.set(false);
     this.player?.cancel();
+  }
+
+  /** Re-run the whole briefing from the top (intro, then transmission). */
+  replay(): void {
+    this.restart();
   }
 
   skip(): void {
@@ -128,6 +160,7 @@ export class MentorDialogueComponent implements OnChanges, OnDestroy {
     }
     this.runId++;
     this.clearTimer();
+    this.introActive.set(false);
     this.player?.cancel();
     this.revealedCount.set(this.blocks.length);
     this.typed.set('');
@@ -136,6 +169,7 @@ export class MentorDialogueComponent implements OnChanges, OnDestroy {
   private restart(): void {
     this.runId++;
     this.clearTimer();
+    this.introActive.set(false);
     this.player?.cancel();
     if (!this.live || this.instant) {
       this.revealedCount.set(this.blocks?.length ?? 0);
@@ -147,7 +181,27 @@ export class MentorDialogueComponent implements OnChanges, OnDestroy {
       console.info('Narration engine not active — briefing will type silently.');
     }
     this.revealedCount.set(0);
-    this.beginBlock();
+    // Spoken intro first (when there is one and voice is on); the persona
+    // transmission only begins once it finishes.
+    if (this.introLine && this.player?.active()) {
+      this.playIntro();
+    } else {
+      this.beginBlock();
+    }
+  }
+
+  private playIntro(): void {
+    const run = this.runId;
+    this.introActive.set(true);
+    const intro = this.introLine!;
+    const done = this.player!.speak(intro.speaker, intro.text).catch(() => undefined);
+    void done.then(() => {
+      if (run !== this.runId) {
+        return;
+      }
+      this.introActive.set(false);
+      this.beginBlock();
+    });
   }
 
   private beginBlock(): void {

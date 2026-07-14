@@ -178,6 +178,17 @@ export class MissionPlayerComponent implements OnDestroy {
   });
 
   /**
+   * The spoken intro for the live transmission: Mission Control reads the
+   * title + summary before the persona blocks start typing.
+   */
+  protected readonly briefingIntro = computed(() => {
+    const mission = this.mission();
+    return mission
+      ? { speaker: 'Mission Control', text: `${mission.title}. ${mission.summary}` }
+      : null;
+  });
+
+  /**
    * The post-answer debrief as the Senior Dev reads it: the challenge's
    * success/failure line, then the feedback for every option the player
    * chose or should have chosen (mirrors what the option list displays).
