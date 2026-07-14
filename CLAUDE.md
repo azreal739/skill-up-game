@@ -186,6 +186,23 @@ and a per-path terminology re-skin (e.g. "Judge Points").
   crossOriginIsolated=true on a plain python http.server); no-op where
   launchers already send headers. `tools/e2e-smoke.mjs` committed — run
   `node tools/e2e-smoke.mjs [--url ...]` for the deploy smoke.
+- **Round 3 — voice everywhere + sequence mode (merged, PRs #88-#93):**
+  `speakAll(lines)` on SpeechService/port + `[lines]` input on
+  `ea-voice-button` = play a whole briefing as one cancellable sequence.
+  Listen buttons added: contextual help drawer, player notes (Archivist),
+  Mission Briefing popup title + live briefing screen title ("Play
+  briefing" reads title/summary then each block). Settings: test-a-voice
+  dropdown (full cast), Recalibrate button (disable+enable w/ voiceCheck),
+  expanded Mentor voice copy. Console breadcrumb when a live briefing
+  starts with the engine inactive.
+- **User-authored fix (PR #91) — LESSONS:** (1) the speech worker queue is
+  serial — NEVER enqueue prefetches before the line the player asked for
+  (speakAll speaks line 1 first, then prefetches the rest via an
+  onPlaybackStart hook; dialogue-level lookahead prefetch was removed for
+  the same reason — do not reintroduce). (2) main.ts gates bootstrap
+  behind ensureCrossOriginIsolation() so the COI reload can't discard user
+  input. (3) Smoke checks must assert real outcomes (enrolment asserts the
+  /campaigns heading, not a tautology).
 - **Mentor narration (Kokoro-82M TTS) — SHIPPED (user approved Option A):**
   `SpeechService` + `speech.worker.ts` (data-access, kokoro-js WASM q8, npm
   install needs `--ignore-scripts` for onnxruntime-node's postinstall);
