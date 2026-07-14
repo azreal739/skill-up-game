@@ -229,7 +229,10 @@
                 @for (hint of session.revealedHints(); track hint.level) {
                   <div class="hint">
                     <p class="hint__framing">“{{ seniorDevLine(hint.level) }}”</p>
-                    <span class="hint__level">Hint {{ hint.level }} — {{ hint.title }}</span>
+                    <span class="hint__level">
+                      Hint {{ hint.level }} — {{ hint.title }}
+                      <ea-voice-button speaker="Senior Dev" [text]="hint.content" />
+                    </span>
                     <p class="hint__content">{{ hint.content }}</p>
                   </div>
                 }

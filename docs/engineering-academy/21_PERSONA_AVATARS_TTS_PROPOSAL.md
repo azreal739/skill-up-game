@@ -210,4 +210,11 @@ Why this fits *this* app:
    briefings started during engine warm-up wait for readiness instead of
    staying silent; generated narration persists across sessions in
    IndexedDB (`SpeechAudioCache`, pruned at 300 lines).
-5. Optional later: per-persona portrait art, per-block "replay voice" button.
+5. **Voice everywhere — ✅ DONE (2026-07-14):** reusable `ea-voice-button`
+   (ui) with idle/generating-spinner/playing/paused states driven by new
+   `nowPlaying()/pause()/resume()` on the `EA_SPEECH_PLAYER` port; wired
+   into challenge questions (Mission Control reads story+prompt), revealed
+   hints (Senior Dev), and Help Centre topics (new calm **Academy
+   Archivist** persona, `af_nicole`, round-spectacles avatar). Buttons
+   render nothing when voice is off.
+6. Optional later: per-persona portrait art.

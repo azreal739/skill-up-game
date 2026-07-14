@@ -29,6 +29,7 @@ import {
   CountUpComponent,
   HudComponent,
   MentorDialogueComponent,
+  VoiceButtonComponent,
 } from '@academy/ui';
 import { ChallengeHostComponent } from '@academy/challenges';
 import { HelpDrawerComponent } from './help-drawer.component';
@@ -48,6 +49,7 @@ import { NoteComposerComponent } from '../../shared/note-composer/note-composer.
     ChallengeHostComponent,
     HelpDrawerComponent,
     NoteComposerComponent,
+    VoiceButtonComponent,
   ],
   templateUrl: './mission-player.component.html',
   styleUrls: ['./mission-player.component.scss'],

@@ -12,6 +12,7 @@ export interface PersonaDefinition {
     | 'team-lead'
     | 'mentor-judge'
     | 'head-judge'
+    | 'archivist'
     | 'operator';
   /** Exact `NarrativeBlock.speaker` string this persona renders for. */
   speaker: string;
@@ -32,6 +33,8 @@ export const PERSONAS: readonly PersonaDefinition[] = [
   { id: 'team-lead', speaker: 'Team Lead', accent: '#fcd34d', voiceId: 'af_bella' },
   { id: 'mentor-judge', speaker: 'Mentor Judge', accent: '#e9a3f5', voiceId: 'af_heart' },
   { id: 'head-judge', speaker: 'Head Judge', accent: '#fda4af', voiceId: 'bm_george' },
+  // Reads the Help Centre: calm, soft-spoken (af_nicole is Kokoro's 🎧 voice).
+  { id: 'archivist', speaker: 'Academy Archivist', accent: '#b9c6e8', voiceId: 'af_nicole' },
 ];
 
 const GENERIC_PERSONA: Omit<PersonaDefinition, 'speaker'> = {

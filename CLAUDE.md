@@ -167,6 +167,13 @@ and a per-path terminology re-skin (e.g. "Judge Points").
   (data-access) keeps generated wavs in IndexedDB across sessions (pruned at
   300 lines, failure-silent; karma tests hit real IndexedDB). Component-style
   budget warning bumped to 12kB (mission-player scss was permanently warning).
+- **Voice buttons everywhere (merged):** `ea-voice-button` (ui) — reusable
+  play/pause/generating-spinner control on the extended `EA_SPEECH_PLAYER`
+  port (`nowPlaying()/pause()/resume()` backed by a SpeechService signal);
+  drop it next to any text. Wired: challenge questions (Mission Control),
+  revealed hints (Senior Dev), Help Centre (new **Academy Archivist**
+  persona, af_nicole — remember to bundle new voices in
+  package-academy-local.mjs TTS_FILES). Hidden entirely when voice is off.
 - **Mentor narration (Kokoro-82M TTS) — SHIPPED (user approved Option A):**
   `SpeechService` + `speech.worker.ts` (data-access, kokoro-js WASM q8, npm
   install needs `--ignore-scripts` for onnxruntime-node's postinstall);

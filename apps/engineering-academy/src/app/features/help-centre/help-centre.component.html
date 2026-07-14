@@ -38,7 +38,10 @@
 
     @if (selected(); as topic) {
       <article class="help__detail ea-panel">
-        <h2>{{ topic.title }}</h2>
+        <h2 class="help__detail-title">
+          {{ topic.title }}
+          <ea-voice-button speaker="Academy Archivist" [text]="spokenTopic(topic)" label="Listen" />
+        </h2>
         <p class="help__detail-summary">{{ topic.summary }}</p>
         <p class="help__detail-content">{{ topic.content }}</p>
         <div class="help__tags">
