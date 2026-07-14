@@ -66,6 +66,8 @@ interface GenerateRequest {
   id: number;
   voice: string;
   text: string;
+  /** Kokoro speaking-rate multiplier (1 = natural). */
+  speed: number;
 }
 
 type InboundMessage = { type: 'init'; voiceCheck?: boolean } | GenerateRequest;
@@ -164,7 +166,10 @@ async function generate(request: GenerateRequest): Promise<void> {
     const splitter = new TextSplitterStream();
     splitter.push(request.text);
     splitter.close();
-    for await (const { audio } of tts.stream(splitter, { voice: request.voice })) {
+    for await (const { audio } of tts.stream(splitter, {
+      voice: request.voice,
+      speed: request.speed,
+    })) {
       const wav = audio.toWav() as ArrayBuffer;
       postMessage({ type: 'audio-chunk', id: request.id, wav }, { transfer: [wav] });
     }

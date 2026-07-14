@@ -298,6 +298,7 @@ export class SpeechService implements OnDestroy {
         id,
         voice: personaForSpeaker(speaker).voiceId,
         text,
+        speed: this.voiceSpeed(),
       });
     });
   }
@@ -336,7 +337,13 @@ export class SpeechService implements OnDestroy {
   }
 
   private keyFor(speaker: string, text: string): string {
-    return `${personaForSpeaker(speaker).voiceId}|${text}`;
+    // Speed is baked into the audio, so it must be part of the cache key —
+    // changing the setting naturally regenerates rather than replaying stale.
+    return `${personaForSpeaker(speaker).voiceId}|${this.voiceSpeed()}|${text}`;
+  }
+
+  private voiceSpeed(): number {
+    return this.gameState.settings().voiceSpeed ?? 1;
   }
 
   /** Resolves when loading settles (ready/error/off) or the cap elapses. */

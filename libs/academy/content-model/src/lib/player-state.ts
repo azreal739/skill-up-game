@@ -23,6 +23,7 @@ export const SETTINGS_DEFAULTS = {
   highContrast: false,
   textScale: 1,
   voiceEnabled: false,
+  voiceSpeed: 1,
 };
 
 export const settingsSchema = z.object({
@@ -35,6 +36,7 @@ export const settingsSchema = z.object({
   textScale: z.number().min(0.8).max(1.6),
   // Added after save v2 shipped — defaulted so existing saves keep parsing.
   voiceEnabled: z.boolean().default(false),
+  voiceSpeed: z.number().min(0.7).max(1.4).default(1),
 });
 
 export const missionRecordSchema = z.object({

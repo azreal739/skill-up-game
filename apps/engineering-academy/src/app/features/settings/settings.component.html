@@ -70,6 +70,22 @@
       />
     </label>
 
+    @if (gameState.settings().voiceEnabled) {
+      <label class="row">
+        <span class="row__label">
+          Narration speed <em>{{ gameState.settings().voiceSpeed | number: '1.1-2' }}×</em>
+        </span>
+        <input
+          type="range"
+          min="0.7"
+          max="1.4"
+          step="0.1"
+          [value]="gameState.settings().voiceSpeed"
+          (change)="onVoiceSpeed($event)"
+        />
+      </label>
+    }
+
     @switch (speech.status()) {
       @case ('ready') {
         <p class="voice-status" role="status">Voice systems online.</p>
