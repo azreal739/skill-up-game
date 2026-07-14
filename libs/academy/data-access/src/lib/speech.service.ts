@@ -116,62 +116,86 @@ export class SpeechService implements OnDestroy {
    * finishes — or immediately when the engine is off/loading, so callers can
    * always await it. Never rejects; a failed line is a silent line.
    */
-  async speak(speaker: string, text: string): Promise<void> {
-    if (!this.active() || !text.trim()) {
+  speak(speaker: string, text: string): Promise<void> {
+    return this.speakAll([{ speaker, text }]);
+  }
+
+  /**
+   * Speak a sequence of lines back to back (e.g. a whole briefing), each in
+   * its own persona's voice, as ONE cancellable playback: skip, navigation
+   * or another speak() stops the entire sequence. Later lines are prefetched
+   * while earlier ones play.
+   */
+  async speakAll(lines: readonly { speaker: string; text: string }[]): Promise<void> {
+    const playable = lines.filter((line) => line.text.trim());
+    if (!this.active() || !playable.length) {
       return;
     }
     this.cancel();
     const token = ++this.playToken;
-    const key = this.keyFor(speaker, text);
 
+    try {
+      if (this.status() === 'loading') {
+        // Engine still booting (e.g. a briefing opened right after page
+        // load): hold until it's ready rather than skipping silently —
+        // surfaced as 'generating' so play buttons show a spinner.
+        this.nowPlayingState.set({ ...playable[0], phase: 'generating' });
+        await this.waitForReady();
+        if (this.status() !== 'ready' || token !== this.playToken) {
+          return;
+        }
+      }
+      for (const line of playable.slice(1)) {
+        this.prefetch(line.speaker, line.text);
+      }
+      for (const line of playable) {
+        if (token !== this.playToken) {
+          return;
+        }
+        await this.speakLine(line.speaker, line.text, token);
+      }
+    } finally {
+      if (token === this.playToken) {
+        this.nowPlayingState.set(null);
+      }
+    }
+  }
+
+  /** One line of a speak sequence; assumes the engine is ready. */
+  private async speakLine(speaker: string, text: string, token: number): Promise<void> {
+    const key = this.keyFor(speaker, text);
     const setPhase = (phase: 'generating' | 'playing' | 'paused') => {
       if (token === this.playToken) {
         this.nowPlayingState.set({ speaker, text, phase });
       }
     };
 
-    try {
-      if (this.status() === 'loading') {
-        // Engine still booting (e.g. a briefing opened right after page
-        // load): hold this line until it's ready rather than skipping it
-        // silently — surfaced as 'generating' so play buttons show a spinner.
-        setPhase('generating');
-        await this.waitForReady();
-        if (this.status() !== 'ready' || token !== this.playToken) {
-          return;
-        }
-      }
-      const ready = this.cache.get(key);
-      if (ready) {
-        setPhase('playing');
-        await this.playChunks(ready, token);
-        return;
-      }
+    const ready = this.cache.get(key);
+    if (ready) {
+      setPhase('playing');
+      await this.playChunks(ready, token);
+      return;
+    }
 
-      setPhase('generating');
-      // Resolve the line (persistent cache → in-flight prefetch → fresh
-      // generation). A fresh generation streams: sentences play as they land.
-      let streamed = false;
-      let playback: Promise<void> = Promise.resolve();
-      const chunks = await this.ensureChunks(key, speaker, text, (blob) => {
-        if (!streamed) {
-          streamed = true;
-          setPhase('playing');
-        }
-        if (token === this.playToken) {
-          playback = playback.then(() => this.playBlob(blob, token));
-        }
-      });
-      if (streamed) {
-        await playback;
-      } else if (chunks && token === this.playToken) {
+    setPhase('generating');
+    // Resolve the line (persistent cache → in-flight prefetch → fresh
+    // generation). A fresh generation streams: sentences play as they land.
+    let streamed = false;
+    let playback: Promise<void> = Promise.resolve();
+    const chunks = await this.ensureChunks(key, speaker, text, (blob) => {
+      if (!streamed) {
+        streamed = true;
         setPhase('playing');
-        await this.playChunks(chunks, token);
       }
-    } finally {
       if (token === this.playToken) {
-        this.nowPlayingState.set(null);
+        playback = playback.then(() => this.playBlob(blob, token));
       }
+    });
+    if (streamed) {
+      await playback;
+    } else if (chunks && token === this.playToken) {
+      setPhase('playing');
+      await this.playChunks(chunks, token);
     }
   }
 

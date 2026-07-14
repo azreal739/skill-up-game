@@ -430,7 +430,10 @@
             ✕
           </button>
         </header>
-        <h2 class="brief__title">{{ mission.title }}</h2>
+        <h2 class="brief__title">
+          {{ mission.title }}
+          <ea-voice-button [lines]="briefingLines()" label="Play briefing" />
+        </h2>
         <p class="brief__summary">{{ mission.summary }}</p>
         <ea-mentor-dialogue [blocks]="mission.briefing" />
         <div class="brief__objectives">
