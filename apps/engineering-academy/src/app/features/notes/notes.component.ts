@@ -2,6 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NoteLinkType, PlayerNote } from '@academy/content-model';
 import { AudioService, ContentService, GameStateService } from '@academy/data-access';
+import { VoiceButtonComponent } from '@academy/ui';
 import { NoteComposerComponent } from '../../shared/note-composer/note-composer.component';
 
 /** Friendly names for each link context, shown on a note card. */
@@ -23,7 +24,7 @@ const LINK_LABELS: Record<NoteLinkType, string> = {
 @Component({
   selector: 'ea-notes',
   standalone: true,
-  imports: [RouterLink, NoteComposerComponent],
+  imports: [RouterLink, NoteComposerComponent, VoiceButtonComponent],
   templateUrl: './notes.component.html',
   styleUrls: ['./notes.component.scss'],
 })
