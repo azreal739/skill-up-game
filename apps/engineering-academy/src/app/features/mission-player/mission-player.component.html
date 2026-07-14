@@ -33,7 +33,10 @@
             </div>
           }
           <p class="ea-eyebrow">{{ isBoss() ? 'Critical Engagement' : 'Mission Briefing' }}</p>
-          <h1 class="briefing__title">{{ mission.title }}</h1>
+          <h1 class="briefing__title">
+            {{ mission.title }}
+            <ea-voice-button [lines]="briefingLines()" label="Play briefing" />
+          </h1>
           <div class="briefing__meta">
             <span class="ea-chip" [class.ea-chip--boss]="isBoss()">{{ mission.difficulty }}</span>
             <span class="ea-chip">{{ mission.challenges.length }} challenge{{ mission.challenges.length === 1 ? '' : 's' }}</span>

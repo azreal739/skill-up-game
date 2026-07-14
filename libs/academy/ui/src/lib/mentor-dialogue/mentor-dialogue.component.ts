@@ -141,6 +141,11 @@ export class MentorDialogueComponent implements OnChanges, OnDestroy {
       this.revealedCount.set(this.blocks?.length ?? 0);
       return;
     }
+    if (this.player && !this.player.active()) {
+      // Breadcrumb for "the briefing didn't speak" reports: names the state
+      // that explains the silence (engine off after an error, etc.).
+      console.info('Narration engine not active — briefing will type silently.');
+    }
     this.revealedCount.set(0);
     this.beginBlock();
   }
