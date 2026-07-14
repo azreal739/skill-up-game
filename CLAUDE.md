@@ -203,6 +203,17 @@ and a per-path terminology re-skin (e.g. "Judge Points").
   behind ensureCrossOriginIsolation() so the COI reload can't discard user
   input. (3) Smoke checks must assert real outcomes (enrolment asserts the
   /campaigns heading, not a tautology).
+- **Round 4 — UX polish (merged, PRs #96-#101):** hint voice reads the
+  full section (Senior Dev framing + level/title + content), not just the
+  clue; live briefing speaks a Mission Control **intro** (title/summary)
+  first and only starts the transmission at the persona voices — new
+  `introLine` input + public `replay()` on ea-mentor-dialogue (reduced
+  motion keeps the voice-only Play button); Campaign Hub recommendation
+  prefers the **last active path** (track of the latest `completedAt`);
+  **route-transition loader** (`shared/route-loader`, concentric sine-wave
+  rings on a canvas rAF loop outside Angular, debounced 140ms, reduced-
+  motion static); **backlog filters** (status chips + concept dropdown) +
+  **collapsible sections**. anyComponentStyle budget warning now 14kB.
 - **Mentor narration (Kokoro-82M TTS) — SHIPPED (user approved Option A):**
   `SpeechService` + `speech.worker.ts` (data-access, kokoro-js WASM q8, npm
   install needs `--ignore-scripts` for onnxruntime-node's postinstall);
