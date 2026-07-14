@@ -174,6 +174,18 @@ and a per-path terminology re-skin (e.g. "Judge Points").
   revealed hints (Senior Dev), Help Centre (new **Academy Archivist**
   persona, af_nicole — remember to bundle new voices in
   package-academy-local.mjs TTS_FILES). Hidden entirely when voice is off.
+- **Round 2 enhancements (merged):** npm audit → 0 vulns via package.json
+  `overrides` (all dev-tooling chains; patched leaves within existing
+  majors). Spoken answer feedback (Senior Dev reads success/failure + option
+  feedback via `spokenFeedback()`), per-line replay buttons on settled
+  dialogue blocks (= the reduced-motion narration path; voice-button clicks
+  stopPropagation so they don't trigger click-to-skip), whole-briefing
+  prefetch on start. `voiceSpeed` setting (0.7–1.4, schema-defaulted; speed
+  is in cache keys). `coi-sw.js` + main.ts registration: header-less web
+  hosts get COOP/COEP via service worker → threaded wasm (verified
+  crossOriginIsolated=true on a plain python http.server); no-op where
+  launchers already send headers. `tools/e2e-smoke.mjs` committed — run
+  `node tools/e2e-smoke.mjs [--url ...]` for the deploy smoke.
 - **Mentor narration (Kokoro-82M TTS) — SHIPPED (user approved Option A):**
   `SpeechService` + `speech.worker.ts` (data-access, kokoro-js WASM q8, npm
   install needs `--ignore-scripts` for onnxruntime-node's postinstall);
