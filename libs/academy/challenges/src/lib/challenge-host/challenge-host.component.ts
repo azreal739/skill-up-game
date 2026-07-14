@@ -8,7 +8,7 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { ChallengeDefinition, EvaluationResult } from '@academy/content-model';
-import { CodeViewerComponent, IconComponent } from '@academy/ui';
+import { CodeViewerComponent, IconComponent, VoiceButtonComponent } from '@academy/ui';
 import { OptionListComponent } from '../option-list/option-list.component';
 
 /**
@@ -20,7 +20,7 @@ import { OptionListComponent } from '../option-list/option-list.component';
 @Component({
   selector: 'ea-challenge-host',
   standalone: true,
-  imports: [CodeViewerComponent, IconComponent, OptionListComponent],
+  imports: [CodeViewerComponent, IconComponent, OptionListComponent, VoiceButtonComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section class="challenge">
@@ -33,7 +33,10 @@ import { OptionListComponent } from '../option-list/option-list.component';
           }
         </span>
       </header>
-      <h2 class="challenge__title">{{ challenge.title }}</h2>
+      <h2 class="challenge__title">
+        {{ challenge.title }}
+        <ea-voice-button speaker="Mission Control" [text]="spokenQuestion" label="Listen" />
+      </h2>
       <p class="challenge__story">{{ challenge.storyContext }}</p>
 
       @for (artefact of challenge.artefacts; track artefact.id) {
@@ -109,6 +112,11 @@ export class ChallengeHostComponent implements OnChanges {
 
   get typeLabel(): string {
     return TYPE_LABELS[this.challenge.type];
+  }
+
+  /** The question as read aloud: scenario first, then the actual ask. */
+  get spokenQuestion(): string {
+    return `${this.challenge.storyContext} ${this.challenge.prompt}`;
   }
 
   onToggle(id: string, multiSelect: boolean): void {

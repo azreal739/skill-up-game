@@ -60,6 +60,13 @@ import { PersonaDefinition, personaForSpeaker } from '@academy/content-model';
             <path d="M34.5 20 q2 -5 -2 -8" />
             <path d="M24 36.2 l1 2 2.2 .3 -1.6 1.5 .4 2.2 -2 -1 -2 1 .4 -2.2 -1.6 -1.5 2.2 -.3Z" fill="currentColor" stroke="none" />
           }
+          @case ('archivist') {
+            <!-- round spectacles + collar book -->
+            <circle cx="19" cy="20.5" r="3.4" />
+            <circle cx="29" cy="20.5" r="3.4" />
+            <path d="M22.4 20.5 h3.2" />
+            <path d="M20 38.5 h8 M24 36.8 v3.4" />
+          }
           @default {
             <!-- generic operator visor -->
             <path d="M15 19 h18" />

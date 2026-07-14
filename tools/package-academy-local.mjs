@@ -56,6 +56,7 @@ const TTS_FILES = [
   'voices/af_heart.bin',
   'voices/bm_george.bin',
   'voices/af_sarah.bin',
+  'voices/af_nicole.bin',
 ];
 
 async function fetchTtsModel() {

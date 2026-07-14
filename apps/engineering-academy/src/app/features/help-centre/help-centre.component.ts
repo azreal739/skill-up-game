@@ -3,12 +3,13 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ContentService, GameStateService } from '@academy/data-access';
 import { HelpTopic } from '@academy/content-model';
+import { VoiceButtonComponent } from '@academy/ui';
 import { NoteComposerComponent } from '../../shared/note-composer/note-composer.component';
 
 @Component({
   selector: 'ea-help-centre',
   standalone: true,
-  imports: [FormsModule, NoteComposerComponent],
+  imports: [FormsModule, NoteComposerComponent, VoiceButtonComponent],
   templateUrl: './help-centre.component.html',
   styleUrls: ['./help-centre.component.scss'],
 })
@@ -42,5 +43,10 @@ export class HelpCentreComponent {
 
   toggleNote(): void {
     this.noteOpen.update((open) => !open);
+  }
+
+  /** The topic as the Archivist reads it: title, then the full entry. */
+  spokenTopic(topic: HelpTopic): string {
+    return `${topic.title}. ${topic.content}`;
   }
 }

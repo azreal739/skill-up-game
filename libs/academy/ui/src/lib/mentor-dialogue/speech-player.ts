@@ -1,5 +1,14 @@
 import { InjectionToken } from '@angular/core';
 
+/** Lifecycle of one spoken line, as surfaced to play/pause UI. */
+export type EaSpeechPhase = 'generating' | 'playing' | 'paused';
+
+export interface EaNowPlaying {
+  speaker: string;
+  text: string;
+  phase: EaSpeechPhase;
+}
+
 /**
  * Port the mentor dialogue uses to narrate briefing blocks aloud. The ui lib
  * stays presentational: the app provides `SpeechService` (data-access) under
@@ -18,6 +27,14 @@ export interface EaSpeechPlayer {
   prefetch?(speaker: string, text: string): void;
   /** Stop playback immediately (skip, navigation, destroy). */
   cancel(): void;
+  /**
+   * The line currently being generated/played via speak(), if any — a signal
+   * read, so templates using it re-render on change. Backs play/pause UI.
+   */
+  nowPlaying?(): EaNowPlaying | null;
+  /** Pause/resume the currently playing line (no-ops when nothing plays). */
+  pause?(): void;
+  resume?(): void;
 }
 
 export const EA_SPEECH_PLAYER = new InjectionToken<EaSpeechPlayer>('EA_SPEECH_PLAYER');

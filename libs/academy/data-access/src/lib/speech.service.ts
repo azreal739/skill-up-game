@@ -50,6 +50,12 @@ export class SpeechService implements OnDestroy {
   readonly warming = signal(false);
   /** True while the calibration screen's audible voice check is playing. */
   readonly voiceCheck = signal(false);
+  /** The speak() line in flight, for play/pause UI (null when idle). */
+  private readonly nowPlayingState = signal<{
+    speaker: string;
+    text: string;
+    phase: 'generating' | 'playing' | 'paused';
+  } | null>(null);
 
   /** speak() calls parked while the engine finishes loading. */
   private readyWaiters: Array<() => void> = [];
@@ -126,26 +132,66 @@ export class SpeechService implements OnDestroy {
     const token = ++this.playToken;
     const key = this.keyFor(speaker, text);
 
-    const ready = this.cache.get(key);
-    if (ready) {
-      await this.playChunks(ready, token);
-      return;
-    }
-
-    // Resolve the line (persistent cache → in-flight prefetch → fresh
-    // generation). A fresh generation streams: sentences play as they land.
-    let streamed = false;
-    let playback: Promise<void> = Promise.resolve();
-    const chunks = await this.ensureChunks(key, speaker, text, (blob) => {
-      streamed = true;
+    const setPhase = (phase: 'generating' | 'playing' | 'paused') => {
       if (token === this.playToken) {
-        playback = playback.then(() => this.playBlob(blob, token));
+        this.nowPlayingState.set({ speaker, text, phase });
       }
-    });
-    if (streamed) {
-      await playback;
-    } else if (chunks && token === this.playToken) {
-      await this.playChunks(chunks, token);
+    };
+
+    try {
+      const ready = this.cache.get(key);
+      if (ready) {
+        setPhase('playing');
+        await this.playChunks(ready, token);
+        return;
+      }
+
+      setPhase('generating');
+      // Resolve the line (persistent cache → in-flight prefetch → fresh
+      // generation). A fresh generation streams: sentences play as they land.
+      let streamed = false;
+      let playback: Promise<void> = Promise.resolve();
+      const chunks = await this.ensureChunks(key, speaker, text, (blob) => {
+        if (!streamed) {
+          streamed = true;
+          setPhase('playing');
+        }
+        if (token === this.playToken) {
+          playback = playback.then(() => this.playBlob(blob, token));
+        }
+      });
+      if (streamed) {
+        await playback;
+      } else if (chunks && token === this.playToken) {
+        setPhase('playing');
+        await this.playChunks(chunks, token);
+      }
+    } finally {
+      if (token === this.playToken) {
+        this.nowPlayingState.set(null);
+      }
+    }
+  }
+
+  /** The line currently generating/playing/paused via speak(), if any. */
+  nowPlaying(): { speaker: string; text: string; phase: 'generating' | 'playing' | 'paused' } | null {
+    return this.nowPlayingState();
+  }
+
+  /** Pause the current line's audio (resume() continues where it stopped). */
+  pause(): void {
+    const state = this.nowPlayingState();
+    if (this.current && state?.phase === 'playing') {
+      this.current.audio.pause();
+      this.nowPlayingState.set({ ...state, phase: 'paused' });
+    }
+  }
+
+  resume(): void {
+    const state = this.nowPlayingState();
+    if (this.current && state?.phase === 'paused') {
+      void this.current.audio.play().catch(() => this.cancel());
+      this.nowPlayingState.set({ ...state, phase: 'playing' });
     }
   }
 
@@ -169,6 +215,7 @@ export class SpeechService implements OnDestroy {
   /** Stop current playback and invalidate any in-flight speak(). */
   cancel(): void {
     this.playToken++;
+    this.nowPlayingState.set(null);
     if (this.current) {
       const { audio, url, finish } = this.current;
       this.current = null;

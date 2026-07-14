@@ -1,0 +1,54 @@
+:host {
+  display: inline-flex;
+}
+
+.voice {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid var(--ea-border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ea-muted);
+  font-family: var(--ea-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  padding: 0.28rem 0.55rem;
+  cursor: pointer;
+  vertical-align: middle;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--ea-text);
+    border-color: var(--ea-accent);
+  }
+
+  &--live {
+    color: var(--ea-accent);
+    border-color: var(--ea-accent);
+  }
+
+  &--busy {
+    color: var(--ea-accent-2);
+  }
+}
+
+.voice__icon {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+}
+
+.voice__spinner {
+  animation: voice-spin 0.9s linear infinite;
+}
+
+.voice__label {
+  white-space: nowrap;
+}
+
+@keyframes voice-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
