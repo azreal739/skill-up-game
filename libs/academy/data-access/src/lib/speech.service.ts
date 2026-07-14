@@ -120,14 +120,6 @@ export class SpeechService implements OnDestroy {
     if (!this.active() || !text.trim()) {
       return;
     }
-    if (this.status() === 'loading') {
-      // Engine still booting (e.g. a briefing opened right after page load):
-      // hold this line until it's ready rather than skipping it silently.
-      await this.waitForReady();
-      if (this.status() !== 'ready') {
-        return;
-      }
-    }
     this.cancel();
     const token = ++this.playToken;
     const key = this.keyFor(speaker, text);
@@ -139,6 +131,16 @@ export class SpeechService implements OnDestroy {
     };
 
     try {
+      if (this.status() === 'loading') {
+        // Engine still booting (e.g. a briefing opened right after page
+        // load): hold this line until it's ready rather than skipping it
+        // silently — surfaced as 'generating' so play buttons show a spinner.
+        setPhase('generating');
+        await this.waitForReady();
+        if (this.status() !== 'ready' || token !== this.playToken) {
+          return;
+        }
+      }
       const ready = this.cache.get(key);
       if (ready) {
         setPhase('playing');
