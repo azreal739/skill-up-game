@@ -36,6 +36,9 @@ content-model (types, Zod schemas, scoring, ranks, badges, personas)
 - Deployable output: `dist/apps/engineering-academy/browser` (static SPA,
   localStorage-only, no backend). The `shareable` build configuration switches
   to hash routing + relative baseHref for dumb static hosts.
+- Deploy smoke: `node tools/e2e-smoke.mjs [--url https://…]` — drives a real
+  browser through enrolment/briefing/challenge/help/settings; exits non-zero
+  on failure. Run it after any build you intend to ship.
 
 ## Rules that tests enforce (don't fight them, extend them)
 
@@ -68,7 +71,16 @@ content-model (types, Zod schemas, scoring, ranks, badges, personas)
 - If the host can send headers, `Cross-Origin-Opener-Policy: same-origin` +
   `Cross-Origin-Embedder-Policy: require-corp` unlock multithreaded WASM
   (faster CPU generation). Safe here: all assets are same-origin and
-  HuggingFace sends CORS headers.
+  HuggingFace sends CORS headers. Header-less hosts are covered anyway:
+  `public/coi-sw.js` stamps the headers from a service worker; `main.ts`
+  registers it (one first-visit reload) and gates bootstrap behind it —
+  keep that ordering, or the reload can discard user input.
+- **The speech worker queue is serial.** Never enqueue prefetch/background
+  generations before the line the player asked to hear — `speakAll()` speaks
+  the first line, then prefetches the rest via its onPlaybackStart hook.
+  Preserve that pattern in any narration change.
+- Every `voiceId` in `content-model/src/lib/personas.ts` must have a matching
+  `voices/*.bin` entry in `tools/package-academy-local.mjs` TTS_FILES.
 
 ## Process
 
