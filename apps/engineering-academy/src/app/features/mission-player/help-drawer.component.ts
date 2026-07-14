@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { HelpTopic } from '@academy/content-model';
+import { VoiceButtonComponent } from '@academy/ui';
 
 /**
  * Slide-over contextual help. Opens without leaving the challenge, closes on
@@ -16,7 +17,7 @@ import { HelpTopic } from '@academy/content-model';
 @Component({
   selector: 'ea-help-drawer',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, VoiceButtonComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="drawer-backdrop">
@@ -26,7 +27,14 @@ import { HelpTopic } from '@academy/content-model';
           <p class="ea-eyebrow">Help Centre</p>
           <button type="button" class="drawer__close" (click)="closed.emit()" aria-label="Close">✕</button>
         </header>
-        <h2 class="drawer__title">{{ topic.title }}</h2>
+        <h2 class="drawer__title">
+          {{ topic.title }}
+          <ea-voice-button
+            speaker="Academy Archivist"
+            [text]="topic.title + '. ' + topic.content"
+            label="Listen"
+          />
+        </h2>
         <p class="drawer__summary">{{ topic.summary }}</p>
         <p class="drawer__content">{{ topic.content }}</p>
         <div class="drawer__tags">

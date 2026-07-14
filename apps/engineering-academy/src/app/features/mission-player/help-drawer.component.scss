@@ -58,6 +58,10 @@
 }
 
 .drawer__title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
   font-size: 1.25rem;
   margin-bottom: 0.4rem;
 }
