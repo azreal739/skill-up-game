@@ -11,6 +11,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import {
+  ChallengeDefinition,
   EvaluationResult,
   HelpTopic,
   badgeById,
@@ -149,6 +150,21 @@ export class MissionPlayerComponent implements OnDestroy {
 
   protected seniorDevLine(level: number): string {
     return SENIOR_DEV_LINES[level] ?? '';
+  }
+
+  /**
+   * The post-answer debrief as the Senior Dev reads it: the challenge's
+   * success/failure line, then the feedback for every option the player
+   * chose or should have chosen (mirrors what the option list displays).
+   */
+  protected spokenFeedback(challenge: ChallengeDefinition, evaluation: EvaluationResult): string {
+    const lines = [evaluation.correct ? challenge.successFeedback : challenge.failureFeedback];
+    for (const outcome of evaluation.options) {
+      if (outcome.feedback && (outcome.wasSelected || outcome.isCorrect)) {
+        lines.push(outcome.feedback);
+      }
+    }
+    return lines.filter(Boolean).join(' ');
   }
 
   /** Tracker state for a mission node in the campaign sidebar. */

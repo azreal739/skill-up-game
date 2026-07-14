@@ -22,7 +22,7 @@ import { EA_SPEECH_PLAYER, EaSpeechPhase } from '../mentor-dialogue/speech-playe
         class="voice"
         [class.voice--busy]="phase() === 'generating'"
         [class.voice--live]="phase() === 'playing'"
-        (click)="toggle()"
+        (click)="toggle($event)"
         [attr.aria-label]="ariaLabel()"
         [attr.title]="ariaLabel()"
       >
@@ -87,7 +87,10 @@ export class VoiceButtonComponent {
     }
   }
 
-  protected toggle(): void {
+  protected toggle(event: Event): void {
+    // Hosts like the mentor dialogue treat container clicks as "skip" —
+    // pressing play must never double as that.
+    event.stopPropagation();
     const player = this.player;
     if (!player) {
       return;
