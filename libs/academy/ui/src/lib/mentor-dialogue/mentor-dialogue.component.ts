@@ -13,6 +13,7 @@ import {
 import { NarrativeBlock } from '@academy/content-model';
 
 import { PersonaAvatarComponent } from '../persona-avatar/persona-avatar.component';
+import { VoiceButtonComponent } from '../voice-button/voice-button.component';
 import { EA_SPEECH_PLAYER } from './speech-player';
 
 /** Ms before a block starts typing — the "incoming transmission" beat. */
@@ -32,7 +33,7 @@ const BLOCK_GAP_MS = 350;
 @Component({
   selector: 'ea-mentor-dialogue',
   standalone: true,
-  imports: [PersonaAvatarComponent],
+  imports: [PersonaAvatarComponent, VoiceButtonComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div
@@ -46,7 +47,12 @@ const BLOCK_GAP_MS = 350;
           <div class="dialogue__block dialogue__block--settled">
             <ea-persona-avatar [speaker]="block.speaker" />
             <div class="dialogue__body">
-              <span class="dialogue__speaker">{{ block.speaker }}</span>
+              <span class="dialogue__speaker">
+                {{ block.speaker }}
+                <!-- Replay for anyone; the ONLY voice path in instant
+                     (reduced-motion) mode, where nothing auto-plays. -->
+                <ea-voice-button [speaker]="block.speaker" [text]="block.text" />
+              </span>
               <p class="dialogue__text">{{ block.text }}</p>
             </div>
           </div>
@@ -134,6 +140,14 @@ export class MentorDialogueComponent implements OnChanges, OnDestroy {
     if (!this.live || this.instant) {
       this.revealedCount.set(this.blocks?.length ?? 0);
       return;
+    }
+    // Queue the WHOLE briefing for generation up front: the worker processes
+    // it in order while early blocks play, so later blocks start gap-free
+    // even on CPU-only machines. Dedupe in the player makes this idempotent.
+    if (this.player?.active()) {
+      for (const block of this.blocks ?? []) {
+        this.player.prefetch?.(block.speaker, block.text);
+      }
     }
     this.revealedCount.set(0);
     this.beginBlock();
