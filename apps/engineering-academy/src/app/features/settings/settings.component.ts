@@ -1,13 +1,15 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { PERSONAS } from '@academy/content-model';
 import { AudioService, GameStateService, SpeechService } from '@academy/data-access';
+import { VoiceButtonComponent } from '@academy/ui';
 import { VoiceSetupOverlayComponent } from './voice-setup-overlay.component';
 
 @Component({
   selector: 'ea-settings',
   standalone: true,
-  imports: [DecimalPipe, VoiceSetupOverlayComponent],
+  imports: [DecimalPipe, VoiceButtonComponent, VoiceSetupOverlayComponent],
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],
 })
@@ -60,6 +62,25 @@ export class SettingsComponent {
     this.gameState.updateSettings({ voiceSpeed: Number(input.value) });
     // Hear the new pace immediately, in Mission Control's voice.
     void this.speech.speak('Mission Control', `Narration speed set to ${input.value}.`);
+  }
+
+  /** The full cast, for the test-a-voice dropdown. */
+  protected readonly personas = PERSONAS;
+  protected readonly testSpeaker = signal(PERSONAS[0].speaker);
+  protected readonly testLine = computed(
+    () =>
+      `${this.testSpeaker()} here — this is my voice. You'll hear me like this throughout the Academy.`
+  );
+
+  onTestSpeaker(event: Event): void {
+    this.testSpeaker.set((event.target as HTMLSelectElement).value);
+  }
+
+  /** Tear the engine down and run the full calibration (with voice check). */
+  recalibrate(): void {
+    this.audio.play('click');
+    this.speech.disable();
+    this.speech.enable({ voiceCheck: true });
   }
 
   exportProgress(): void {
