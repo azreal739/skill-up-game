@@ -93,15 +93,8 @@
 
     @if (gameState.settings().voiceEnabled) {
       <label class="row">
-        <span class="row__label">Test a mentor's voice</span>
-        <span class="voice-test">
-          <select [value]="testSpeaker()" (change)="onTestSpeaker($event)" aria-label="Mentor to test">
-            @for (persona of personas; track persona.id) {
-              <option [value]="persona.speaker">{{ persona.speaker }}</option>
-            }
-          </select>
-          <ea-voice-button [speaker]="testSpeaker()" [text]="testLine()" label="Test" />
-        </span>
+        <span class="row__label">Meet the mentors <em>See the cast and preview each voice</em></span>
+        <button type="button" class="ea-btn" (click)="showCast.set(true)">Meet the mentors</button>
       </label>
 
       <label class="row">
@@ -188,4 +181,8 @@
 
 @if (speech.status() === 'loading') {
   <ea-voice-setup-overlay />
+}
+
+@if (showCast()) {
+  <ea-persona-voices-dialog (close)="showCast.set(false)" />
 }
