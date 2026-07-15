@@ -35,10 +35,15 @@ import { EA_SPEECH_PLAYER, EaSpeechLine, EaSpeechPhase } from '../mentor-dialogu
             <span class="voice__label">generating…</span>
           }
           @case ('playing') {
-            <svg class="voice__icon" viewBox="0 0 16 16" aria-hidden="true" fill="currentColor">
-              <rect x="3.5" y="3" width="3" height="10" rx="1" />
-              <rect x="9.5" y="3" width="3" height="10" rx="1" />
+            <!-- Transmitting: an animated equalizer (click still pauses). -->
+            <svg class="voice__icon voice__eq" viewBox="0 0 16 16" aria-hidden="true" fill="currentColor">
+              <rect class="voice__bar" x="2" y="4" width="2.4" height="8" rx="1.2" />
+              <rect class="voice__bar" x="6.8" y="4" width="2.4" height="8" rx="1.2" />
+              <rect class="voice__bar" x="11.6" y="4" width="2.4" height="8" rx="1.2" />
             </svg>
+            @if (label) {
+              <span class="voice__label">transmitting…</span>
+            }
           }
           @case ('paused') {
             <svg class="voice__icon" viewBox="0 0 16 16" aria-hidden="true" fill="currentColor">

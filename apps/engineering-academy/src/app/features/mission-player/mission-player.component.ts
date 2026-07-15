@@ -6,6 +6,7 @@ import {
   effect,
   inject,
   signal,
+  untracked,
 } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -23,6 +24,7 @@ import {
   GameStateService,
   LearningAnalyticsService,
   MissionSessionService,
+  SpeechService,
 } from '@academy/data-access';
 import {
   BadgeChipComponent,
@@ -64,6 +66,7 @@ export class MissionPlayerComponent implements OnDestroy {
   private readonly analytics = inject(LearningAnalyticsService);
   protected readonly session = inject(MissionSessionService);
   protected readonly gameState = inject(GameStateService);
+  private readonly speech = inject(SpeechService);
 
   private readonly missionId = toSignal(
     this.route.paramMap.pipe(map((params) => params.get('missionId') ?? '')),
@@ -120,7 +123,82 @@ export class MissionPlayerComponent implements OnDestroy {
     effect(() => {
       this.waves.setAlert(this.isBoss() && this.session.phase() === 'challenge');
     });
+
+    // ---- Auto-play "conversation": mentors narrate each beat as it appears,
+    // so voice users experience the mission as one continuous exchange. Each
+    // effect fires once per logical unit (guarded by a last-played key) and
+    // only when voice + auto-play are on. Playback flows through the comms HUD.
+
+    // Briefing: Mission Control + mentors read the whole brief on arrival.
+    effect(() => {
+      const mission = this.mission();
+      const isBriefing = this.session.phase() === 'briefing';
+      const active = this.autoNarrateActive();
+      if (!mission || !isBriefing || !active || this.lastBriefingPlayed === mission.id) {
+        return;
+      }
+      this.lastBriefingPlayed = mission.id;
+      const lines = this.briefingLines();
+      untracked(() => void this.speech.speakAll(lines));
+    });
+
+    // Question: Mission Control reads the scenario + ask when a challenge opens
+    // (but not one already answered, e.g. when revisiting).
+    effect(() => {
+      const run = this.session.currentRun();
+      const isChallenge = this.session.phase() === 'challenge';
+      const answered = !!this.attemptEvaluation();
+      const active = this.autoNarrateActive();
+      if (!run || !isChallenge || !active) {
+        return;
+      }
+      const key = `${this.mission()?.id}:${run.challenge.id}`;
+      if (this.lastQuestionPlayed === key || run.completed || answered) {
+        return;
+      }
+      this.lastQuestionPlayed = key;
+      const text = `${run.challenge.storyContext} ${run.challenge.prompt}`;
+      untracked(() => void this.speech.speak('Mission Control', text));
+    });
+
+    // Debrief: the Senior Dev reads the feedback right after the player answers.
+    effect(() => {
+      const evaluation = this.attemptEvaluation();
+      const run = this.session.currentRun();
+      const active = this.autoNarrateActive();
+      if (!evaluation || !run || !active) {
+        return;
+      }
+      const key = `${this.mission()?.id}:${run.challenge.id}`;
+      if (this.lastFeedbackPlayed === key) {
+        return;
+      }
+      this.lastFeedbackPlayed = key;
+      const text = this.spokenFeedback(run.challenge, evaluation);
+      untracked(() => void this.speech.speak('Senior Dev', text));
+    });
   }
+
+  /** Keys of the last auto-played beats, so each plays at most once. */
+  private lastBriefingPlayed = '';
+  private lastQuestionPlayed = '';
+  private lastFeedbackPlayed = '';
+
+  /** Auto-narration is on when voice + auto-play are enabled and the engine is up. */
+  private autoNarrateActive(): boolean {
+    const settings = this.gameState.settings();
+    return settings.voiceEnabled && settings.autoPlay && this.speech.active();
+  }
+
+  /**
+   * Whether the briefing's transmission text shows on the main screen. When
+   * voice is off it always shows (so the story is never lost); when voice is
+   * on the words are carried by the comms HUD, so on-screen text is opt-in.
+   */
+  protected readonly showBriefingText = computed(() => {
+    const settings = this.gameState.settings();
+    return !settings.voiceEnabled || settings.displayTransmissions;
+  });
 
   ngOnDestroy(): void {
     this.waves.setAlert(false);
@@ -175,17 +253,6 @@ export class MissionPlayerComponent implements OnDestroy {
       { speaker: 'Mission Control', text: `${mission.title}. ${mission.summary}` },
       ...mission.briefing.map((block) => ({ speaker: block.speaker, text: block.text })),
     ];
-  });
-
-  /**
-   * The spoken intro for the live transmission: Mission Control reads the
-   * title + summary before the persona blocks start typing.
-   */
-  protected readonly briefingIntro = computed(() => {
-    const mission = this.mission();
-    return mission
-      ? { speaker: 'Mission Control', text: `${mission.title}. ${mission.summary}` }
-      : null;
   });
 
   /**
@@ -354,6 +421,10 @@ export class MissionPlayerComponent implements OnDestroy {
     const hint = this.session.revealNextHint();
     if (hint) {
       this.audio.play('hint');
+      // Clicking to ask the Senior Dev also plays the reply, if auto-play is on.
+      if (this.autoNarrateActive()) {
+        void this.speech.speak('Senior Dev', this.spokenHint(hint));
+      }
     }
   }
 

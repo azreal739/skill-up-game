@@ -43,6 +43,31 @@
   animation: voice-spin 0.9s linear infinite;
 }
 
+// Transmitting equalizer: three bars pulsing out of phase.
+.voice__eq .voice__bar {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: voice-eq 0.9s ease-in-out infinite;
+}
+
+.voice__eq .voice__bar:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.voice__eq .voice__bar:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes voice-eq {
+  0%,
+  100% {
+    transform: scaleY(0.4);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
 .voice__label {
   white-space: nowrap;
 }

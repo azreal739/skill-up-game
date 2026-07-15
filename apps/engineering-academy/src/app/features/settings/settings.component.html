@@ -93,6 +93,29 @@
 
     @if (gameState.settings().voiceEnabled) {
       <label class="row">
+        <span class="row__label">
+          Auto-play narration <em>Mentors speak automatically as the mission unfolds</em>
+        </span>
+        <input
+          type="checkbox"
+          [checked]="gameState.settings().autoPlay"
+          (change)="onVoicePref('autoPlay', $event)"
+        />
+      </label>
+
+      <label class="row">
+        <span class="row__label">
+          Show transmission text on screen
+          <em>Off: the mentors' words appear in the comms panel instead</em>
+        </span>
+        <input
+          type="checkbox"
+          [checked]="gameState.settings().displayTransmissions"
+          (change)="onVoicePref('displayTransmissions', $event)"
+        />
+      </label>
+
+      <label class="row">
         <span class="row__label">Meet the mentors <em>See the cast and preview each voice</em></span>
         <button type="button" class="ea-btn" (click)="showCast.set(true)">Meet the mentors</button>
       </label>

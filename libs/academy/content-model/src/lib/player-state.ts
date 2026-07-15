@@ -24,6 +24,8 @@ export const SETTINGS_DEFAULTS = {
   textScale: 1,
   voiceEnabled: false,
   voiceSpeed: 1,
+  displayTransmissions: false,
+  autoPlay: true,
 };
 
 export const settingsSchema = z.object({
@@ -37,6 +39,13 @@ export const settingsSchema = z.object({
   // Added after save v2 shipped — defaulted so existing saves keep parsing.
   voiceEnabled: z.boolean().default(false),
   voiceSpeed: z.number().min(0.7).max(1.4).default(1),
+  // Show the mentors' transmission text on-screen. When voice is on the words
+  // are carried by the comms HUD, so on-screen text is opt-in; when voice is
+  // off the text always shows regardless (so briefings are never lost).
+  displayTransmissions: z.boolean().default(false),
+  // Auto-play narration on mission screens (briefings, questions, feedback,
+  // hints) and when opening playable text, so it flows as one conversation.
+  autoPlay: z.boolean().default(true),
 });
 
 export const missionRecordSchema = z.object({

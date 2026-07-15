@@ -59,6 +59,12 @@ export class SettingsComponent {
     this.speech.enable({ voiceCheck: true });
   }
 
+  onVoicePref(key: 'displayTransmissions' | 'autoPlay', event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.gameState.updateSettings({ [key]: input.checked });
+    this.audio.play('click');
+  }
+
   onVoiceSpeed(event: Event): void {
     const input = event.target as HTMLInputElement;
     this.gameState.updateSettings({ voiceSpeed: Number(input.value) });
