@@ -4,6 +4,7 @@ import { TRACKS } from '@academy/content-model';
 import { AudioService, GameStateService, SpeechService } from '@academy/data-access';
 import { WaveBackgroundComponent } from './shared/wave-background/wave-background.component';
 import { RouteLoaderComponent } from './shared/route-loader/route-loader.component';
+import { CommsHudComponent } from './shared/comms-hud/comms-hud.component';
 
 @Component({
   selector: 'ea-root',
@@ -14,6 +15,7 @@ import { RouteLoaderComponent } from './shared/route-loader/route-loader.compone
     RouterLinkActive,
     WaveBackgroundComponent,
     RouteLoaderComponent,
+    CommsHudComponent,
   ],
   template: `
     <ea-wave-background />
@@ -89,6 +91,7 @@ import { RouteLoaderComponent } from './shared/route-loader/route-loader.compone
       <router-outlet />
     </main>
     <ea-route-loader />
+    <ea-comms-hud />
   `,
   styleUrls: ['./app.component.scss'],
 })

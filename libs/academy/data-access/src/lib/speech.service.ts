@@ -7,6 +7,16 @@ import { SpeechAudioCache } from './speech-audio-cache';
 
 export type SpeechStatus = 'off' | 'loading' | 'ready' | 'error';
 
+/** One line that has been spoken aloud, for the comms-log / speaker HUD. */
+export interface SpokenLine {
+  id: number;
+  speaker: string;
+  text: string;
+}
+
+/** How many recent spoken lines the comms log keeps. */
+const HISTORY_LIMIT = 20;
+
 interface ChunkHandler {
   onChunk(wav: ArrayBuffer): void;
   onDone(): void;
@@ -50,6 +60,9 @@ export class SpeechService implements OnDestroy {
   readonly warming = signal(false);
   /** True while the calibration screen's audible voice check is playing. */
   readonly voiceCheck = signal(false);
+  /** Recent spoken lines (most recent last), for the speaker HUD / comms log. */
+  readonly spokenHistory = signal<SpokenLine[]>([]);
+  private historyId = 0;
   /** The speak() line in flight, for play/pause UI (null when idle). */
   private readonly nowPlayingState = signal<{
     speaker: string;
@@ -191,6 +204,7 @@ export class SpeechService implements OnDestroy {
     const markPlaybackStarted = () => {
       if (!playbackStarted) {
         playbackStarted = true;
+        this.recordSpoken(speaker, text);
         onPlaybackStart?.();
       }
     };
@@ -235,6 +249,22 @@ export class SpeechService implements OnDestroy {
   /** The line currently generating/playing/paused via speak(), if any. */
   nowPlaying(): { speaker: string; text: string; phase: 'generating' | 'playing' | 'paused' } | null {
     return this.nowPlayingState();
+  }
+
+  /**
+   * Append a line to the comms-log history when it starts playing. Skips an
+   * immediate duplicate (e.g. replaying the newest line) so the log doesn't
+   * stutter, and caps the list at HISTORY_LIMIT.
+   */
+  private recordSpoken(speaker: string, text: string): void {
+    this.spokenHistory.update((list) => {
+      const last = list[list.length - 1];
+      if (last && last.speaker === speaker && last.text === text) {
+        return list;
+      }
+      const next = [...list, { id: ++this.historyId, speaker, text }];
+      return next.length > HISTORY_LIMIT ? next.slice(next.length - HISTORY_LIMIT) : next;
+    });
   }
 
   /** Pause the current line's audio (resume() continues where it stopped). */
