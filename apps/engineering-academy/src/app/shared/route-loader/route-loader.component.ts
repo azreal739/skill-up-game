@@ -75,18 +75,26 @@ export class RouteLoaderComponent implements AfterViewInit, OnDestroy {
 
   private sub?: Subscription;
   private showTimer: ReturnType<typeof setTimeout> | null = null;
+  private hideTimer: ReturnType<typeof setTimeout> | null = null;
+  private activeNavigationId: number | null = null;
   private shownAt = 0;
   private raf = 0;
 
   constructor() {
     this.sub = this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
+        this.activeNavigationId = event.id;
+        this.clearHideTimer();
         this.scheduleShow();
       } else if (
         event instanceof NavigationEnd ||
         event instanceof NavigationCancel ||
         event instanceof NavigationError
       ) {
+        if (event.id !== this.activeNavigationId) {
+          return;
+        }
+        this.activeNavigationId = null;
         this.scheduleHide();
       }
     });
@@ -99,6 +107,7 @@ export class RouteLoaderComponent implements AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.sub?.unsubscribe();
     this.clearShowTimer();
+    this.clearHideTimer();
     cancelAnimationFrame(this.raf);
   }
 
@@ -126,7 +135,11 @@ export class RouteLoaderComponent implements AfterViewInit, OnDestroy {
     }
     const elapsed = performance.now() - this.shownAt;
     const wait = Math.max(0, MIN_VISIBLE_MS - elapsed);
-    setTimeout(() => {
+    this.hideTimer = setTimeout(() => {
+      this.hideTimer = null;
+      if (this.activeNavigationId !== null) {
+        return;
+      }
       this.visible.set(false);
       cancelAnimationFrame(this.raf);
     }, wait);
@@ -136,6 +149,13 @@ export class RouteLoaderComponent implements AfterViewInit, OnDestroy {
     if (this.showTimer) {
       clearTimeout(this.showTimer);
       this.showTimer = null;
+    }
+  }
+
+  private clearHideTimer(): void {
+    if (this.hideTimer) {
+      clearTimeout(this.hideTimer);
+      this.hideTimer = null;
     }
   }
 
