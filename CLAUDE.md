@@ -146,8 +146,23 @@ and a per-path terminology re-skin (e.g. "Judge Points").
 - User-authored fix on the branch (`c575e0b`): show briefing text when engine
   inactive, `speech.cancel()` on mission-player destroy, narration guards reset
   on replay + a lifecycle spec (mock MissionSessionService needs `result`).
-- **Pending:** real-device listen-test of all narration (HF blocked in
-  sandbox); local-package zip must be rebuilt on a normal machine.
+- **Round 2 (PR #108, merged):** `toSpokenText` code-to-speech in data-access,
+  applied ONLY at the TTS worker boundary (display text unchanged) — block
+  code → "the code is shown on screen", operators → whiteboard words,
+  identifier splitting, error-code spelling, `$`-observables → "stream";
+  corpus spec sweeps every spoken field in all packs + help topics. Comms HUD
+  speaker panel: big portrait RIGHT, speech bubble LEFT w/ 3-line bottom-
+  anchored reading window + pause/stop; log messages are bubbles w/ mini
+  avatar + 3-line clamp/expand; collapse persists (`commsLogCollapsed`).
+  PersonaAvatar `stress` input (brow tilt + sweat) replaces the hint-panel
+  emoji. Hub speaks the recommended mission. **Voice ON by default for new
+  saves**: enrolment calibrates behind a "Getting things ready for you"
+  overlay (copy inputs on voice-setup-overlay) then Mission Control greets
+  "Welcome to the team, {name}"; returning = "Welcome back" after first
+  gesture. SpeechService.enable() survives a throwing Worker constructor.
+  Smoke updated: tolerates env voice-init errors, waits for settled outcomes.
+- **Pending:** real-device listen-test of all narration + the code-to-speech
+  phrasing (HF blocked in sandbox); local zip rebuild on a normal machine.
 
 ## Done earlier (branch `claude/engineering-academy-build-audit-wqabi2`)
 
