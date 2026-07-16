@@ -169,7 +169,7 @@
                   <p class="feedback__result">
                     {{ evaluation.correct ? '✓ Decision confirmed' : 'Decision recorded' }}
                     <ea-voice-button
-                      speaker="Senior Dev"
+                      [speaker]="feedbackSpeaker(evaluation)"
                       [text]="spokenFeedback(run.challenge, evaluation)"
                       label="Listen"
                     />
@@ -302,6 +302,8 @@
                 @case ('stable') { Stable resolution ✓ }
                 @case ('partial') { Partial resolution — recovery recommended }
               }
+              <!-- Hidden when voice is off; plays the whole debrief through the HUD. -->
+              <ea-voice-button [lines]="debriefLines()" label="Play debrief" />
             </h1>
             @if (isBoss()) {
               <p class="results__boss">⚠ Boss encounter complete — the platform stands.</p>

@@ -41,14 +41,16 @@ interface CastMember {
         <ul class="cast__grid">
           @for (member of cast; track member.speaker) {
             <li class="cast__card" [style.--card-accent]="accentOf(member.speaker)">
-              <ea-persona-avatar
-                class="cast__avatar"
-                [speaker]="member.speaker"
-                [talking]="isSpeaking(member.speaker)"
-              />
-              <div class="cast__meta">
-                <span class="cast__name">{{ member.speaker }}</span>
-                <span class="cast__role">{{ member.role }}</span>
+              <div class="cast__top">
+                <ea-persona-avatar
+                  class="cast__avatar"
+                  [speaker]="member.speaker"
+                  [talking]="isSpeaking(member.speaker)"
+                />
+                <div class="cast__meta">
+                  <span class="cast__name">{{ member.speaker }}</span>
+                  <span class="cast__role">{{ member.role }}</span>
+                </div>
               </div>
               <ea-voice-button [speaker]="member.speaker" [text]="member.line" label="Play" />
             </li>
@@ -120,18 +122,24 @@ interface CastMember {
         margin: 0;
         padding: 0;
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
         gap: 0.85rem;
       }
 
       .cast__card {
         display: flex;
-        align-items: center;
-        gap: 0.85rem;
-        padding: 0.75rem 0.85rem;
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 0.85rem 0.95rem;
         border-radius: 14px;
         border: 1px solid color-mix(in srgb, var(--card-accent, var(--ea-accent)) 45%, var(--ea-border));
         background: color-mix(in srgb, var(--card-accent, var(--ea-accent)) 8%, transparent);
+      }
+
+      .cast__top {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
       }
 
       .cast__avatar {
@@ -144,7 +152,7 @@ interface CastMember {
         min-width: 0;
         display: flex;
         flex-direction: column;
-        gap: 0.15rem;
+        gap: 0.2rem;
       }
 
       .cast__name {

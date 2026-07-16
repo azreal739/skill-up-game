@@ -175,7 +175,23 @@ export class MissionPlayerComponent implements OnDestroy {
       }
       this.lastFeedbackPlayed = key;
       const text = this.spokenFeedback(run.challenge, evaluation);
-      untracked(() => void this.speech.speak('Senior Dev', text));
+      const speaker = this.feedbackSpeaker(evaluation);
+      untracked(() => void this.speech.speak(speaker, text));
+    });
+
+    // Debrief: the results screen narrates as a short hand-off between mentors
+    // — Mission Control calls the outcome, the Team Lead marks a promotion, the
+    // Senior Dev recaps the lessons, the Archivist prompts reflection.
+    effect(() => {
+      const isResults = this.session.phase() === 'results';
+      const result = this.session.result();
+      const active = this.autoNarrateActive();
+      if (!isResults || !result || !active || this.lastDebriefResult === result) {
+        return;
+      }
+      this.lastDebriefResult = result;
+      const lines = this.debriefLines();
+      untracked(() => void this.speech.speakAll(lines));
     });
   }
 
@@ -183,6 +199,8 @@ export class MissionPlayerComponent implements OnDestroy {
   private lastBriefingPlayed = '';
   private lastQuestionPlayed = '';
   private lastFeedbackPlayed = '';
+  /** The result whose debrief was last auto-narrated (identity-compared). */
+  private lastDebriefResult: object | null = null;
 
   /** Auto-narration is on when voice + auto-play are enabled and the engine is up. */
   private autoNarrateActive(): boolean {
@@ -259,12 +277,23 @@ export class MissionPlayerComponent implements OnDestroy {
   });
 
   /**
-   * The post-answer debrief as the Senior Dev reads it: the challenge's
-   * success/failure line, then the feedback for every option the player
-   * chose or should have chosen (mirrors what the option list displays).
+   * Who voices the post-answer debrief: Mission Control confirms a correct
+   * decision; the Senior Dev coaches a miss. (Keeps the tone right — a win
+   * shouldn't be read in the "here's help" hint voice.)
+   */
+  protected feedbackSpeaker(evaluation: EvaluationResult): string {
+    return evaluation.correct ? 'Mission Control' : 'Senior Dev';
+  }
+
+  /**
+   * The post-answer debrief as it's read aloud: the verdict first (so a
+   * correct answer is clearly acknowledged), then the success/failure line,
+   * then the feedback for every option the player chose or should have chosen
+   * (mirrors what the option list displays).
    */
   protected spokenFeedback(challenge: ChallengeDefinition, evaluation: EvaluationResult): string {
-    const lines = [evaluation.correct ? challenge.successFeedback : challenge.failureFeedback];
+    const verdict = evaluation.correct ? 'Decision confirmed.' : 'Not quite.';
+    const lines = [verdict, evaluation.correct ? challenge.successFeedback : challenge.failureFeedback];
     for (const outcome of evaluation.options) {
       if (outcome.feedback && (outcome.wasSelected || outcome.isCorrect)) {
         lines.push(outcome.feedback);
@@ -296,6 +325,59 @@ export class MissionPlayerComponent implements OnDestroy {
   protected readonly lessons = computed(
     () => this.mission()?.challenges.map((challenge) => challenge.successFeedback) ?? []
   );
+
+  /**
+   * The results debrief as a spoken hand-off between mentors — different
+   * personas voice different parts (outcome, promotion, lessons, reflection).
+   * Drives both the "Play debrief" button and the auto-play on results.
+   */
+  protected readonly debriefLines = computed<{ speaker: string; text: string }[]>(() => {
+    const result = this.session.result();
+    const mission = this.mission();
+    if (!result || !mission) {
+      return [];
+    }
+    const lines: { speaker: string; text: string }[] = [];
+
+    const outcomeText =
+      result.outcome === 'perfect'
+        ? 'Perfect resolution — flawless work.'
+        : result.outcome === 'stable'
+          ? 'Stable resolution — the platform holds.'
+          : 'Partial resolution — recovery recommended.';
+    let mc = `Mission resolved. ${outcomeText} You banked ${result.completion.xpAwarded} experience points.`;
+    if (this.isBoss()) {
+      mc += ' Boss encounter complete — the platform stands.';
+    }
+    if (this.campaignCompleted()) {
+      mc += ' Campaign complete — production is safe in your hands.';
+    }
+    lines.push({ speaker: 'Mission Control', text: mc });
+
+    if (result.completion.rankAfter.id !== result.completion.rankBefore.id) {
+      lines.push({
+        speaker: 'Team Lead',
+        text: `Promotion confirmed — you've advanced to ${result.completion.rankAfter.title}. Well earned.`,
+      });
+    }
+
+    const lessons = this.lessons().filter(Boolean);
+    if (lessons.length) {
+      lines.push({
+        speaker: 'Senior Dev',
+        text: `Here's what this mission taught. ${lessons.join(' ')}`,
+      });
+    }
+
+    if (mission.reflectionPrompt) {
+      lines.push({
+        speaker: 'Academy Archivist',
+        text: `A moment to reflect. ${mission.reflectionPrompt}`,
+      });
+    }
+
+    return lines;
+  });
 
   protected readonly nextMission = computed(() => {
     const mission = this.mission();
@@ -454,6 +536,7 @@ export class MissionPlayerComponent implements OnDestroy {
     this.lastBriefingPlayed = '';
     this.lastQuestionPlayed = '';
     this.lastFeedbackPlayed = '';
+    this.lastDebriefResult = null;
   }
 
   goToNextMission(): void {

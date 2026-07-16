@@ -79,6 +79,17 @@
   }
 }
 
+.review__context-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+
+  h2 {
+    margin: 0;
+  }
+}
+
 .review__first {
   display: grid;
   gap: 0.3rem;

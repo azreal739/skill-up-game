@@ -68,6 +68,8 @@ describe('MissionPlayerComponent narration lifecycle', () => {
             mission,
             phase,
             currentRun: signal(null),
+            // Read by the results-debrief narration effect; null = no debrief.
+            result: signal(null),
             start: (next: { id: string }) => {
               mission.set(next);
               phase.set('briefing');
