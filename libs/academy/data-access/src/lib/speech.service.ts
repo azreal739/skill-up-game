@@ -4,6 +4,7 @@ import { personaForSpeaker } from '@academy/content-model';
 
 import { GameStateService } from './game-state.service';
 import { SpeechAudioCache } from './speech-audio-cache';
+import { toSpokenText } from './speech-text';
 
 export type SpeechStatus = 'off' | 'loading' | 'ready' | 'error';
 
@@ -104,7 +105,15 @@ export class SpeechService implements OnDestroy {
     this.progress.set(0);
     this.warming.set(false);
     this.voiceCheck.set(false);
-    this.worker = new Worker(new URL('./speech.worker', import.meta.url), { type: 'module' });
+    try {
+      this.worker = new Worker(new URL('./speech.worker', import.meta.url), { type: 'module' });
+    } catch {
+      // Worker construction can throw synchronously (blocked origin, test
+      // environments) — surface it as the same error state as a failed init.
+      this.status.set('error');
+      this.settleReadyWaiters();
+      return;
+    }
     this.worker.onmessage = ({ data }) => this.onWorkerMessage(data);
     this.worker.onerror = () => {
       this.status.set('error');
@@ -384,7 +393,9 @@ export class SpeechService implements OnDestroy {
         type: 'generate',
         id,
         voice: personaForSpeaker(speaker).voiceId,
-        text,
+        // Code-flavoured prose is rewritten for the voice only — displayed
+        // text everywhere keeps the author's original wording.
+        text: toSpokenText(text),
         speed: this.voiceSpeed(),
       });
     });

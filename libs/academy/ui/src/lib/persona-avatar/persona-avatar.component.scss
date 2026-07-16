@@ -34,6 +34,30 @@
   transform: scaleY(0.06);
 }
 
+// Stress (the Senior Dev's hint ladder): worried brows tilt inward-up.
+// Static transforms, so reduced-motion needs no special-casing.
+.pa__brow {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 0.35s ease;
+}
+
+:host(.pa-stress-mid) .pa__brow--l {
+  transform: rotate(9deg) translateY(-0.6px);
+}
+
+:host(.pa-stress-mid) .pa__brow--r {
+  transform: rotate(-9deg) translateY(-0.6px);
+}
+
+:host(.pa-stress-high) .pa__brow--l {
+  transform: rotate(16deg) translateY(-1.2px);
+}
+
+:host(.pa-stress-high) .pa__brow--r {
+  transform: rotate(-16deg) translateY(-1.2px);
+}
+
 // Idle: occasional blink + a gentle breathing float.
 :host(:not(.pa-talking)) .pa__lids {
   animation: pa-blink 5s infinite;

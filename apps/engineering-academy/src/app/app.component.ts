@@ -1,10 +1,11 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { TRACKS } from '@academy/content-model';
 import { AudioService, GameStateService, SpeechService } from '@academy/data-access';
 import { WaveBackgroundComponent } from './shared/wave-background/wave-background.component';
 import { RouteLoaderComponent } from './shared/route-loader/route-loader.component';
 import { CommsHudComponent } from './shared/comms-hud/comms-hud.component';
+import { VoiceSetupOverlayComponent } from './features/settings/voice-setup-overlay.component';
 
 @Component({
   selector: 'ea-root',
@@ -16,6 +17,7 @@ import { CommsHudComponent } from './shared/comms-hud/comms-hud.component';
     WaveBackgroundComponent,
     RouteLoaderComponent,
     CommsHudComponent,
+    VoiceSetupOverlayComponent,
   ],
   template: `
     <ea-wave-background />
@@ -92,6 +94,11 @@ import { CommsHudComponent } from './shared/comms-hud/comms-hud.component';
     </main>
     <ea-route-loader />
     <ea-comms-hud />
+    @if (showFirstLoadSetup()) {
+      <!-- Enrolment kicked off the first voice calibration: hold the moment
+           with a friendlier variant of the setup screen, then greet. -->
+      <ea-voice-setup-overlay eyebrow="Welcome aboard" title="Getting things ready for you" />
+    }
   `,
   styleUrls: ['./app.component.scss'],
 })
@@ -99,7 +106,17 @@ export class AppComponent {
   protected readonly gameState = inject(GameStateService);
   private readonly audio = inject(AudioService);
   private readonly speech = inject(SpeechService);
-  private interacted = false;
+  /** Signal so the greeting effect can wait for the first user gesture. */
+  private readonly interacted = signal(false);
+  /** The profile was created in THIS session (enrolment just happened). */
+  private readonly enrolledThisSession = signal(false);
+  /** One greeting per app load, tops. */
+  private greeted = false;
+
+  /** Enrolment triggered the first calibration — show "getting ready". */
+  protected readonly showFirstLoadSetup = computed(
+    () => this.enrolledThisSession() && this.speech.status() === 'loading'
+  );
 
   /** Paths listed in the Campaigns nav dropdown (iterated, so extensible). */
   protected readonly paths = TRACKS;
@@ -149,12 +166,49 @@ export class AppComponent {
         this.speech.disable();
       }
     });
+
+    // Spot enrolment: hasProfile flipping on mid-session means the player
+    // just joined — that first calibration gets the welcome treatment.
+    let hadProfile: boolean | undefined;
+    effect(() => {
+      const has = this.gameState.hasProfile();
+      if (hadProfile === false && has) {
+        this.enrolledThisSession.set(true);
+      }
+      hadProfile = has;
+    });
+
+    // Mission Control greets the player once the voice is up: "welcome to
+    // the team" right after enrolment, "welcome back" on a returning load
+    // (after the first gesture, so the browser lets the audio through).
+    effect(() => {
+      const ready = this.speech.status() === 'ready';
+      const enrolled = this.enrolledThisSession();
+      const canPlay = enrolled || this.interacted();
+      const settings = this.gameState.settings();
+      if (
+        this.greeted ||
+        !ready ||
+        !canPlay ||
+        !this.gameState.hasProfile() ||
+        !settings.voiceEnabled ||
+        !settings.autoPlay
+      ) {
+        return;
+      }
+      this.greeted = true;
+      const name = this.gameState.state()?.profile.name ?? 'operator';
+      const text = enrolled
+        ? `Welcome to the team, ${name}. I'm Mission Control — I'll run point on your missions. Your first briefing is ready whenever you are.`
+        : `Welcome back, ${name}. Good to have you on the channel.`;
+      void this.speech.speak('Mission Control', text);
+    });
   }
 
   /** Browsers only allow audio after a user gesture. */
   onFirstInteraction(): void {
-    if (!this.interacted) {
-      this.interacted = true;
+    if (!this.interacted()) {
+      this.interacted.set(true);
       this.audio.play('click');
     }
   }

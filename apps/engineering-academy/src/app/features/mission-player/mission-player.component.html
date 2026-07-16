@@ -236,20 +236,35 @@
             <aside class="workspace__support">
               <div class="support ea-panel senior-dev" [attr.data-stress]="seniorDevStress()">
                 <div class="senior-dev__header">
-                  <span class="senior-dev__avatar" aria-hidden="true">{{ seniorDevAvatar() }}</span>
+                  <ea-persona-avatar
+                    class="senior-dev__portrait"
+                    speaker="Senior Dev"
+                    [talking]="seniorDevTalking()"
+                    [stress]="seniorDevStress()"
+                  />
                   <div>
                     <h2 class="support__heading">Senior Dev</h2>
                     <p class="senior-dev__status">{{ seniorDevStatus() }}</p>
                   </div>
                 </div>
                 @for (hint of session.revealedHints(); track hint.level) {
-                  <div class="hint">
+                  <div class="hint hint--bubble">
                     <p class="hint__framing">“{{ seniorDevLine(hint.level) }}”</p>
-                    <span class="hint__level">
-                      Hint {{ hint.level }} — {{ hint.title }}
+                    <span class="hint__level">Hint {{ hint.level }} — {{ hint.title }}</span>
+                    <p
+                      class="hint__content"
+                      [class.hint__content--clamped]="!expandedHints().has(hint.level)"
+                    >
+                      {{ hint.content }}
+                    </p>
+                    <div class="hint__actions">
                       <ea-voice-button speaker="Senior Dev" [text]="spokenHint(hint)" />
-                    </span>
-                    <p class="hint__content">{{ hint.content }}</p>
+                      @if (hint.content.length > 130) {
+                        <button type="button" class="hint__expand" (click)="toggleHint(hint.level)">
+                          {{ expandedHints().has(hint.level) ? 'Show less' : 'Show more' }}
+                        </button>
+                      }
+                    </div>
                   </div>
                 }
                 @if (session.nextHint(); as hint) {

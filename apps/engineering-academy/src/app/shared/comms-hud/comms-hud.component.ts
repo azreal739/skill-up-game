@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 
 import { personaForSpeaker } from '@academy/content-model';
-import { SpeechService, SpokenLine } from '@academy/data-access';
+import { GameStateService, SpeechService, SpokenLine } from '@academy/data-access';
 import { PersonaAvatarComponent, VoiceButtonComponent } from '@academy/ui';
 
 /** Ms per typewriter tick and characters revealed each tick (live panel). */
@@ -19,12 +19,14 @@ const TICK_MS = 18;
 const CHARS_PER_TICK = 2;
 
 /**
- * Persistent "comms" HUD anchored bottom-right: a dedicated speaker panel that
- * shows whoever is currently speaking (avatar with active-speaker ring + the
- * line typing out), with a collapsible group-chat log of recent lines above
- * it. Each logged message is outlined/tinted in its persona's colour and has a
- * replay button. Only shown once the on-device voice engine is calibrated and
- * something has actually been said.
+ * Persistent "comms" HUD anchored bottom-right: a dedicated speaker panel —
+ * large portrait on the RIGHT, a speech bubble on the LEFT whose text types
+ * out as the persona talks (a ~3-line window; earlier lines flow out the top)
+ * — plus pause/stop controls, and a collapsible group-chat log of recent
+ * lines above it. Log messages are speech bubbles with a mini avatar, their
+ * persona's colour, a replay button underneath, and a 3-line clamp with
+ * expand. Only shown once the voice engine is calibrated and something has
+ * been said. The log's collapsed state persists via settings.
  */
 @Component({
   selector: 'ea-comms-hud',
@@ -39,7 +41,7 @@ const CHARS_PER_TICK = 2;
             <button
               type="button"
               class="hud__toggle"
-              (click)="collapsed.set(!collapsed())"
+              (click)="toggleCollapsed()"
               [attr.aria-expanded]="!collapsed()"
             >
               <span class="hud__toggle-label">Comms log</span>
@@ -50,11 +52,24 @@ const CHARS_PER_TICK = 2;
               <ul #list class="hud__messages">
                 @for (m of past(); track m.id) {
                   <li class="hud__msg" [style.--msg-accent]="accentFor(m.speaker)">
-                    <div class="hud__msg-head">
+                    <ea-persona-avatar class="hud__msg-avatar" [speaker]="m.speaker" />
+                    <div class="hud__msg-bubble">
                       <span class="hud__msg-name">{{ m.speaker }}</span>
-                      <ea-voice-button [speaker]="m.speaker" [text]="m.text" />
+                      <p
+                        class="hud__msg-text"
+                        [class.hud__msg-text--clamped]="!expanded().has(m.id)"
+                      >
+                        {{ m.text }}
+                      </p>
+                      <div class="hud__msg-actions">
+                        <ea-voice-button [speaker]="m.speaker" [text]="m.text" />
+                        @if (isClampable(m.text)) {
+                          <button type="button" class="hud__expand" (click)="toggleExpanded(m.id)">
+                            {{ expanded().has(m.id) ? 'Show less' : 'Show more' }}
+                          </button>
+                        }
+                      </div>
                     </div>
-                    <p class="hud__msg-text">{{ m.text }}</p>
                   </li>
                 }
               </ul>
@@ -65,19 +80,37 @@ const CHARS_PER_TICK = 2;
         <section class="hud__live" [style.--live-accent]="accentFor(live()!.speaker)">
           @for (l of liveList(); track l.id) {
             <div class="hud__live-inner">
-              <ea-persona-avatar class="hud__avatar" [speaker]="l.speaker" [talking]="speaking()" />
-              <div class="hud__live-body">
+              <div class="hud__bubble">
                 <span class="hud__live-name">
                   {{ l.speaker }}
                   @if (speaking()) {
                     <span class="hud__transmit" aria-hidden="true">▮ transmitting</span>
                   }
                 </span>
-                <p class="hud__live-text">
-                  {{ typed()
-                  }}<span class="hud__cursor" [class.is-on]="speaking()" aria-hidden="true">▊</span>
-                </p>
+                <div class="hud__bubble-window">
+                  <p class="hud__live-text">
+                    {{ typed()
+                    }}<span class="hud__cursor" [class.is-on]="speaking()" aria-hidden="true">▊</span>
+                  </p>
+                </div>
+                <div class="hud__controls">
+                  @if (paused()) {
+                    <button type="button" class="hud__ctl" (click)="resume()" aria-label="Resume narration">
+                      ▶ Resume
+                    </button>
+                  } @else if (speaking()) {
+                    <button type="button" class="hud__ctl" (click)="pause()" aria-label="Pause narration">
+                      ⏸ Pause
+                    </button>
+                  }
+                  @if (speaking() || paused()) {
+                    <button type="button" class="hud__ctl hud__ctl--stop" (click)="stop()" aria-label="Stop narration">
+                      ■ Stop
+                    </button>
+                  }
+                </div>
               </div>
+              <ea-persona-avatar class="hud__avatar" [speaker]="l.speaker" [talking]="speaking()" />
             </div>
           }
         </section>
@@ -88,6 +121,7 @@ const CHARS_PER_TICK = 2;
 })
 export class CommsHudComponent {
   private readonly speech = inject(SpeechService);
+  private readonly gameState = inject(GameStateService);
   private readonly list = viewChild<ElementRef<HTMLElement>>('list');
 
   /** Only show once the engine is calibrated AND someone has spoken. */
@@ -113,7 +147,20 @@ export class CommsHudComponent {
     return !!now && !!l && now.phase === 'playing' && now.speaker === l.speaker && now.text === l.text;
   });
 
-  protected readonly collapsed = signal(false);
+  protected readonly paused = computed(() => {
+    const now = this.speech.nowPlaying();
+    const l = this.live();
+    return !!now && !!l && now.phase === 'paused' && now.speaker === l.speaker && now.text === l.text;
+  });
+
+  /** Collapse state persists across sessions via settings. */
+  protected readonly collapsed = computed(
+    () => this.gameState.settings().commsLogCollapsed ?? false
+  );
+
+  /** Log messages the player has expanded past the 3-line clamp. */
+  protected readonly expanded = signal<ReadonlySet<number>>(new Set());
+
   protected readonly typed = signal('');
   private typeTimer: ReturnType<typeof setInterval> | null = null;
 
@@ -139,6 +186,39 @@ export class CommsHudComponent {
 
   protected accentFor(speaker: string): string {
     return personaForSpeaker(speaker).accent;
+  }
+
+  protected toggleCollapsed(): void {
+    this.gameState.updateSettings({ commsLogCollapsed: !this.collapsed() });
+  }
+
+  protected toggleExpanded(id: number): void {
+    this.expanded.update((set) => {
+      const next = new Set(set);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }
+
+  /** Cheap "would this clamp?" heuristic so short messages get no button. */
+  protected isClampable(text: string): boolean {
+    return text.length > 130;
+  }
+
+  protected pause(): void {
+    this.speech.pause();
+  }
+
+  protected resume(): void {
+    this.speech.resume();
+  }
+
+  protected stop(): void {
+    this.speech.cancel();
   }
 
   private retype(line: SpokenLine | null, speaking: boolean): void {
