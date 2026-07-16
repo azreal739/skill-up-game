@@ -26,12 +26,27 @@ describe('RouteLoaderComponent', () => {
     events.complete();
   });
 
+  it('shows as soon as a navigation starts', fakeAsync(() => {
+    const fixture = TestBed.createComponent(RouteLoaderComponent);
+    fixture.detectChanges();
+
+    events.next(new NavigationStart(1, '/first'));
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.route-loader')).not.toBeNull();
+
+    events.next(new NavigationEnd(1, '/first', '/first'));
+    tick(600);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.route-loader')).toBeNull();
+
+    fixture.destroy();
+  }));
+
   it('keeps the loader visible when a new navigation starts before a pending hide', fakeAsync(() => {
     const fixture = TestBed.createComponent(RouteLoaderComponent);
     fixture.detectChanges();
 
     events.next(new NavigationStart(1, '/first'));
-    tick(140);
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.route-loader')).not.toBeNull();
 
@@ -39,12 +54,12 @@ describe('RouteLoaderComponent', () => {
     tick(100);
     events.next(new NavigationStart(2, '/second'));
 
-    tick(360);
+    tick(600);
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.route-loader')).not.toBeNull();
 
     events.next(new NavigationEnd(2, '/second', '/second'));
-    tick(360);
+    tick(600);
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.route-loader')).toBeNull();
 

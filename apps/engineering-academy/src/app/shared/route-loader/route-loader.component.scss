@@ -12,6 +12,11 @@
     transparent 60%
   );
   animation: route-loader-in 0.18s ease-out;
+  transition: opacity 0.18s ease-out;
+}
+
+.route-loader--out {
+  opacity: 0;
 }
 
 .route-loader__canvas {

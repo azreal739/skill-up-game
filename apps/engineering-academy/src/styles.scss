@@ -27,6 +27,13 @@ body {
   min-height: 100vh;
 }
 
+/* The root canvas must be dark: during router view transitions the page is
+   composited from two semi-transparent snapshots drawn over <html>, and a
+   default (white) root bleeds through mid-fade as a white flash. */
+html {
+  background: var(--ea-bg-0, #070a14);
+}
+
 body {
   background:
     radial-gradient(60rem 40rem at 85% -10%, rgba(167, 139, 250, 0.12), transparent 60%),

@@ -157,6 +157,28 @@
   white-space: nowrap;
 }
 
+/* "Current path" reads as a ribbon pinned to the card's top-left corner, so
+   it never squeezes the heading (and never collides with the complete chip). */
+.path__current {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 0;
+  border-right: 1px solid color-mix(in srgb, var(--ea-path-accent) 45%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--ea-path-accent) 45%, transparent);
+  border-radius: 0 0 10px 0;
+  padding: 0.22rem 0.7rem;
+  color: var(--ea-path-accent);
+  background: color-mix(in srgb, var(--ea-path-accent) 14%, rgba(7, 10, 20, 0.8));
+  white-space: nowrap;
+}
+
+/* The player's current path gets a lit border so it reads at a glance. */
+.path--current {
+  border-color: color-mix(in srgb, var(--ea-path-accent) 55%, var(--ea-border));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ea-path-accent) 30%, transparent);
+}
+
 .path__blurb {
   margin: 0;
   color: var(--ea-muted);

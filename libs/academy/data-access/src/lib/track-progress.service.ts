@@ -51,6 +51,29 @@ export class TrackProgressService {
     )
   );
 
+  /**
+   * The player's CURRENT path: the track of the mission with the latest
+   * `completedAt` — i.e. where they most recently made progress. Null until
+   * anything has been completed. Shared by the hub (current-path badge,
+   * recommendation preference) and the path landing header.
+   */
+  readonly lastActiveTrackId: Signal<string | null> = computed(() => {
+    const completed = this.gameState.state()?.completedMissions ?? {};
+    let latestId: string | null = null;
+    let latestAt = '';
+    for (const [missionId, record] of Object.entries(completed)) {
+      if (record.completedAt > latestAt) {
+        latestAt = record.completedAt;
+        latestId = missionId;
+      }
+    }
+    if (!latestId) {
+      return null;
+    }
+    const campaignId = this.content.missionById(latestId)?.campaignId;
+    return campaignId ? (this.content.campaignById(campaignId)?.track ?? null) : null;
+  });
+
   /** Summary for a single path, or undefined if the id is unknown/empty. */
   summaryFor(trackId: string): PathSummary | undefined {
     return this.summaries().find((summary) => summary.track.id === trackId);

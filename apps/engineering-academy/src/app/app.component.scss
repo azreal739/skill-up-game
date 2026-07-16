@@ -11,6 +11,21 @@
   z-index: 50;
 }
 
+/* Left and right columns share flex so the nav sits dead-centre; the fixed
+   comms HUD occupies the top-right corner over the right column. */
+.topbar__left {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.topbar__right {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
 .topbar__brand {
   display: flex;
   align-items: center;
@@ -35,6 +50,8 @@
   display: flex;
   gap: 0.4rem;
   flex-wrap: wrap;
+  justify-content: center;
+  flex: 0 1 auto;
 
   a {
     padding: 0.35rem 0.8rem;
@@ -82,6 +99,18 @@
   position: absolute;
   top: calc(100% + 0.4rem);
   left: 0;
+
+  // Invisible hover bridge across the visual gap between the trigger and the
+  // menu — without it, crossing the gap fires mouseleave/:hover-off and the
+  // menu snaps shut before the pointer can reach it.
+  &::before {
+    content: '';
+    position: absolute;
+    top: -0.45rem;
+    left: 0;
+    right: 0;
+    height: 0.45rem;
+  }
   min-width: 13rem;
   padding: 0.4rem;
   flex-direction: column;
@@ -138,11 +167,13 @@
 }
 
 .topbar__status {
-  margin-left: auto;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   line-height: 1.25;
+  padding-left: 1rem;
+  border-left: 1px solid var(--ea-border);
+  white-space: nowrap;
 }
 
 .topbar__rank {
@@ -163,7 +194,18 @@
     gap: 0.6rem;
   }
 
+  .topbar__left {
+    flex: 1 1 100%;
+  }
+
+  .topbar__right {
+    display: none;
+  }
+
   .topbar__status {
-    margin-left: 0;
+    margin-left: auto;
+    align-items: flex-end;
+    border-left: 0;
+    padding-left: 0;
   }
 }

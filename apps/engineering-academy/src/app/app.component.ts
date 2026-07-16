@@ -23,10 +23,18 @@ import { VoiceSetupOverlayComponent } from './features/settings/voice-setup-over
     <ea-wave-background />
     <a class="ea-visually-hidden" href="#ea-main">Skip to content</a>
     <header class="topbar">
-      <a class="topbar__brand" routerLink="/">
-        <span class="topbar__logo" aria-hidden="true">⬡</span>
-        <span class="topbar__name">Engineering Academy</span>
-      </a>
+      <div class="topbar__left">
+        <a class="topbar__brand" routerLink="/">
+          <span class="topbar__logo" aria-hidden="true">⬡</span>
+          <span class="topbar__name">Engineering Academy</span>
+        </a>
+        @if (gameState.hasProfile()) {
+          <div class="topbar__status">
+            <span class="topbar__rank">{{ gameState.rank().title }}</span>
+            <span class="topbar__xp">{{ gameState.xp() }} XP</span>
+          </div>
+        }
+      </div>
       <nav class="topbar__nav" aria-label="Primary">
         @if (gameState.hasProfile()) {
           <div
@@ -82,12 +90,8 @@ import { VoiceSetupOverlayComponent } from './features/settings/voice-setup-over
           <a routerLink="/settings" routerLinkActive="is-active">Settings</a>
         }
       </nav>
-      @if (gameState.hasProfile()) {
-        <div class="topbar__status">
-          <span class="topbar__rank">{{ gameState.rank().title }}</span>
-          <span class="topbar__xp">{{ gameState.xp() }} XP</span>
-        </div>
-      }
+      <!-- Right column balances the flex layout; the fixed comms HUD floats over it. -->
+      <div class="topbar__right" aria-hidden="true"></div>
     </header>
     <main id="ea-main" (click)="onFirstInteraction()">
       <router-outlet />

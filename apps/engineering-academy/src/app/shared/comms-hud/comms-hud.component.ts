@@ -19,14 +19,14 @@ const TICK_MS = 18;
 const CHARS_PER_TICK = 2;
 
 /**
- * Persistent "comms" HUD anchored bottom-right: a dedicated speaker panel —
- * large portrait on the RIGHT, a speech bubble on the LEFT whose text types
- * out as the persona talks (a ~3-line window; earlier lines flow out the top)
- * — plus pause/stop controls, and a collapsible group-chat log of recent
- * lines above it. Log messages are speech bubbles with a mini avatar, their
- * persona's colour, a replay button underneath, and a 3-line clamp with
- * expand. Only shown once the voice engine is calibrated and something has
- * been said. The log's collapsed state persists via settings.
+ * Persistent "comms" HUD anchored TOP-right, layered over the nav bar so it
+ * never covers the page content below: a dedicated speaker panel — large
+ * portrait on the RIGHT, a speech bubble on the LEFT whose text types out as
+ * the persona talks (a ~3-line window; earlier lines flow out the top) — plus
+ * pause/stop controls, and a collapsible group-chat log of recent lines BELOW
+ * it, newest first, bubbles anchored to the right with their mini avatar.
+ * Only shown once the voice engine is calibrated and something has been said.
+ * The log's collapsed state persists via settings.
  */
 @Component({
   selector: 'ea-comms-hud',
@@ -36,6 +36,44 @@ const CHARS_PER_TICK = 2;
   template: `
     @if (visible()) {
       <aside class="hud" aria-label="Mentor comms">
+        <section class="hud__live" [style.--live-accent]="accentFor(live()!.speaker)">
+          @for (l of liveList(); track l.id) {
+            <div class="hud__live-inner">
+              <div class="hud__bubble">
+                <span class="hud__live-name">
+                  {{ l.speaker }}
+                  @if (speaking()) {
+                    <span class="hud__transmit" aria-hidden="true">▮ transmitting</span>
+                  }
+                </span>
+                <div class="hud__bubble-window">
+                  <p class="hud__live-text">
+                    {{ typed()
+                    }}<span class="hud__cursor" [class.is-on]="speaking()" aria-hidden="true">▊</span>
+                  </p>
+                </div>
+                <div class="hud__controls">
+                  @if (paused()) {
+                    <button type="button" class="hud__ctl" (click)="resume()" aria-label="Resume narration">
+                      ▶ Resume
+                    </button>
+                  } @else if (speaking()) {
+                    <button type="button" class="hud__ctl" (click)="pause()" aria-label="Pause narration">
+                      ⏸ Pause
+                    </button>
+                  }
+                  @if (speaking() || paused()) {
+                    <button type="button" class="hud__ctl hud__ctl--stop" (click)="stop()" aria-label="Stop narration">
+                      ■ Stop
+                    </button>
+                  }
+                </div>
+              </div>
+              <ea-persona-avatar class="hud__avatar" [speaker]="l.speaker" [talking]="speaking()" />
+            </div>
+          }
+        </section>
+
         @if (past().length) {
           <section class="hud__log" [class.hud__log--collapsed]="collapsed()">
             <button
@@ -76,44 +114,6 @@ const CHARS_PER_TICK = 2;
             }
           </section>
         }
-
-        <section class="hud__live" [style.--live-accent]="accentFor(live()!.speaker)">
-          @for (l of liveList(); track l.id) {
-            <div class="hud__live-inner">
-              <div class="hud__bubble">
-                <span class="hud__live-name">
-                  {{ l.speaker }}
-                  @if (speaking()) {
-                    <span class="hud__transmit" aria-hidden="true">▮ transmitting</span>
-                  }
-                </span>
-                <div class="hud__bubble-window">
-                  <p class="hud__live-text">
-                    {{ typed()
-                    }}<span class="hud__cursor" [class.is-on]="speaking()" aria-hidden="true">▊</span>
-                  </p>
-                </div>
-                <div class="hud__controls">
-                  @if (paused()) {
-                    <button type="button" class="hud__ctl" (click)="resume()" aria-label="Resume narration">
-                      ▶ Resume
-                    </button>
-                  } @else if (speaking()) {
-                    <button type="button" class="hud__ctl" (click)="pause()" aria-label="Pause narration">
-                      ⏸ Pause
-                    </button>
-                  }
-                  @if (speaking() || paused()) {
-                    <button type="button" class="hud__ctl hud__ctl--stop" (click)="stop()" aria-label="Stop narration">
-                      ■ Stop
-                    </button>
-                  }
-                </div>
-              </div>
-              <ea-persona-avatar class="hud__avatar" [speaker]="l.speaker" [talking]="speaking()" />
-            </div>
-          }
-        </section>
       </aside>
     }
   `,
@@ -133,9 +133,10 @@ export class CommsHudComponent {
   protected readonly live = computed<SpokenLine | null>(
     () => this.speech.spokenHistory().at(-1) ?? null
   );
+  /** Earlier lines for the log, newest first (the log reads top-down). */
   protected readonly past = computed<SpokenLine[]>(() => {
     const all = this.speech.spokenHistory();
-    return all.slice(0, Math.max(0, all.length - 1));
+    return all.slice(0, Math.max(0, all.length - 1)).reverse();
   });
   /** Single-item list so the panel re-mounts (fades in) on speaker change. */
   protected readonly liveList = computed(() => (this.live() ? [this.live()!] : []));
@@ -173,13 +174,13 @@ export class CommsHudComponent {
       untracked(() => this.retype(line, speaking));
     });
 
-    // Keep the log scrolled to the newest message.
+    // Keep the log scrolled to the newest message (which sits at the top).
     effect(() => {
       this.past();
       this.collapsed();
       const el = this.list()?.nativeElement;
       if (el) {
-        queueMicrotask(() => (el.scrollTop = el.scrollHeight));
+        queueMicrotask(() => (el.scrollTop = 0));
       }
     });
   }

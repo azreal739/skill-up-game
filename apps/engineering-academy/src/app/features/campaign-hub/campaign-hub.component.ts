@@ -1,7 +1,7 @@
 import { Component, computed, effect, inject, untracked } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { PercentPipe } from '@angular/common';
-import { ContentService, GameStateService, SpeechService, TrackProgressService } from '@academy/data-access';
+import { GameStateService, SpeechService, TrackProgressService } from '@academy/data-access';
 
 /**
  * Campaign hub / path overview (`/campaigns`). The top level of the game: a
@@ -19,7 +19,6 @@ import { ContentService, GameStateService, SpeechService, TrackProgressService }
 export class CampaignHubComponent {
   protected readonly tracks = inject(TrackProgressService);
   private readonly gameState = inject(GameStateService);
-  private readonly content = inject(ContentService);
   private readonly speech = inject(SpeechService);
 
   constructor() {
@@ -50,26 +49,8 @@ export class CampaignHubComponent {
 
   protected readonly paths = this.tracks.summaries;
 
-  /**
-   * The track the player most recently made progress on — the track of the
-   * mission with the latest `completedAt`. Null until anything is completed.
-   */
-  private readonly lastActiveTrackId = computed(() => {
-    const completed = this.gameState.state()?.completedMissions ?? {};
-    let latestId: string | null = null;
-    let latestAt = '';
-    for (const [missionId, record] of Object.entries(completed)) {
-      if (record.completedAt > latestAt) {
-        latestAt = record.completedAt;
-        latestId = missionId;
-      }
-    }
-    if (!latestId) {
-      return null;
-    }
-    const campaignId = this.content.missionById(latestId)?.campaignId;
-    return campaignId ? this.content.campaignById(campaignId)?.track ?? null : null;
-  });
+  /** The path the player most recently progressed on (current path). */
+  protected readonly currentTrackId = this.tracks.lastActiveTrackId;
 
   /**
    * The recommended next mission, carrying its path and campaign so the
@@ -80,7 +61,7 @@ export class CampaignHubComponent {
    */
   protected readonly recommended = computed(() => {
     const paths = this.paths();
-    const lastTrack = this.lastActiveTrackId();
+    const lastTrack = this.currentTrackId();
     const preferred = lastTrack ? paths.find((path) => path.track.id === lastTrack) : undefined;
     const ordered = preferred ? [preferred, ...paths.filter((p) => p !== preferred)] : paths;
     for (const path of ordered) {
