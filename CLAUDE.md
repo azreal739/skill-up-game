@@ -115,7 +115,41 @@ Deferred (NOT built — would be engine work, ask for review first): fully
 interactive challenge types (animated diagrams, metronome timing, mock-sheet UI)
 and a per-path terminology re-skin (e.g. "Judge Points").
 
-## Done this session (branch `claude/engineering-academy-build-audit-wqabi2`)
+## Done this session (branch `claude/persona-portrait-art-vyn8i4`, PRs #105 + #106, both merged)
+
+- **Illustrated persona portraits:** `PersonaAvatarComponent` (ui) rebuilt as
+  detailed layered SVG busts (per-persona skin/hair/accessory keyed by persona
+  id in a ui-lib STYLES record; accent still from content-model). Video-call
+  **active-speaker ring** (fade in → hold → fade out via `talking` +
+  opacity transition), idle blink/breathe, CSS-only (reduced-motion safe).
+- **"Meet the mentors" modal** (Settings) replaced the test-a-voice dropdown:
+  cast as portrait cards (vertical: avatar+name/role on top, Play below),
+  per-persona intro lines, ring lights while playing.
+- **Comms HUD** (`shared/comms-hud`, mounted in AppComponent): bottom-right
+  speaker panel (avatar + name + "transmitting" + typewriter of the current
+  line) + collapsible group-chat log (per-persona colours, replay buttons).
+  Backed by `SpeechService.spokenHistory` (capped 20, recorded on playback
+  start, immediate-duplicate-skipping). Shown only when `status==='ready'` and
+  something has been said.
+- **Auto-play conversation** (mission-player effects, one-shot guards + reset
+  on replay): briefing on arrival → question on challenge open (Mission
+  Control) → post-answer debrief (**Mission Control if correct / Senior Dev if
+  wrong**, verdict spoken first) → results debrief hand-off (MC outcome, Team
+  Lead promotion, Senior Dev lessons, Archivist reflection) → hint reply on
+  reveal. Academy Review reads the whole item on open (Senior Dev explanation
+  + Archivist help-topic tips) — it's the learning surface.
+- **Settings:** `autoPlay` (default on) + `displayTransmissions` (default off),
+  schema-defaulted (save stays v2). Briefing screen shows an animated
+  "transmitting" wave panel when voice carries the words; static text when
+  voice is off/engine inactive/opted-in. Voice button "playing" state is now an
+  animated equalizer ("transmitting…").
+- User-authored fix on the branch (`c575e0b`): show briefing text when engine
+  inactive, `speech.cancel()` on mission-player destroy, narration guards reset
+  on replay + a lifecycle spec (mock MissionSessionService needs `result`).
+- **Pending:** real-device listen-test of all narration (HF blocked in
+  sandbox); local-package zip must be rebuilt on a normal machine.
+
+## Done earlier (branch `claude/engineering-academy-build-audit-wqabi2`)
 
 - **Shareable local package (built + verified):** `node
   tools/package-academy-local.mjs` → `dist/EngineeringAcademy-local.zip`
