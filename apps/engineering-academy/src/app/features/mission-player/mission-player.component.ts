@@ -197,10 +197,13 @@ export class MissionPlayerComponent implements OnDestroy {
    */
   protected readonly showBriefingText = computed(() => {
     const settings = this.gameState.settings();
-    return !settings.voiceEnabled || settings.displayTransmissions;
+    return (
+      !settings.voiceEnabled || !this.speech.active() || settings.displayTransmissions
+    );
   });
 
   ngOnDestroy(): void {
+    this.speech.cancel();
     this.waves.setAlert(false);
   }
 
@@ -440,9 +443,17 @@ export class MissionPlayerComponent implements OnDestroy {
     const mission = this.mission();
     if (mission) {
       this.audio.play('click');
+      this.resetAutoNarrationState();
       this.session.start(mission);
       this.attemptEvaluation.set(null);
     }
+  }
+
+  /** Let a replay narrate every beat again, including single-challenge missions. */
+  private resetAutoNarrationState(): void {
+    this.lastBriefingPlayed = '';
+    this.lastQuestionPlayed = '';
+    this.lastFeedbackPlayed = '';
   }
 
   goToNextMission(): void {
