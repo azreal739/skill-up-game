@@ -154,9 +154,9 @@ export class CommsHudComponent {
     return !!now && !!l && now.phase === 'paused' && now.speaker === l.speaker && now.text === l.text;
   });
 
-  /** Collapse state persists across sessions via settings. */
+  /** Collapse state persists across sessions via settings (default collapsed). */
   protected readonly collapsed = computed(
-    () => this.gameState.settings().commsLogCollapsed ?? false
+    () => this.gameState.settings().commsLogCollapsed ?? true
   );
 
   /** Log messages the player has expanded past the 3-line clamp. */

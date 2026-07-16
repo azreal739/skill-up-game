@@ -28,7 +28,9 @@ export const SETTINGS_DEFAULTS = {
   voiceSpeed: 1,
   displayTransmissions: false,
   autoPlay: true,
-  commsLogCollapsed: false,
+  // The log starts collapsed: the live speaker panel is the HUD's face, the
+  // history is opt-in.
+  commsLogCollapsed: true,
 };
 
 export const settingsSchema = z.object({
@@ -50,7 +52,8 @@ export const settingsSchema = z.object({
   // hints) and when opening playable text, so it flows as one conversation.
   autoPlay: z.boolean().default(true),
   // Comms-log (speaker HUD chat history) collapsed state, remembered.
-  commsLogCollapsed: z.boolean().default(false),
+  // Collapsed by default — the log is opt-in history.
+  commsLogCollapsed: z.boolean().default(true),
 });
 
 export const missionRecordSchema = z.object({
