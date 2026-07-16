@@ -18,7 +18,12 @@
     </header>
 
     <section class="review__context ea-panel">
-      <h2>What happened</h2>
+      <div class="review__context-head">
+        <h2>What happened</h2>
+        <!-- Reads the whole lesson (why it matters, explanation, tips) aloud;
+             hidden when voice is off. -->
+        <ea-voice-button [lines]="reviewLines()" label="Play" />
+      </div>
       <p class="review__first">
         <span class="review__first-label">Your first decision</span>
         @for (label of firstAnswerLabels(); track label) {
