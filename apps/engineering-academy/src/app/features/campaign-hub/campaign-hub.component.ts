@@ -1,7 +1,7 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, effect, inject, untracked } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { PercentPipe } from '@angular/common';
-import { ContentService, GameStateService, TrackProgressService } from '@academy/data-access';
+import { ContentService, GameStateService, SpeechService, TrackProgressService } from '@academy/data-access';
 
 /**
  * Campaign hub / path overview (`/campaigns`). The top level of the game: a
@@ -20,6 +20,33 @@ export class CampaignHubComponent {
   protected readonly tracks = inject(TrackProgressService);
   private readonly gameState = inject(GameStateService);
   private readonly content = inject(ContentService);
+  private readonly speech = inject(SpeechService);
+
+  constructor() {
+    // Mission Control voices the recommendation once per hub visit, when
+    // voice + auto-play are on — the hub is the "what now?" screen.
+    let spokenFor = '';
+    effect(() => {
+      const rec = this.recommended();
+      const settings = this.gameState.settings();
+      if (
+        !rec ||
+        !settings.voiceEnabled ||
+        !settings.autoPlay ||
+        !this.speech.active() ||
+        spokenFor === rec.mission.id
+      ) {
+        return;
+      }
+      spokenFor = rec.mission.id;
+      untracked(() =>
+        void this.speech.speak(
+          'Mission Control',
+          `Recommended next: ${rec.mission.title}, in ${rec.campaign.title}. Jump in when ready.`
+        )
+      );
+    });
+  }
 
   protected readonly paths = this.tracks.summaries;
 

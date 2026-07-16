@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core';
 import { NarrativeBlock } from '@academy/content-model';
 import { SpeechService, VOICE_CHECK_LINE, VOICE_CHECK_SPEAKER } from '@academy/data-access';
 import { MentorDialogueComponent, PersonaAvatarComponent } from '@academy/ui';
@@ -18,8 +18,8 @@ import { MentorDialogueComponent, PersonaAvatarComponent } from '@academy/ui';
   template: `
     <div class="setup" role="dialog" aria-modal="true" aria-labelledby="voice-setup-title">
       <div class="setup__panel ea-panel">
-        <p class="ea-eyebrow">One-time calibration</p>
-        <h2 id="voice-setup-title" class="setup__title">Bringing voice systems online</h2>
+        <p class="ea-eyebrow">{{ eyebrow }}</p>
+        <h2 id="voice-setup-title" class="setup__title">{{ title }}</h2>
 
         <ea-mentor-dialogue [blocks]="banter" [live]="true" [instant]="instant" />
 
@@ -136,6 +136,10 @@ import { MentorDialogueComponent, PersonaAvatarComponent } from '@academy/ui';
   ],
 })
 export class VoiceSetupOverlayComponent {
+  /** Copy is overridable: enrolment uses a warmer welcome variant. */
+  @Input() eyebrow = 'One-time calibration';
+  @Input() title = 'Bringing voice systems online';
+
   protected readonly speech = inject(SpeechService);
   protected readonly checkSpeaker = VOICE_CHECK_SPEAKER;
   protected readonly checkLine = VOICE_CHECK_LINE;

@@ -22,10 +22,13 @@ export const SETTINGS_DEFAULTS = {
   reducedMotion: false,
   highContrast: false,
   textScale: 1,
-  voiceEnabled: false,
+  // Voice is on for new players: enrolment runs the calibration behind the
+  // "getting things ready" screen, then Mission Control greets them.
+  voiceEnabled: true,
   voiceSpeed: 1,
   displayTransmissions: false,
   autoPlay: true,
+  commsLogCollapsed: false,
 };
 
 export const settingsSchema = z.object({
@@ -46,6 +49,8 @@ export const settingsSchema = z.object({
   // Auto-play narration on mission screens (briefings, questions, feedback,
   // hints) and when opening playable text, so it flows as one conversation.
   autoPlay: z.boolean().default(true),
+  // Comms-log (speaker HUD chat history) collapsed state, remembered.
+  commsLogCollapsed: z.boolean().default(false),
 });
 
 export const missionRecordSchema = z.object({

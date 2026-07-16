@@ -32,6 +32,7 @@ import {
   CountUpComponent,
   HudComponent,
   MentorDialogueComponent,
+  PersonaAvatarComponent,
   VoiceButtonComponent,
 } from '@academy/ui';
 import { ChallengeHostComponent } from '@academy/challenges';
@@ -52,6 +53,7 @@ import { NoteComposerComponent } from '../../shared/note-composer/note-composer.
     ChallengeHostComponent,
     HelpDrawerComponent,
     NoteComposerComponent,
+    PersonaAvatarComponent,
     VoiceButtonComponent,
   ],
   templateUrl: './mission-player.component.html',
@@ -239,9 +241,26 @@ export class MissionPlayerComponent implements OnDestroy {
     () => this.session.currentRun()?.hintsRevealed ?? 0
   );
 
-  protected readonly seniorDevAvatar = computed(
-    () => SENIOR_DEV_AVATARS[this.seniorDevStress()] ?? SENIOR_DEV_AVATARS[0]
-  );
+  /** The Senior Dev's portrait talks whenever one of their lines is playing. */
+  protected readonly seniorDevTalking = computed(() => {
+    const now = this.speech.nowPlaying();
+    return !!now && now.speaker === 'Senior Dev' && now.phase === 'playing';
+  });
+
+  /** Hints the player expanded past the 3-line clamp. */
+  protected readonly expandedHints = signal<ReadonlySet<number>>(new Set());
+
+  toggleHint(level: number): void {
+    this.expandedHints.update((set) => {
+      const next = new Set(set);
+      if (next.has(level)) {
+        next.delete(level);
+      } else {
+        next.add(level);
+      }
+      return next;
+    });
+  }
 
   protected readonly seniorDevStatus = computed(
     () => SENIOR_DEV_STATUS[this.seniorDevStress()] ?? SENIOR_DEV_STATUS[0]
@@ -556,16 +575,8 @@ export class MissionPlayerComponent implements OnDestroy {
 /**
  * The Senior Dev hint character (10_HELP_CENTRE_AND_HINT_SYSTEM.md tone
  * rules): always kind, increasingly caffeinated. Indexed by hints revealed
- * on the current challenge.
+ * on the current challenge — the portrait's `stress` input mirrors it.
  */
-const SENIOR_DEV_AVATARS: Record<number, string> = {
-  0: '🧑‍💻',
-  1: '🧑‍💻',
-  2: '😅',
-  3: '😰',
-  4: '🥲',
-};
-
 const SENIOR_DEV_STATUS: Record<number, string> = {
   0: 'online — no judgement, ever',
   1: 'sipping coffee, happy to help',

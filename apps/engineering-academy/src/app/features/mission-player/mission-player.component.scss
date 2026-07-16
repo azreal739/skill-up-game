@@ -177,6 +177,45 @@
 .hint__content {
   font-size: 0.85rem;
   line-height: 1.6;
+  margin: 0;
+}
+
+// Speech-bubble hints: 3-line clamp until expanded, voice + expand below.
+.hint--bubble {
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  border-left-width: 3px;
+  border-radius: 4px 12px 12px 12px;
+}
+
+.hint__content--clamped {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.hint__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.4rem;
+}
+
+.hint__expand {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: var(--ea-warn);
+  font-family: var(--ea-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 .support__hint-btn {
@@ -665,9 +704,9 @@
   }
 }
 
-.senior-dev__avatar {
-  font-size: 1.6rem;
-  line-height: 1;
+.senior-dev__portrait {
+  width: 56px;
+  height: 56px;
 }
 
 .senior-dev__status {
@@ -677,8 +716,8 @@
   color: var(--ea-muted);
 }
 
-.senior-dev[data-stress='3'] .senior-dev__avatar,
-.senior-dev[data-stress='4'] .senior-dev__avatar {
+.senior-dev[data-stress='3'] .senior-dev__portrait,
+.senior-dev[data-stress='4'] .senior-dev__portrait {
   animation: senior-dev-jitter 2.4s ease-in-out infinite;
 }
 

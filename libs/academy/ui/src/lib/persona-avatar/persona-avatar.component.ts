@@ -169,11 +169,19 @@ const STYLES: Record<PersonaDefinition['id'], PortraitStyle> = {
             }
           }
 
-          <!-- brows -->
-          <g [attr.fill]="s.brow">
-            <path d="M40 50 q6 -3 11 -0.5 l0 2.2 q-5 -2 -11 0.4Z" />
-            <path d="M72 50 q-6 -3 -11 -0.5 l0 2.2 q5 -2 11 0.4Z" />
+          <!-- brows (tilt with stress) -->
+          <g class="pa__brows" [attr.fill]="s.brow">
+            <path class="pa__brow pa__brow--l" d="M40 50 q6 -3 11 -0.5 l0 2.2 q-5 -2 -11 0.4Z" />
+            <path class="pa__brow pa__brow--r" d="M72 50 q-6 -3 -11 -0.5 l0 2.2 q5 -2 11 0.4Z" />
           </g>
+
+          @if (stress >= 2) {
+            <!-- sweat: one bead, then two when properly flustered -->
+            <path d="M77 40 q3.4 5 0 7.6 q-3.4 -2.6 0 -7.6Z" fill="#9bd8f7" opacity="0.9" />
+          }
+          @if (stress >= 4) {
+            <path d="M34 44 q2.8 4.2 0 6.4 q-2.8 -2.2 0 -6.4Z" fill="#9bd8f7" opacity="0.8" />
+          }
 
           @if (!hideEyes) {
             <g class="pa__eyes">
@@ -281,6 +289,19 @@ export class PersonaAvatarComponent {
   @Input()
   @HostBinding('class.pa-talking')
   talking = false;
+
+  /**
+   * How rattled this persona looks, 0–4 (the Senior Dev's hint ladder):
+   * 0–1 composed, 2 concerned brows + a sweat bead, 4 full flustered.
+   */
+  @Input() stress = 0;
+
+  @HostBinding('class.pa-stress-mid') get stressMid(): boolean {
+    return this.stress >= 2 && this.stress < 4;
+  }
+  @HostBinding('class.pa-stress-high') get stressHigh(): boolean {
+    return this.stress >= 4;
+  }
 
   protected persona!: PersonaDefinition;
   protected s!: PortraitStyle;
