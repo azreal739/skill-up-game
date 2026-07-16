@@ -1,7 +1,7 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TechnicalDebtItem, TechnicalDebtStatus } from '@academy/content-model';
-import { ContentService, GameStateService } from '@academy/data-access';
+import { ContentService, GameStateService, SpeechService } from '@academy/data-access';
 
 interface BacklogGroup {
   status: TechnicalDebtStatus;
@@ -33,6 +33,42 @@ const STATUS_ORDER: { status: TechnicalDebtStatus; label: string; hint: string }
 export class BacklogComponent {
   protected readonly gameState = inject(GameStateService);
   private readonly content = inject(ContentService);
+  private readonly speech = inject(SpeechService);
+
+  constructor() {
+    // Opening the backlog is a coaching moment: the Senior Dev encourages the
+    // player to remediate what's waiting (once per visit, voice+auto-play on).
+    let spoken = false;
+    effect(() => {
+      const settings = this.gameState.settings();
+      const openCount = this.gameState.openDebtCount();
+      // Read the signals before the guards so the effect re-runs when the
+      // engine finishes booting or the save loads.
+      const engineActive = this.speech.active();
+      if (spoken || !settings.voiceEnabled || !settings.autoPlay || !engineActive) {
+        return;
+      }
+      spoken = true;
+      const first = untracked(() => this.firstActionable());
+      const text =
+        openCount > 0
+          ? `You have ${openCount} item${openCount === 1 ? '' : 's'} waiting in the backlog. ` +
+            `Each one is a concept ready to click — reviewing them is how a mistake becomes mastery. ` +
+            (first ? `I'd start with ${first.challengeTitle}.` : '')
+          : this.totalItems() > 0
+            ? 'Backlog is clear — every item remediated. That is exactly how debt should be handled.'
+            : 'No technical debt on the books. Keep shipping.';
+      untracked(() => void this.speech.speak('Senior Dev', text));
+    });
+  }
+
+  /** The oldest item still needing work — the suggested place to start. */
+  protected readonly firstActionable = computed(
+    () =>
+      this.gameState
+        .technicalDebtItems()
+        .find((item) => item.status === 'open' || item.status === 'reopened') ?? null
+  );
 
   /** Active filters. 'all' = no constraint. */
   protected readonly statusFilter = signal<TechnicalDebtStatus | 'all'>('all');

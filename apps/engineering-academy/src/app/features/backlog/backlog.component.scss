@@ -31,6 +31,39 @@
   font-size: 0.9rem;
 }
 
+/* Encouragement callout: point the player at the first item worth reviewing. */
+.backlog__nudge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  border-color: color-mix(in srgb, var(--ea-accent) 40%, var(--ea-border));
+  background:
+    radial-gradient(
+      120% 160% at 0% 0%,
+      color-mix(in srgb, var(--ea-accent) 10%, transparent),
+      transparent 60%
+    ),
+    var(--ea-panel);
+}
+
+.backlog__nudge-copy {
+  max-width: 40rem;
+}
+
+.backlog__nudge-title {
+  margin: 0.15rem 0 0.3rem;
+  font-size: 1.15rem;
+}
+
+.backlog__nudge-text {
+  margin: 0;
+  color: var(--ea-muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
 .backlog__empty {
   text-align: center;
   display: grid;

@@ -24,6 +24,22 @@
       {{ gameState.openDebtCount() }} still open
     </p>
 
+    @if (firstActionable(); as first) {
+      <section class="backlog__nudge ea-panel">
+        <div class="backlog__nudge-copy">
+          <p class="ea-eyebrow">Senior Dev suggests</p>
+          <h2 class="backlog__nudge-title">Turn this debt into mastery</h2>
+          <p class="backlog__nudge-text">
+            Every item below is a concept ready to click. A short review pays part of the XP back
+            — and, more importantly, makes the next mission easier.
+          </p>
+        </div>
+        <a class="ea-btn ea-btn--primary" [routerLink]="['/review', first.id]">
+          Start with “{{ first.challengeTitle }}”
+        </a>
+      </section>
+    }
+
     <div class="backlog__filters" role="group" aria-label="Filter backlog">
       <div class="backlog__chips">
         <button

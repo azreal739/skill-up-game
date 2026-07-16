@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, effect, inject, untracked } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
@@ -7,6 +7,7 @@ import {
   ContentService,
   GameStateService,
   LearningAnalyticsService,
+  SpeechService,
 } from '@academy/data-access';
 import { MissionDefinition, debtHealth, stabilityHealth } from '@academy/content-model';
 import { MeterComponent } from '@academy/ui';
@@ -52,11 +53,57 @@ export class CampaignDetailComponent {
   private readonly content = inject(ContentService);
   private readonly gameState = inject(GameStateService);
   private readonly analytics = inject(LearningAnalyticsService);
+  private readonly speech = inject(SpeechService);
 
   private readonly campaignId = toSignal(
     this.route.paramMap.pipe(map((params) => params.get('campaignId') ?? '')),
     { initialValue: '' }
   );
+
+  constructor() {
+    // Drilling into a campaign keeps the conversation going: Mission Control
+    // briefs the campaign once per visit (voice + auto-play on) — where you
+    // stand and which mission to fly next.
+    let spokenFor = '';
+    effect(() => {
+      const campaign = this.campaign();
+      const settings = this.gameState.settings();
+      if (
+        !campaign ||
+        !settings.voiceEnabled ||
+        !settings.autoPlay ||
+        !this.speech.active() ||
+        spokenFor === campaign.id
+      ) {
+        return;
+      }
+      spokenFor = campaign.id;
+      untracked(() => void this.speech.speak('Mission Control', this.campaignBriefLine()));
+    });
+  }
+
+  /** The spoken drill-in line: campaign standing + the next actionable mission. */
+  private campaignBriefLine(): string {
+    const campaign = this.campaign();
+    if (!campaign) {
+      return '';
+    }
+    if (this.locked()) {
+      const prerequisite = this.prerequisiteTitle();
+      return `${campaign.title} is still locked. Complete ${prerequisite ?? 'its prerequisite'} first and I'll open it up.`;
+    }
+    const { done, total } = this.progress();
+    const next = this.nodes().find(
+      (node) => node.state === 'in-progress' || node.state === 'available'
+    );
+    if (this.campaignComplete() || !next) {
+      return `${campaign.title}: all ${total} missions complete. Replay any of them for a perfect, hint-free run.`;
+    }
+    const standing =
+      done === 0 ? 'No missions flown yet' : `${done} of ${total} missions complete`;
+    const verb = next.state === 'in-progress' ? 'Resume' : 'Next up';
+    return `${campaign.title}. ${standing}. ${verb}: ${next.mission.title}.`;
+  }
 
   protected readonly campaign = computed(() => this.content.campaignById(this.campaignId()));
 

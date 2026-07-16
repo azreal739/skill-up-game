@@ -115,7 +115,43 @@ Deferred (NOT built — would be engine work, ask for review first): fully
 interactive challenge types (animated diagrams, metronome timing, mock-sheet UI)
 and a per-path terminology re-skin (e.g. "Judge Points").
 
-## Done this session (branch `claude/persona-portrait-art-vyn8i4`, PRs #105 + #106, both merged)
+## Done this session (branch `claude/engineering-academy-ui-enhancements-y6i2l1`)
+
+Seven user-requested UI enhancements, all verified (build/test/lint + committed
+smoke + a seeded-save Playwright visual suite with screenshots):
+
+- **Header/HUD restructure:** topbar is now brand + player status (rank/XP)
+  LEFT, nav CENTERED (flex spacers both sides), and the comms HUD moved from
+  bottom-right to fixed TOP-right (z 60, over the nav bar's empty right
+  column). HUD order flipped: live speaker panel first, comms log BELOW it,
+  log newest-first (`past()` reversed, autoscroll to top), log bubbles
+  right-anchored (row-reverse, avatar right, right-aligned name/actions).
+- **Nav dropdown hover fix:** the 0.4rem gap between the Campaigns trigger and
+  the menu fired mouseleave when entering from the left — invisible
+  `::before` hover bridge on `.topbar__menu` closes the dead zone.
+- **Route loader actually visible:** shows immediately on NavigationStart (no
+  140ms debounce — SPA navs are near-instant so it never appeared), holds
+  420ms (200ms reduced motion), fades out 180ms. Canvas render now starts
+  from an `effect` on the `viewChild` signal (the old `queueMicrotask` raced
+  change detection and drew nothing). **Plus the real bug:** `html` had no
+  background, so router view transitions (two semi-transparent snapshots over
+  the root canvas) flashed WHITE mid-cross-fade — `html { background:
+  var(--ea-bg-0) }` fixes it.
+- **Conversation on drill-in:** path view + campaign detail speak a Mission
+  Control status line on open (once per id, voice+autoPlay gated, same
+  pattern as the hub). Backlog speaks a Senior Dev encouragement on open.
+- **Current path:** `TrackProgressService.lastActiveTrackId` (moved out of the
+  hub) → "current path" ribbon on the hub card (absolute top-left, doesn't
+  squeeze the heading), "Current path · recommended next mission" eyebrow,
+  path-view header chip + "Your next step" panel.
+- **Backlog nudge panel:** "Senior Dev suggests" callout with a CTA to the
+  first open/reopened item.
+- **Help Centre:** tag-chip filters (top 10 + "All tags…" expansion, counts),
+  result count + clear-filters, tags on list items, clickable tags in the
+  detail pane, "Related topics" (shared-tag) quick links. Selection falls
+  back to the first result when filters hide the selected topic.
+
+## Done earlier (branch `claude/persona-portrait-art-vyn8i4`, PRs #105 + #106, both merged)
 
 - **Illustrated persona portraits:** `PersonaAvatarComponent` (ui) rebuilt as
   detailed layered SVG busts (per-persona skin/hair/accessory keyed by persona

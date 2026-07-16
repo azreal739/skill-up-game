@@ -15,7 +15,13 @@
       [style.--ea-path-accent]="rec.track.accent"
     >
       <div>
-        <p class="ea-eyebrow">Recommended next mission</p>
+        <p class="ea-eyebrow">
+          @if (rec.track.id === currentTrackId()) {
+            Current path · recommended next mission
+          } @else {
+            Recommended next mission
+          }
+        </p>
         <p class="recommended__path">
           <span class="recommended__emblem" aria-hidden="true">{{ rec.track.emblem }}</span>
           <a class="recommended__path-link" [routerLink]="['/paths', rec.track.id]">{{
@@ -53,6 +59,7 @@
         [style.--ea-path-accent]="path.track.accent"
         [style.animation-delay]="i * 80 + 'ms'"
         [class.path--complete]="path.complete"
+        [class.path--current]="path.track.id === currentTrackId()"
         [routerLink]="['/paths', path.track.id]"
       >
         <div class="path__top">
@@ -61,6 +68,9 @@
             <h2 class="path__title">{{ path.track.title }}</h2>
             <p class="path__tagline">{{ path.track.tagline }}</p>
           </div>
+          @if (path.track.id === currentTrackId()) {
+            <span class="ea-chip path__current">▶ current path</span>
+          }
           @if (path.complete) {
             <span class="ea-chip path__done">✓ complete</span>
           }

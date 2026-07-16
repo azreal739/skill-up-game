@@ -98,6 +98,18 @@
   margin: 0.15rem 0 0;
   font-size: 1.7rem;
   color: var(--ea-path-accent);
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.path-view__current {
+  font-size: 0.68rem;
+  color: var(--ea-path-accent);
+  border-color: color-mix(in srgb, var(--ea-path-accent) 55%, transparent);
+  background: color-mix(in srgb, var(--ea-path-accent) 12%, transparent);
+  white-space: nowrap;
 }
 
 .path-view__blurb {

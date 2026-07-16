@@ -1,10 +1,15 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, effect, inject, untracked } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { PercentPipe } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs';
-import { ContentService, GameStateService, TrackProgressService } from '@academy/data-access';
+import {
+  ContentService,
+  GameStateService,
+  SpeechService,
+  TrackProgressService,
+} from '@academy/data-access';
 import { IconComponent } from '@academy/ui';
 import { CampaignEmblemComponent } from '../campaign-hub/campaign-emblem.component';
 
@@ -27,6 +32,7 @@ export class PathViewComponent {
   protected readonly gameState = inject(GameStateService);
   private readonly tracks = inject(TrackProgressService);
   private readonly route = inject(ActivatedRoute);
+  private readonly speech = inject(SpeechService);
 
   private readonly trackId = toSignal(
     this.route.paramMap.pipe(map((params) => params.get('trackId') ?? '')),
@@ -35,6 +41,37 @@ export class PathViewComponent {
 
   /** The resolved path summary, or undefined for an unknown id. */
   protected readonly path = computed(() => this.tracks.summaryFor(this.trackId()));
+
+  /** True when this is the path the player most recently progressed on. */
+  protected readonly isCurrent = computed(
+    () => !!this.path() && this.path()!.track.id === this.tracks.lastActiveTrackId()
+  );
+
+  constructor() {
+    // Mission Control keeps the conversation going as the player drills in:
+    // a spoken status report for the path, once per path visit, when voice +
+    // auto-play are on.
+    let spokenFor = '';
+    effect(() => {
+      const path = this.path();
+      const settings = this.gameState.settings();
+      if (
+        !path ||
+        !settings.voiceEnabled ||
+        !settings.autoPlay ||
+        !this.speech.active() ||
+        spokenFor === path.track.id
+      ) {
+        return;
+      }
+      spokenFor = path.track.id;
+      const text = path.next
+        ? `${path.track.title}. ${path.campaignsDone} of ${path.campaignsTotal} campaigns cleared. ` +
+          `Your next step is ${path.next.mission.title}, in ${path.next.campaign.title}.`
+        : `${path.track.title} is fully cleared. Outstanding work, operator — replay any campaign for a perfect run.`;
+      untracked(() => void this.speech.speak('Mission Control', text));
+    });
+  }
 
   progressFor(campaignId: string): number {
     const campaign = this.content.campaignById(campaignId);

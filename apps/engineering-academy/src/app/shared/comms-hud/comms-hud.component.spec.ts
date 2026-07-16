@@ -58,4 +58,25 @@ describe('CommsHudComponent', () => {
     expect(html().querySelectorAll('.hud__msg').length).toBe(2);
     expect(html().querySelector('.hud__toggle-count')?.textContent).toContain('2');
   });
+
+  it('renders the live panel first and the log below it, newest message on top', () => {
+    speech.status.set('ready');
+    speech.spokenHistory.set([
+      { id: 1, speaker: 'Senior Dev', text: 'One.' },
+      { id: 2, speaker: 'Team Lead', text: 'Two.' },
+      { id: 3, speaker: 'Mission Control', text: 'Three.' },
+    ]);
+    fixture.detectChanges();
+
+    const hud = html().querySelector('.hud');
+    const sections = Array.from(hud?.children ?? []).map((el) => el.className);
+    expect(sections[0]).toContain('hud__live');
+    expect(sections[1]).toContain('hud__log');
+
+    // Log reads top-down, newest first.
+    const names = Array.from(html().querySelectorAll('.hud__msg-name')).map((el) =>
+      el.textContent?.trim()
+    );
+    expect(names).toEqual(['Team Lead', 'Senior Dev']);
+  });
 });

@@ -9,8 +9,19 @@
     <header class="path-view__header ea-panel">
       <span class="path-view__emblem" aria-hidden="true">{{ path.track.emblem }}</span>
       <div class="path-view__heading">
-        <p class="ea-eyebrow">Path</p>
-        <h1 class="path-view__title">{{ path.track.title }}</h1>
+        <p class="ea-eyebrow">
+          @if (isCurrent()) {
+            Path · you are here
+          } @else {
+            Path
+          }
+        </p>
+        <h1 class="path-view__title">
+          {{ path.track.title }}
+          @if (isCurrent()) {
+            <span class="ea-chip path-view__current">▶ current path</span>
+          }
+        </h1>
         <p class="path-view__blurb">{{ path.track.blurb }}</p>
         <div class="path-view__progress">
           <div
@@ -35,7 +46,7 @@
     @if (path.next; as next) {
       <section class="path-view__recommended ea-panel">
         <div>
-          <p class="ea-eyebrow">Recommended next mission</p>
+          <p class="ea-eyebrow">Your next step</p>
           <h2 class="path-view__rec-title">{{ next.mission.title }}</h2>
           <p class="path-view__rec-summary">
             {{ next.campaign.title }} · {{ next.mission.summary }}

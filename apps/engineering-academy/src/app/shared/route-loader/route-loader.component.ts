@@ -1,13 +1,14 @@
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   ElementRef,
   NgZone,
   OnDestroy,
-  ViewChild,
+  effect,
   inject,
   signal,
+  untracked,
+  viewChild,
 } from '@angular/core';
 import {
   NavigationCancel,
@@ -40,16 +41,21 @@ const RINGS: Ring[] = [
   { lobes: 4, amplitude: 9, speed: 0.0011, colour: CYAN, seed: 3.4 },
 ];
 
-/** Only show the loader if navigation is slow enough to notice (avoids flash). */
-const SHOW_DELAY_MS = 140;
-/** Keep it up at least this long once shown, so it never strobes. */
-const MIN_VISIBLE_MS = 360;
+/** Keep the loader up at least this long once shown — SPA navigations are
+ *  near-instant, so this beat is what actually makes the state visible. */
+const MIN_VISIBLE_MS = 420;
+/** Shorter hold under reduced motion: still a visible state, less of a beat. */
+const MIN_VISIBLE_REDUCED_MS = 200;
+/** How long the fade-out class stays on before the element is removed. */
+const FADE_OUT_MS = 180;
 
 /**
  * Route-transition loader: concentric sine waves wrapped into rotating rings,
  * in the mission-control palette with a soft glow — a telemetry "tuning in"
- * beat rather than a vanilla spinner. Shown only while a navigation is in
- * flight (debounced), and renders a single static frame under reduced motion.
+ * beat rather than a vanilla spinner. Shows on every navigation and holds for
+ * a short minimum so the state is actually perceivable (it is
+ * pointer-transparent, so it never blocks input), then fades out. Renders a
+ * single static frame under reduced motion.
  */
 @Component({
   selector: 'ea-route-loader',
@@ -57,7 +63,7 @@ const MIN_VISIBLE_MS = 360;
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (visible()) {
-      <div class="route-loader" role="status" aria-label="Loading">
+      <div class="route-loader" [class.route-loader--out]="leaving()" role="status" aria-label="Loading">
         <canvas #canvas class="route-loader__canvas" aria-hidden="true"></canvas>
         <span class="route-loader__label">Tuning in…</span>
       </div>
@@ -65,17 +71,18 @@ const MIN_VISIBLE_MS = 360;
   `,
   styleUrls: ['./route-loader.component.scss'],
 })
-export class RouteLoaderComponent implements AfterViewInit, OnDestroy {
-  @ViewChild('canvas') private canvasRef?: ElementRef<HTMLCanvasElement>;
+export class RouteLoaderComponent implements OnDestroy {
+  private readonly canvasRef = viewChild<ElementRef<HTMLCanvasElement>>('canvas');
 
   private readonly router = inject(Router);
   private readonly zone = inject(NgZone);
 
   protected readonly visible = signal(false);
+  protected readonly leaving = signal(false);
 
   private sub?: Subscription;
-  private showTimer: ReturnType<typeof setTimeout> | null = null;
   private hideTimer: ReturnType<typeof setTimeout> | null = null;
+  private fadeTimer: ReturnType<typeof setTimeout> | null = null;
   private activeNavigationId: number | null = null;
   private shownAt = 0;
   private raf = 0;
@@ -84,8 +91,12 @@ export class RouteLoaderComponent implements AfterViewInit, OnDestroy {
     this.sub = this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
         this.activeNavigationId = event.id;
-        this.clearHideTimer();
-        this.scheduleShow();
+        this.clearTimers();
+        this.leaving.set(false);
+        if (!this.visible()) {
+          this.shownAt = performance.now();
+          this.visible.set(true);
+        }
       } else if (
         event instanceof NavigationEnd ||
         event instanceof NavigationCancel ||
@@ -98,72 +109,73 @@ export class RouteLoaderComponent implements AfterViewInit, OnDestroy {
         this.scheduleHide();
       }
     });
-  }
 
-  ngAfterViewInit(): void {
-    // Canvas only exists while visible; the render loop (re)starts on show.
+    // The canvas only exists while the @if is rendered; starting the render
+    // from an effect on the viewChild signal (rather than a microtask racing
+    // change detection) guarantees we draw once it is actually in the DOM.
+    effect(() => {
+      const canvas = this.canvasRef()?.nativeElement;
+      if (this.visible() && canvas) {
+        untracked(() => this.startRender(canvas));
+      } else {
+        cancelAnimationFrame(this.raf);
+      }
+    });
   }
 
   ngOnDestroy(): void {
     this.sub?.unsubscribe();
-    this.clearShowTimer();
-    this.clearHideTimer();
+    this.clearTimers();
     cancelAnimationFrame(this.raf);
   }
 
-  private scheduleShow(): void {
-    if (this.visible() || this.showTimer) {
-      return;
-    }
-    this.showTimer = setTimeout(() => {
-      this.showTimer = null;
-      this.shownAt = performance.now();
-      this.visible.set(true);
-      // Canvas renders after the @if adds it to the DOM.
-      queueMicrotask(() => this.startRender());
-    }, SHOW_DELAY_MS);
-  }
-
   private scheduleHide(): void {
-    if (this.showTimer) {
-      // Navigation finished before the loader ever appeared — nothing to show.
-      this.clearShowTimer();
-      return;
-    }
     if (!this.visible()) {
       return;
     }
+    const reduced = document.documentElement.classList.contains('ea-reduced-motion');
+    const minVisible = reduced ? MIN_VISIBLE_REDUCED_MS : MIN_VISIBLE_MS;
     const elapsed = performance.now() - this.shownAt;
-    const wait = Math.max(0, MIN_VISIBLE_MS - elapsed);
+    const wait = Math.max(0, minVisible - elapsed);
     this.hideTimer = setTimeout(() => {
       this.hideTimer = null;
       if (this.activeNavigationId !== null) {
         return;
       }
-      this.visible.set(false);
-      cancelAnimationFrame(this.raf);
+      if (reduced) {
+        this.hide();
+        return;
+      }
+      // Fade the overlay out, then remove it from the DOM.
+      this.leaving.set(true);
+      this.fadeTimer = setTimeout(() => {
+        this.fadeTimer = null;
+        if (this.activeNavigationId === null) {
+          this.hide();
+        }
+      }, FADE_OUT_MS);
     }, wait);
   }
 
-  private clearShowTimer(): void {
-    if (this.showTimer) {
-      clearTimeout(this.showTimer);
-      this.showTimer = null;
-    }
+  private hide(): void {
+    this.visible.set(false);
+    this.leaving.set(false);
+    cancelAnimationFrame(this.raf);
   }
 
-  private clearHideTimer(): void {
+  private clearTimers(): void {
     if (this.hideTimer) {
       clearTimeout(this.hideTimer);
       this.hideTimer = null;
     }
+    if (this.fadeTimer) {
+      clearTimeout(this.fadeTimer);
+      this.fadeTimer = null;
+    }
   }
 
-  private startRender(): void {
-    const canvas = this.canvasRef?.nativeElement;
-    if (!canvas) {
-      return;
-    }
+  private startRender(canvas: HTMLCanvasElement): void {
+    cancelAnimationFrame(this.raf);
     const ctx = canvas.getContext('2d');
     if (!ctx) {
       return;
