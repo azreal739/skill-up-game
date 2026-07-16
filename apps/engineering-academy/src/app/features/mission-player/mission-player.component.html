@@ -35,27 +35,26 @@
           <p class="ea-eyebrow">{{ isBoss() ? 'Critical Engagement' : 'Mission Briefing' }}</p>
           <h1 class="briefing__title">
             {{ mission.title }}
-            @if (gameState.settings().reducedMotion) {
-              <!-- No transmission in reduced motion — play the whole briefing as voice. -->
-              <ea-voice-button [lines]="briefingLines()" label="Play briefing" />
-            } @else {
-              <button type="button" class="briefing__replay" (click)="dlg.replay()">
-                ↻ Replay briefing
-              </button>
-            }
+            <!-- Hidden automatically when voice is off; plays through the comms HUD. -->
+            <ea-voice-button [lines]="briefingLines()" label="Play briefing" />
           </h1>
           <div class="briefing__meta">
             <span class="ea-chip" [class.ea-chip--boss]="isBoss()">{{ mission.difficulty }}</span>
             <span class="ea-chip">{{ mission.challenges.length }} challenge{{ mission.challenges.length === 1 ? '' : 's' }}</span>
           </div>
 
-          <ea-mentor-dialogue
-            #dlg
-            [blocks]="mission.briefing"
-            [live]="true"
-            [introLine]="briefingIntro()"
-            [instant]="gameState.settings().reducedMotion"
-          />
+          @if (showBriefingText()) {
+            <!-- Voice off (or opted-in): read the briefing on the page. -->
+            <ea-mentor-dialogue [blocks]="mission.briefing" [instant]="true" />
+          } @else {
+            <!-- Voice on: the transmission is carried by the comms HUD. -->
+            <div class="briefing__transmission" role="status">
+              <span class="briefing__wave" aria-hidden="true">
+                <span></span><span></span><span></span><span></span><span></span>
+              </span>
+              <p>Incoming transmission — your mentors are briefing you. Watch the comms panel ↘</p>
+            </div>
+          }
 
           <div class="briefing__objectives">
             <h2>Learning objectives</h2>
