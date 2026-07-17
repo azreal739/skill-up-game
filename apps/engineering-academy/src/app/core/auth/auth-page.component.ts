@@ -51,7 +51,9 @@ export class AuthPageComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     if (this.auth.signedIn()) {
-      void this.router.navigateByUrl(this.route.snapshot.queryParamMap.get('returnUrl') ?? '/');
+      void this.router.navigateByUrl(
+        safeInternalReturnUrl(this.route.snapshot.queryParamMap.get('returnUrl'))
+      );
       return;
     }
     if (this.auth.status() !== 'ready') {
@@ -66,5 +68,24 @@ export class AuthPageComponent implements AfterViewInit {
         ? this.auth.mountWaitlist(element)
         : this.auth.mountSignIn(element);
     this.destroyRef.onDestroy(unmount);
+  }
+}
+
+export function safeInternalReturnUrl(value: string | null): string {
+  if (!value || !value.startsWith('/') || value.startsWith('//')) {
+    return '/';
+  }
+
+  try {
+    const url = new URL(value, window.location.origin);
+    if (url.origin !== window.location.origin) {
+      return '/';
+    }
+    if (url.pathname === '/sign-in' || url.pathname === '/waitlist') {
+      return '/';
+    }
+    return `${url.pathname}${url.search}${url.hash}`;
+  } catch {
+    return '/';
   }
 }

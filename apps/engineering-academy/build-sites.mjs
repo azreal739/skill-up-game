@@ -16,7 +16,7 @@ const workerSource = `const worker = {
     const url = new URL(request.url);
     if (url.pathname === '/runtime-config.js') {
       const publishableKey = env.CLERK_PUBLISHABLE_KEY ?? '';
-      return new Response(
+      return secureResponse(new Response(
         'window.__EA_RUNTIME_CONFIG__ = ' + JSON.stringify({ clerkPublishableKey: publishableKey }) + ';',
         {
           headers: {
@@ -24,19 +24,35 @@ const workerSource = `const worker = {
             'cache-control': 'no-store',
           },
         }
-      );
+      ));
     }
 
     const response = await env.ASSETS.fetch(request);
-    if (response.status !== 404 || request.method !== 'GET') return response;
+    if (response.status !== 404 || request.method !== 'GET') return secureResponse(response);
 
     const acceptsHtml = request.headers.get('accept')?.includes('text/html');
-    if (!acceptsHtml) return response;
+    if (!acceptsHtml) return secureResponse(response);
 
     const indexUrl = new URL('/index.html', request.url);
-    return env.ASSETS.fetch(new Request(indexUrl, request));
+    const indexResponse = await env.ASSETS.fetch(new Request(indexUrl, request));
+    return secureResponse(indexResponse, { html: true });
   },
 };
+
+function secureResponse(response, options = {}) {
+  const headers = new Headers(response.headers);
+  headers.set('x-content-type-options', 'nosniff');
+  headers.set('referrer-policy', 'strict-origin-when-cross-origin');
+  headers.set('permissions-policy', 'camera=(), microphone=(), geolocation=()');
+  headers.set('x-frame-options', 'DENY');
+  headers.set('content-security-policy', "base-uri 'self'; frame-ancestors 'none'; object-src 'none'");
+  if (options.html) headers.set('cache-control', 'no-cache');
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
 
 export default worker;
 `;
