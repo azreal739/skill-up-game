@@ -14,9 +14,13 @@ import { personaForSpeaker } from '@academy/content-model';
 import { GameStateService, SpeechService, SpokenLine } from '@academy/data-access';
 import { PersonaAvatarComponent, VoiceButtonComponent } from '@academy/ui';
 
-/** Ms per typewriter tick and characters revealed each tick (live panel). */
-const TICK_MS = 18;
-const CHARS_PER_TICK = 2;
+/**
+ * Ms per typewriter tick and characters revealed each tick (live panel).
+ * Paced to roughly track the spoken narration (~17 chars/s) rather than
+ * sprinting ahead of the voice.
+ */
+const TICK_MS = 56;
+const CHARS_PER_TICK = 1;
 
 /**
  * Persistent "comms" HUD anchored TOP-right, layered over the nav bar so it
@@ -52,22 +56,24 @@ const CHARS_PER_TICK = 2;
                     }}<span class="hud__cursor" [class.is-on]="speaking()" aria-hidden="true">▊</span>
                   </p>
                 </div>
-                <div class="hud__controls">
-                  @if (paused()) {
-                    <button type="button" class="hud__ctl" (click)="resume()" aria-label="Resume narration">
-                      ▶ Resume
-                    </button>
-                  } @else if (speaking()) {
-                    <button type="button" class="hud__ctl" (click)="pause()" aria-label="Pause narration">
-                      ⏸ Pause
-                    </button>
-                  }
-                  @if (speaking() || paused()) {
+                <!-- Only rendered while there is something to control, so the
+                     bubble carries no reserved empty space when idle. -->
+                @if (speaking() || paused()) {
+                  <div class="hud__controls">
+                    @if (paused()) {
+                      <button type="button" class="hud__ctl" (click)="resume()" aria-label="Resume narration">
+                        ▶ Resume
+                      </button>
+                    } @else {
+                      <button type="button" class="hud__ctl" (click)="pause()" aria-label="Pause narration">
+                        ⏸ Pause
+                      </button>
+                    }
                     <button type="button" class="hud__ctl hud__ctl--stop" (click)="stop()" aria-label="Stop narration">
                       ■ Stop
                     </button>
-                  }
-                </div>
+                  </div>
+                }
               </div>
               <ea-persona-avatar class="hud__avatar" [speaker]="l.speaker" [talking]="speaking()" />
             </div>

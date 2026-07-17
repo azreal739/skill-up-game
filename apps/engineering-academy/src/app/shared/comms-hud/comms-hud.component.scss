@@ -235,20 +235,21 @@
 }
 
 /*
- * The reading window: ~3 lines tall. The inner text is anchored to the
- * bottom, so as the typewriter adds lines the earlier ones flow out the top
- * (with a soft mask) — the newest words are always in view.
+ * The reading window: ~3 lines tall and SCROLLABLE. column-reverse keeps the
+ * scroll position anchored to the newest words while the typewriter adds
+ * lines, and lets the player scroll up to re-read everything that flowed out
+ * of view (a soft mask fades the top edge).
  */
 .hud__bubble-window {
   max-height: calc(0.9rem * 1.55 * 3);
-  overflow: hidden;
+  overflow-y: auto;
   display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
+  flex-direction: column-reverse;
+  scrollbar-width: thin;
   // Clear of the speaker name and the panel's top glow, so the first visible
   // line is never dimmed by either.
   margin-top: 0.45rem;
-  mask-image: linear-gradient(180deg, transparent 0, #000 0.9em, #000 100%);
+  mask-image: linear-gradient(180deg, transparent 0, #000 0.6em, #000 100%);
 }
 
 .hud__live-text {
@@ -273,7 +274,6 @@
   display: flex;
   gap: 0.45rem;
   margin-top: 0.45rem;
-  min-height: 1.5rem;
 }
 
 .hud__ctl {
