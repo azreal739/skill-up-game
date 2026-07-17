@@ -18,6 +18,12 @@ declare global {
   }
 }
 
+// Clerk publishable keys are intentionally safe to include in frontend code.
+// Keep this fallback hosted-only: local and shareable builds replace this
+// provider with the accountless implementation.
+const HOSTED_POC_CLERK_PUBLISHABLE_KEY =
+  'pk_test_dW5pZmllZC10cm9sbC05OC5jbGVyay5hY2NvdW50cy5kZXYk';
+
 @Injectable({ providedIn: 'root' })
 class ClerkAuthService implements AuthService {
   readonly enabled = true;
@@ -30,7 +36,9 @@ class ClerkAuthService implements AuthService {
   private removeListener: (() => void) | null = null;
 
   async initialize(): Promise<void> {
-    const publishableKey = window.__EA_RUNTIME_CONFIG__?.clerkPublishableKey?.trim();
+    const publishableKey =
+      window.__EA_RUNTIME_CONFIG__?.clerkPublishableKey?.trim() ||
+      HOSTED_POC_CLERK_PUBLISHABLE_KEY;
     if (!publishableKey) {
       this.fail('Authentication is not configured for this deployment yet.');
       return;
