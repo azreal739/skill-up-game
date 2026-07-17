@@ -12,6 +12,7 @@ import '../../../libs/academy/content/src/lib/content-integrity.spec';
 import '../../../libs/academy/data-access/src/lib/persistence.service.spec';
 import '../../../libs/academy/data-access/src/lib/speech-audio-cache.spec';
 import '../../../libs/academy/data-access/src/lib/speech-text.spec';
+import '../../../libs/academy/data-access/src/lib/speech.service.spec';
 import '../../../libs/academy/data-access/src/lib/game-state.service.spec';
 import '../../../libs/academy/data-access/src/lib/track-progress.service.spec';
 import '../../../libs/academy/data-access/src/lib/mission-session.service.spec';

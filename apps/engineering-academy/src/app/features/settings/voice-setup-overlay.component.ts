@@ -21,7 +21,10 @@ import { MentorDialogueComponent, PersonaAvatarComponent } from '@academy/ui';
         <p class="ea-eyebrow">{{ eyebrow }}</p>
         <h2 id="voice-setup-title" class="setup__title">{{ title }}</h2>
 
-        <ea-mentor-dialogue [blocks]="banter" [live]="true" [instant]="instant" />
+        <!-- voice=false: the engine is still loading, so narrating this
+             dialogue would park speaks that then collide with the greeting
+             and screen lines the moment calibration finishes. -->
+        <ea-mentor-dialogue [blocks]="banter" [live]="true" [instant]="instant" [voice]="false" />
 
         @if (speech.voiceCheck()) {
           <!-- The audible voice check: Mission Control actually says this. -->

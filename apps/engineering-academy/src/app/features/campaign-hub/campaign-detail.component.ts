@@ -78,7 +78,7 @@ export class CampaignDetailComponent {
         return;
       }
       spokenFor = campaign.id;
-      untracked(() => void this.speech.speak('Mission Control', this.campaignBriefLine()));
+      untracked(() => this.speech.sayAmbient('Mission Control', this.campaignBriefLine()));
     });
   }
 

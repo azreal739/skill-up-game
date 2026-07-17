@@ -205,7 +205,9 @@ export class AppComponent {
       const text = enrolled
         ? `Welcome to the team, ${name}. I'm Mission Control — I'll run point on your missions. Your first briefing is ready whenever you are.`
         : `Welcome back, ${name}. Good to have you on the channel.`;
-      void this.speech.speak('Mission Control', text);
+      // Ambient: queues politely, so the screen's own arrival line (spoken
+      // from the same 'ready' transition) can't cancel the welcome mid-word.
+      this.speech.sayAmbient('Mission Control', text);
     });
   }
 

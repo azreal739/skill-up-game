@@ -71,6 +71,14 @@ export class SpeechService implements OnDestroy {
     phase: 'generating' | 'playing' | 'paused';
   } | null>(null);
 
+  /**
+   * The pending "ambient" line (screen-arrival conversation). Ambient lines
+   * are polite: they never interrupt the line being spoken — the newest one
+   * waits its turn instead, and a newer ambient line replaces a waiting one.
+   */
+  private pendingAmbient: { speaker: string; text: string } | null = null;
+  private ambientDraining = false;
+
   /** speak() calls parked while the engine finishes loading. */
   private readyWaiters: Array<() => void> = [];
   /** Cap on how long a briefing line waits for the engine to finish loading. */
@@ -143,6 +151,43 @@ export class SpeechService implements OnDestroy {
   }
 
   /**
+   * Speak an ambient conversation line (screen arrivals: the greeting, hub
+   * recommendation, path/campaign drill-ins, backlog nudge). Unlike speak(),
+   * it never cuts off whatever is currently being said — it queues behind it.
+   * Only ONE ambient line waits at a time: a newer one replaces it (the
+   * player has moved on), and any explicit speak()/cancel() clears it.
+   */
+  sayAmbient(speaker: string, text: string): void {
+    if (!this.active() || !text.trim()) {
+      return;
+    }
+    this.pendingAmbient = { speaker, text };
+    this.maybeDrainAmbient();
+  }
+
+  /** Start playing the waiting ambient line if nothing else is speaking. */
+  private maybeDrainAmbient(): void {
+    if (this.ambientDraining || !this.pendingAmbient || this.nowPlayingState() !== null) {
+      return;
+    }
+    void this.drainAmbient();
+  }
+
+  private async drainAmbient(): Promise<void> {
+    this.ambientDraining = true;
+    try {
+      // A new ambient line queued while this one plays is picked up next.
+      while (this.pendingAmbient) {
+        const line = this.pendingAmbient;
+        this.pendingAmbient = null;
+        await this.speakAll([line]);
+      }
+    } finally {
+      this.ambientDraining = false;
+    }
+  }
+
+  /**
    * Speak a sequence of lines back to back (e.g. a whole briefing), each in
    * its own persona's voice, as ONE cancellable playback: skip, navigation
    * or another speak() stops the entire sequence. Later lines are prefetched
@@ -197,6 +242,8 @@ export class SpeechService implements OnDestroy {
     } finally {
       if (token === this.playToken) {
         this.nowPlayingState.set(null);
+        // An ambient line may have queued up politely while this played.
+        this.maybeDrainAmbient();
       }
     }
   }
@@ -225,6 +272,9 @@ export class SpeechService implements OnDestroy {
 
     const ready = this.cache.get(key);
     if (ready) {
+      if (token !== this.playToken) {
+        return;
+      }
       markPlaybackStarted();
       setPhase('playing');
       await this.playChunks(ready, token);
@@ -234,17 +284,20 @@ export class SpeechService implements OnDestroy {
     setPhase('generating');
     // Resolve the line (persistent cache → in-flight prefetch → fresh
     // generation). A fresh generation streams: sentences play as they land.
+    // Everything below is token-guarded: a line cancelled while its audio was
+    // still generating must not play OR be recorded in the comms log.
     let streamed = false;
     let playback: Promise<void> = Promise.resolve();
     const chunks = await this.ensureChunks(key, speaker, text, (blob) => {
+      if (token !== this.playToken) {
+        return;
+      }
       if (!streamed) {
         streamed = true;
         markPlaybackStarted();
         setPhase('playing');
       }
-      if (token === this.playToken) {
-        playback = playback.then(() => this.playBlob(blob, token));
-      }
+      playback = playback.then(() => this.playBlob(blob, token));
     });
     if (streamed) {
       await playback;
@@ -313,6 +366,9 @@ export class SpeechService implements OnDestroy {
   /** Stop current playback and invalidate any in-flight speak(). */
   cancel(): void {
     this.playToken++;
+    // Whatever was waiting its turn belongs to a moment the player just
+    // dismissed / replaced — drop it rather than surprise them later.
+    this.pendingAmbient = null;
     this.nowPlayingState.set(null);
     if (this.current) {
       const { audio, url, finish } = this.current;

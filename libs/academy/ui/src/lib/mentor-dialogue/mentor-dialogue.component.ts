@@ -109,6 +109,14 @@ export class MentorDialogueComponent implements OnChanges, OnDestroy {
   /** Render everything immediately (reduced motion). */
   @Input() instant = false;
   /**
+   * Narrate blocks through the speech player. Turn OFF for dialogues that
+   * must stay visual-only (e.g. the voice-calibration overlay: its speaks
+   * would park behind the loading engine and then collide with the real
+   * post-calibration narration). When off, this dialogue also never issues
+   * player.cancel() — it has no claim on the global voice channel.
+   */
+  @Input() voice = true;
+  /**
    * Optional spoken preamble (e.g. mission title + summary). When narration
    * is active in live mode, it is spoken first and the transmission holds
    * until it finishes — so the typewriter only starts at the persona voices.
@@ -146,7 +154,9 @@ export class MentorDialogueComponent implements OnChanges, OnDestroy {
     this.runId++;
     this.clearTimer();
     this.introActive.set(false);
-    this.player?.cancel();
+    if (this.voice) {
+      this.player?.cancel();
+    }
   }
 
   /** Re-run the whole briefing from the top (intro, then transmission). */
@@ -161,7 +171,9 @@ export class MentorDialogueComponent implements OnChanges, OnDestroy {
     this.runId++;
     this.clearTimer();
     this.introActive.set(false);
-    this.player?.cancel();
+    if (this.voice) {
+      this.player?.cancel();
+    }
     this.revealedCount.set(this.blocks.length);
     this.typed.set('');
   }
@@ -170,12 +182,14 @@ export class MentorDialogueComponent implements OnChanges, OnDestroy {
     this.runId++;
     this.clearTimer();
     this.introActive.set(false);
-    this.player?.cancel();
+    if (this.voice) {
+      this.player?.cancel();
+    }
     if (!this.live || this.instant) {
       this.revealedCount.set(this.blocks?.length ?? 0);
       return;
     }
-    if (this.player && !this.player.active()) {
+    if (this.voice && this.player && !this.player.active()) {
       // Breadcrumb for "the briefing didn't speak" reports: names the state
       // that explains the silence (engine off after an error, etc.).
       console.info('Narration engine not active — briefing will type silently.');
@@ -183,7 +197,7 @@ export class MentorDialogueComponent implements OnChanges, OnDestroy {
     this.revealedCount.set(0);
     // Spoken intro first (when there is one and voice is on); the persona
     // transmission only begins once it finishes.
-    if (this.introLine && this.player?.active()) {
+    if (this.introLine && this.voice && this.player?.active()) {
       this.playIntro();
     } else {
       this.beginBlock();
@@ -217,7 +231,7 @@ export class MentorDialogueComponent implements OnChanges, OnDestroy {
       // Narration runs alongside the typewriter; the block only settles when
       // both are done, so the avatar keeps talking to the end of the line.
       this.speechDone =
-        this.player?.active() && block
+        this.voice && this.player?.active() && block
           ? this.player.speak(block.speaker, block.text).catch(() => undefined)
           : Promise.resolve();
       this.typeFrom(0, run);

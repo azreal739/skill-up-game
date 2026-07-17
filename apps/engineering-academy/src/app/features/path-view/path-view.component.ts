@@ -65,11 +65,15 @@ export class PathViewComponent {
         return;
       }
       spokenFor = path.track.id;
+      // The full drill-in announcement: what this path IS (its description),
+      // where you stand, then the recommended next step (campaign + mission).
       const text = path.next
-        ? `${path.track.title}. ${path.campaignsDone} of ${path.campaignsTotal} campaigns cleared. ` +
+        ? `${path.track.title}. ${path.track.blurb} ` +
+          `${path.campaignsDone} of ${path.campaignsTotal} campaigns cleared. ` +
           `Your next step is ${path.next.mission.title}, in ${path.next.campaign.title}.`
-        : `${path.track.title} is fully cleared. Outstanding work, operator — replay any campaign for a perfect run.`;
-      untracked(() => void this.speech.speak('Mission Control', text));
+        : `${path.track.title}. ${path.track.blurb} ` +
+          `Fully cleared — outstanding work, operator. Replay any campaign for a perfect run.`;
+      untracked(() => this.speech.sayAmbient('Mission Control', text));
     });
   }
 
