@@ -56,24 +56,29 @@ const CHARS_PER_TICK = 1;
                     }}<span class="hud__cursor" [class.is-on]="speaking()" aria-hidden="true">▊</span>
                   </p>
                 </div>
-                <!-- Only rendered while there is something to control, so the
-                     bubble carries no reserved empty space when idle. -->
-                @if (speaking() || paused()) {
-                  <div class="hud__controls">
-                    @if (paused()) {
-                      <button type="button" class="hud__ctl" (click)="resume()" aria-label="Resume narration">
-                        ▶ Resume
-                      </button>
-                    } @else {
-                      <button type="button" class="hud__ctl" (click)="pause()" aria-label="Pause narration">
-                        ⏸ Pause
-                      </button>
-                    }
+                <!-- Always rendered so the bubble never changes height when a
+                     transmission starts/ends: playback controls while live, a
+                     Replay control for the settled line otherwise. -->
+                <div class="hud__controls">
+                  @if (paused()) {
+                    <button type="button" class="hud__ctl" (click)="resume()" aria-label="Resume narration">
+                      ▶ Resume
+                    </button>
+                  } @else if (speaking()) {
+                    <button type="button" class="hud__ctl" (click)="pause()" aria-label="Pause narration">
+                      ⏸ Pause
+                    </button>
+                  } @else {
+                    <button type="button" class="hud__ctl" (click)="replay()" aria-label="Replay last line">
+                      ↻ Replay
+                    </button>
+                  }
+                  @if (speaking() || paused()) {
                     <button type="button" class="hud__ctl hud__ctl--stop" (click)="stop()" aria-label="Stop narration">
                       ■ Stop
                     </button>
-                  </div>
-                }
+                  }
+                </div>
               </div>
               <ea-persona-avatar class="hud__avatar" [speaker]="l.speaker" [talking]="speaking()" />
             </div>
@@ -226,6 +231,14 @@ export class CommsHudComponent {
 
   protected stop(): void {
     this.speech.cancel();
+  }
+
+  /** Replay the settled live line (cached audio, so it starts instantly). */
+  protected replay(): void {
+    const line = this.live();
+    if (line) {
+      void this.speech.speak(line.speaker, line.text);
+    }
   }
 
   private retype(line: SpokenLine | null, speaking: boolean): void {
