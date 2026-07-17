@@ -13,32 +13,34 @@ JavaScript assets. Local storage is also controlled by the person using that
 browser; user-scoped save keys provide separation and migration behavior, not
 encryption or protection from someone with device access.
 
-## Pre-beta risk acceptance and operating boundary
+## Pre-beta operating boundary
 
-For controlled pre-beta testing, the project accepts the limitations of the
-client-side gate and the Clerk development instance. This is an operational
-admission control and deterrence measure, not cryptographic protection of the
-public JavaScript or curriculum assets.
+Anonymous visitors must not receive the Academy JavaScript bundle. The current
+Clerk integration runs inside that bundle, so it cannot enforce this
+requirement by itself: once Sites is public, the Worker serves the bundle before
+the Angular guard or Clerk UI runs.
 
 The accepted boundary is:
 
 - Hosted use requires an internet connection.
 - The app has no protected backend APIs or sensitive server-side user data.
   Academy progress remains in device-local storage.
-- Only trusted testers are approved through the Clerk waitlist.
-- Public Sites access is enabled only for an explicitly approved, time-boxed
-  testing window. The default state remains owner-only/private.
-- Clerk and Sites usage are monitored during the window. Unexpected traffic,
-  authentication anomalies, or the end of the window triggers an immediate
-  return to owner-only/private access.
+- Only trusted testers are approved through both the Sites access policy and
+  the Clerk waitlist.
+- Sites remains owner-only/private or explicitly allowlisted for every tester.
+  Do not switch it to public while the Worker serves assets without first
+  verifying authentication.
+- Clerk and Sites usage are monitored during testing. Unexpected traffic or
+  authentication anomalies trigger removal of tester access or a return to
+  owner-only access.
 - A Clerk session lasting a day or longer is acceptable for these trusted
   testing windows. The actual session lifetime is a Clerk Dashboard policy and
   must be reviewed there rather than assumed from the Angular implementation.
 
 The current POC uses a Clerk development instance (`pk_test_`). Its relaxed
-security posture is accepted only for this narrow pre-beta phase. A production
-instance and owned production domain are deferred until the product name and
-hosting environment are settled.
+security posture is accepted only behind the Sites outer access gate for this
+narrow pre-beta phase. A production instance and owned production domain are
+deferred until the product name and hosting environment are settled.
 
 ## Required before V1 or protected server data
 
@@ -74,27 +76,24 @@ inaccessible to an unauthorized visitor.
 - Saves remain Zod-validated and device-local, with explicit migration from the
   legacy accountless key.
 
-## Pre-beta public-window runbook
+## Pre-beta tester-access runbook
 
 1. Confirm Clerk waitlist mode is enabled and only the intended trusted testers
    are approved or invited.
-2. Confirm the Site is owner-only/private and record the current access policy
-   before opening the window.
-3. Set a start and end time, then explicitly change Sites access to public at
-   the start. Do not leave it public indefinitely.
-4. In a signed-out incognito window, confirm the public URL reaches Clerk's
-   sign-in or waitlist experience and does not render the Academy shell.
+2. Add the tester explicitly to the Sites access policy; do not change the Site
+   to public.
+3. In a signed-out incognito window that is not an allowed Sites user, confirm
+   the hosting gate blocks the request before Clerk or Academy code loads.
+4. Have the allowlisted tester pass the Sites gate, then confirm Clerk still
+   requires sign-in or waitlist approval before rendering the Academy shell.
 5. Approve the tester, complete sign-in, and verify that their progress uses a
    separate device-local save.
 6. Monitor Clerk sign-ins/waitlist entries and Sites usage for unexpected
    activity during the test.
-7. At the end of the window—or immediately after suspicious activity—restore
-   owner-only/private Sites access.
-8. Recheck the public URL in incognito and confirm the Sites hosting gate now
-   blocks access before Clerk loads.
+7. Remove the tester from the Sites policy when their testing access ends.
 
-Changing the Sites access policy requires explicit approval for each testing
-window. It is not part of a normal code deployment.
+Changing the Sites access policy requires explicit approval. It is not part of
+a normal code deployment.
 
 ## Manual pre-beta bypass test
 
@@ -111,10 +110,9 @@ authorization.
    render first.
 4. Use the browser Back and Forward buttons after sign-out. Cached screens must
    not restore an authenticated Academy shell.
-5. Open a private/incognito window. While Sites is owner-only, the hosting
-   platform should challenge the visitor before Clerk loads. During an
-   explicitly approved public window, the same test should reach Clerk's
-   sign-in or waitlist screen without rendering the Academy shell.
+5. Open a private/incognito window that is not allowlisted by Sites. The
+   hosting platform must challenge the visitor before Clerk loads or the
+   Academy bundle is returned.
 6. In the normal signed-out window, create or edit only Academy local-storage
    save keys. Local progress must not sign the user in or unlock protected
    routes. Do not copy or modify real Clerk session tokens.
@@ -124,6 +122,7 @@ authorization.
 
 Expected conclusion: URL guessing, refreshes, browser history, and Academy save
 tampering do not bypass the normal Clerk flow. A determined visitor can still
-modify client JavaScript once the Site is public, which is why these tests do
-not protect public client content. Worker-side authorization remains required
-before adding protected APIs or private server data.
+modify client JavaScript if the Site becomes public. Worker-side authentication
+must protect asset delivery before any public release where anonymous visitors
+must not receive the Academy bundle. Worker-side authorization also remains
+required before adding protected APIs or private server data.
