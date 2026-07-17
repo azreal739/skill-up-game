@@ -115,7 +115,69 @@ Deferred (NOT built — would be engine work, ask for review first): fully
 interactive challenge types (animated diagrams, metronome timing, mock-sheet UI)
 and a per-path terminology re-skin (e.g. "Judge Points").
 
-## Done this session (branch `claude/academy-auth-account-layer-uoa5ua`)
+## Done this session (branch `claude/engineering-academy-ui-enhancements-y6i2l1` + PR #125)
+
+Two streams this session — Claude-authored UI/voice refinement rounds, and a
+review of a parallel agent PR. **All merged.**
+
+**Claude-authored refinements (PRs #110-#123, incremental, each verified +
+user-merged):** device-test feedback loop on the comms HUD and narration —
+- **Narration content/ordering:** `SpeechService.sayAmbient()` (screen-arrival
+  lines queue politely, never cut off the current line; one waiter, newer
+  replaces; speak()/cancel() clears) fixed the enrolment collision where only
+  the last of greeting/hub-rec/calibration played and cancelled lines still
+  hit the comms log; `speakLine` token-guards recording (no ghost log
+  entries). Path/campaign/hub drill-ins now speak their description +
+  standing + next step, hub names its **path**. Mission narration announces
+  "Mission: {title}" and "Challenge N of M — {title}"; feedback leads with
+  "Correct."/"Incorrect." and frames each MC option ("Your answer — …" / "The
+  correct answer."); Academy Review speaks its verdict too.
+- **Comms HUD:** portrait top-aligned + bigger (116/88px), tail at the face,
+  text clear of the name glow, **log collapsed by default**; bubble is a fixed
+  size in every state (no jump) with an always-present control row (Pause/Stop
+  while live, **Replay** when idle); 3-line window is scrollable; typewriter
+  slowed to ~18 ch/s to track speech.
+- **Other:** route-loader **glow sphere** + centred cluster fix; Mission Brief
+  button moved out from under the HUD into a **sidebar Mission Briefing card**;
+  mission-brief + contextual-help **drawers fly in from the LEFT** (HUD owns
+  the right); **Archivist voice af_nicole → `bf_emma`** (was too sleepy) —
+  bundled-voice list in package-academy-local.mjs updated to match.
+
+**PR #125 (Sol/Codex agent, branch `agent/academy-immersive-hud-voice`) —
+merged, Claude reviewed.** Six-item immersive pass; reproduced green
+(build/lint, **166 tests**, smoke) + visual QA. What the next session must
+know about it:
+- **Wave background restored + enhanced** — it had vanished behind the
+  `html { background }` white-flash fix; fixed with `isolation: isolate` on the
+  `ea-root` `:host` (new stacking context). Additive `lighter` blend, 3-pass
+  strokes, telemetry-packet dashes, vignette. Reduced-motion still draws one
+  static frame.
+- **Comms HUD moved BELOW the nav** (`top: 4.35rem` desktop / `7.8rem` mobile,
+  z 55) so Clerk's account button is never covered; **compact mode** = mini
+  avatar chip + bubble underneath (up-tail), bubble independently collapsible.
+- **Briefing transmission equalizer** now gated to real playback
+  (`briefingTransmitting`/`briefingPreparing` off `speech.nowPlaying()`);
+  freezes + says "Transmission complete" when done.
+- **Avatar speaking border**: idle glow softened (opacity .58) + a bright
+  carrier segment travels the frame while speaking (SVG `pathLength`).
+- **Pre-enrolment settings**: Settings route un-guarded; chosen prefs persist
+  to `engineering-academy:preferences` (scoped like the save) and merge into
+  the new profile at enrolment (then cleared). `GameStateService` gained a
+  `pendingSettingsSignal`; Transfer/Progress sections hidden until a profile
+  exists. Landing gained privacy line, 3 feature cards, "How the Academy
+  works". **Note: voice still defaults ON pre-enrolment**, so a brand-new
+  visitor can trigger the model download on the landing page — left as-is by
+  user decision; flip `SETTINGS_DEFAULTS.voiceEnabled` to false if that
+  becomes unwanted.
+
+**Still pending (needs a real machine — HF blocked in this sandbox):** build
+the full-model shareable zip (`node tools/package-academy-local.mjs`) and
+publish it as a GitHub Release asset; on-device **voice listen-test** of the
+whole narration stack now that bf_emma + ambient-queue + transmission-settle
+are live. Dispatch (desktop app) or a plain local CLI session can do both;
+`--cloud` cannot (cloud sandbox blocks HF).
+
+## Done earlier (branch `claude/academy-auth-account-layer-uoa5ua`)
 
 **Hosted auth (Clerk) is live — PR #122, merged.** The user built it (via
 Codex, branch `codex/clerk-auth-poc`); Claude's role was PR review (two
