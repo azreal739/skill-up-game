@@ -159,7 +159,15 @@ export class MissionPlayerComponent implements OnDestroy {
         return;
       }
       this.lastQuestionPlayed = key;
-      const text = `${run.challenge.storyContext} ${run.challenge.prompt}`;
+      // Announce which challenge this is before the scenario, so the player
+      // always knows where they are in the mission: "Challenge 1 of 3 —
+      // Choose the Interface." (single-challenge missions skip the count).
+      const total = this.session.totalChallenges();
+      const stage =
+        total > 1
+          ? `Challenge ${this.session.challengeIndex() + 1} of ${total} — ${run.challenge.title}.`
+          : `Challenge: ${run.challenge.title}.`;
+      const text = `${stage} ${run.challenge.storyContext} ${run.challenge.prompt}`;
       untracked(() => void this.speech.speak('Mission Control', text));
     });
 
@@ -290,7 +298,7 @@ export class MissionPlayerComponent implements OnDestroy {
       return [];
     }
     return [
-      { speaker: 'Mission Control', text: `${mission.title}. ${mission.summary}` },
+      { speaker: 'Mission Control', text: `Mission: ${mission.title}. ${mission.summary}` },
       ...mission.briefing.map((block) => ({ speaker: block.speaker, text: block.text })),
     ];
   });
