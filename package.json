@@ -4,7 +4,7 @@
   "scripts": {
     "start": "nx serve skill-up-game",
     "start:academy": "nx serve engineering-academy",
-    "build:academy:site": "nx build engineering-academy && node apps/engineering-academy/build-sites.mjs",
+    "build:academy:site": "nx build engineering-academy --configuration=hosted && node apps/engineering-academy/build-sites.mjs",
     "build": "nx run-many -t build",
     "watch": "nx build skill-up-game --watch --configuration development",
     "test": "nx run-many -t test -- --watch=false",
@@ -21,6 +21,7 @@
     "@angular/platform-browser": "^20.3.25",
     "@angular/platform-browser-dynamic": "^20.3.25",
     "@angular/router": "^20.3.25",
+    "@clerk/clerk-js": "^6.25.5",
     "chess.js": "^1.0.0",
     "kokoro-js": "^1.2.1",
     "rxjs": "~7.8.0",

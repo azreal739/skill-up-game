@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateFn, Router } from '@angular/router';
 import { ContentService, GameStateService } from '@academy/data-access';
+import { authGuard } from './core/auth/auth.guard';
 
 /** Screens that need a save file redirect to the landing screen. */
 export const profileGuard: CanActivateFn = () => {
@@ -38,7 +39,7 @@ export const missionUnlockedGuard: CanActivateFn = (route: ActivatedRouteSnapsho
     : router.parseUrl('/campaigns');
 };
 
-export const appRoutes: Routes = [
+const academyRoutes: Routes = [
   {
     path: '',
     loadComponent: () =>
@@ -110,4 +111,24 @@ export const appRoutes: Routes = [
       import('./features/settings/settings.component').then((m) => m.SettingsComponent),
   },
   { path: '**', redirectTo: '' },
+];
+
+export const appRoutes: Routes = [
+  {
+    path: 'sign-in',
+    data: { mode: 'sign-in' },
+    loadComponent: () =>
+      import('./core/auth/auth-page.component').then((m) => m.AuthPageComponent),
+  },
+  {
+    path: 'waitlist',
+    data: { mode: 'waitlist' },
+    loadComponent: () =>
+      import('./core/auth/auth-page.component').then((m) => m.AuthPageComponent),
+  },
+  {
+    path: '',
+    canActivate: [authGuard],
+    children: academyRoutes,
+  },
 ];

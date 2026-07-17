@@ -13,6 +13,20 @@ await cp(angularOutput, resolve(sitesOutput, 'client'), { recursive: true });
 
 const workerSource = `const worker = {
   async fetch(request, env) {
+    const url = new URL(request.url);
+    if (url.pathname === '/runtime-config.js') {
+      const publishableKey = env.CLERK_PUBLISHABLE_KEY ?? '';
+      return new Response(
+        'window.__EA_RUNTIME_CONFIG__ = ' + JSON.stringify({ clerkPublishableKey: publishableKey }) + ';',
+        {
+          headers: {
+            'content-type': 'application/javascript; charset=utf-8',
+            'cache-control': 'no-store',
+          },
+        }
+      );
+    }
+
     const response = await env.ASSETS.fetch(request);
     if (response.status !== 404 || request.method !== 'GET') return response;
 

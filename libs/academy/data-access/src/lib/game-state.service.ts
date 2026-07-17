@@ -175,6 +175,16 @@ export class GameStateService {
     this.stateSignal.set(null);
   }
 
+  /** Adopt a validated accountless save after the player explicitly opts in. */
+  adoptUnscopedSave(): boolean {
+    const state = this.persistence.adoptUnscopedSave();
+    if (!state) {
+      return false;
+    }
+    this.stateSignal.set(state);
+    return true;
+  }
+
   /** Serialise the current save for export (facilitation / backup). */
   exportState(): string {
     return JSON.stringify(this.requireState(), null, 2);
