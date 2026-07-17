@@ -189,6 +189,14 @@ export class ReviewComponent {
     if (result.newBadges.length > 0) {
       this.audio.play('badge');
     }
+    // Spoken verdict, matching the mission flow: the listener should never
+    // have to read the banner to learn how their answer landed.
+    if (this.autoNarrateActive()) {
+      const text = result.remediated
+        ? 'Correct. Technical debt remediated — you have corrected your understanding.'
+        : 'Not correct this time. No penalty in review — revisit the explanation and try again when ready.';
+      void this.speech.speak('Senior Dev', text);
+    }
   }
 
   tryReviewAgain(): void {

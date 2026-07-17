@@ -319,11 +319,21 @@ export class MissionPlayerComponent implements OnDestroy {
    * (mirrors what the option list displays).
    */
   protected spokenFeedback(challenge: ChallengeDefinition, evaluation: EvaluationResult): string {
-    const verdict = evaluation.correct ? 'Decision confirmed.' : 'Not quite.';
+    // Lead with an unambiguous verdict — voice-first players hear this before
+    // (or instead of) reading the UI's "Decision confirmed" banner.
+    const verdict = evaluation.correct ? 'Correct. Decision confirmed.' : 'Incorrect.';
     const lines = [verdict, evaluation.correct ? challenge.successFeedback : challenge.failureFeedback];
     for (const outcome of evaluation.options) {
       if (outcome.feedback && (outcome.wasSelected || outcome.isCorrect)) {
-        lines.push(outcome.feedback);
+        // Frame each option so the listener knows what the feedback refers to:
+        // their own pick (right or wrong), or the correct answer they missed.
+        const frame =
+          outcome.wasSelected && outcome.isCorrect
+            ? 'Your answer — correct.'
+            : outcome.wasSelected
+              ? 'Your answer — incorrect.'
+              : 'The correct answer.';
+        lines.push(`${frame} ${outcome.feedback}`);
       }
     }
     return lines.filter(Boolean).join(' ');
