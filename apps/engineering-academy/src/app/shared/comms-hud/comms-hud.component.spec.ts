@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
 
-import { SpeechService, SpeechStatus, SpokenLine } from '@academy/data-access';
+import { GameStateService, SpeechService, SpeechStatus, SpokenLine } from '@academy/data-access';
 
 import { CommsHudComponent } from './comms-hud.component';
 
@@ -15,15 +15,33 @@ class FakeSpeech {
   }
 }
 
+/** The HUD only reads the log's collapse preference from settings. */
+class FakeGameState {
+  collapsed = signal(false);
+  settings() {
+    return { commsLogCollapsed: this.collapsed() };
+  }
+  updateSettings(patch: { commsLogCollapsed?: boolean }): void {
+    if (patch.commsLogCollapsed !== undefined) {
+      this.collapsed.set(patch.commsLogCollapsed);
+    }
+  }
+}
+
 describe('CommsHudComponent', () => {
   let fixture: ComponentFixture<CommsHudComponent>;
   let speech: FakeSpeech;
+  let gameState: FakeGameState;
 
   beforeEach(async () => {
     speech = new FakeSpeech();
+    gameState = new FakeGameState();
     await TestBed.configureTestingModule({
       imports: [CommsHudComponent],
-      providers: [{ provide: SpeechService, useValue: speech }],
+      providers: [
+        { provide: SpeechService, useValue: speech },
+        { provide: GameStateService, useValue: gameState },
+      ],
     }).compileComponents();
     fixture = TestBed.createComponent(CommsHudComponent);
   });
@@ -78,5 +96,19 @@ describe('CommsHudComponent', () => {
       el.textContent?.trim()
     );
     expect(names).toEqual(['Team Lead', 'Senior Dev']);
+  });
+
+  it('keeps the log collapsed when the setting says so (the default)', () => {
+    gameState.collapsed.set(true);
+    speech.status.set('ready');
+    speech.spokenHistory.set([
+      { id: 1, speaker: 'Senior Dev', text: 'One.' },
+      { id: 2, speaker: 'Mission Control', text: 'Two.' },
+    ]);
+    fixture.detectChanges();
+
+    // Toggle row shows with its count, but no message bodies render.
+    expect(html().querySelector('.hud__toggle-count')?.textContent).toContain('1');
+    expect(html().querySelectorAll('.hud__msg').length).toBe(0);
   });
 });
