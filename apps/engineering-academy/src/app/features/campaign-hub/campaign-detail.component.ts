@@ -82,7 +82,10 @@ export class CampaignDetailComponent {
     });
   }
 
-  /** The spoken drill-in line: campaign standing + the next actionable mission. */
+  /**
+   * The spoken drill-in line: what this campaign IS (its description), the
+   * player's standing, then the next actionable mission.
+   */
   private campaignBriefLine(): string {
     const campaign = this.campaign();
     if (!campaign) {
@@ -97,12 +100,12 @@ export class CampaignDetailComponent {
       (node) => node.state === 'in-progress' || node.state === 'available'
     );
     if (this.campaignComplete() || !next) {
-      return `${campaign.title}: all ${total} missions complete. Replay any of them for a perfect, hint-free run.`;
+      return `${campaign.title}. ${campaign.description} All ${total} missions complete — replay any of them for a perfect, hint-free run.`;
     }
     const standing =
       done === 0 ? 'No missions flown yet' : `${done} of ${total} missions complete`;
     const verb = next.state === 'in-progress' ? 'Resume' : 'Next up';
-    return `${campaign.title}. ${standing}. ${verb}: ${next.mission.title}.`;
+    return `${campaign.title}. ${campaign.description} ${standing}. ${verb}: ${next.mission.title}.`;
   }
 
   protected readonly campaign = computed(() => this.content.campaignById(this.campaignId()));
