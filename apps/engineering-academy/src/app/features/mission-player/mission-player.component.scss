@@ -73,30 +73,20 @@
     border-radius: 2px;
     background: var(--ea-accent);
     transform-origin: bottom;
-    animation: briefing-wave 1s ease-in-out infinite;
+    transform: scaleY(0.24);
 
     &:nth-child(2) {
-      animation-delay: 0.12s;
+      transform: scaleY(0.45);
     }
     &:nth-child(3) {
-      animation-delay: 0.24s;
+      transform: scaleY(0.7);
     }
     &:nth-child(4) {
-      animation-delay: 0.36s;
+      transform: scaleY(0.45);
     }
     &:nth-child(5) {
-      animation-delay: 0.48s;
+      transform: scaleY(0.24);
     }
-  }
-}
-
-@keyframes briefing-wave {
-  0%,
-  100% {
-    transform: scaleY(0.3);
-  }
-  50% {
-    transform: scaleY(1);
   }
 }
 

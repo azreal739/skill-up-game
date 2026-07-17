@@ -1,7 +1,14 @@
 import { Injectable, InjectionToken, inject, signal } from '@angular/core';
-import { PlayerState, migrateSave, playerStateSchema } from '@academy/content-model';
+import {
+  PlayerSettings,
+  PlayerState,
+  migrateSave,
+  playerStateSchema,
+  settingsSchema,
+} from '@academy/content-model';
 
 const SAVE_KEY = 'engineering-academy:save';
+const PREFERENCES_KEY = 'engineering-academy:preferences';
 const MIGRATION_KEY = 'engineering-academy:save-migration';
 
 /** Optional hosted-auth identity used only to namespace this device's save. */
@@ -17,6 +24,9 @@ export const SAVE_SCOPE = new InjectionToken<string | null>('EA_SAVE_SCOPE', {
 export class PersistenceService {
   private readonly scope = inject(SAVE_SCOPE);
   private readonly scopedSaveKey = this.scope ? `${SAVE_KEY}:${this.scope}` : SAVE_KEY;
+  private readonly scopedPreferencesKey = this.scope
+    ? `${PREFERENCES_KEY}:${this.scope}`
+    : PREFERENCES_KEY;
   private readonly migrationKey = this.scope ? `${MIGRATION_KEY}:${this.scope}` : null;
   private readonly migrationPendingSignal = signal(this.shouldOfferMigration());
 
@@ -24,6 +34,37 @@ export class PersistenceService {
 
   load(): PlayerState | null {
     return this.loadKey(this.scopedSaveKey);
+  }
+
+  /** Preferences chosen before enrolment live independently of a profile. */
+  loadPreferences(): PlayerSettings | null {
+    try {
+      const raw = localStorage.getItem(this.scopedPreferencesKey);
+      if (raw === null) {
+        return null;
+      }
+      const result = settingsSchema.safeParse(JSON.parse(raw));
+      return result.success ? result.data : null;
+    } catch (error) {
+      console.error('[persistence] failed to load pre-enrolment preferences', error);
+      return null;
+    }
+  }
+
+  savePreferences(settings: PlayerSettings): void {
+    try {
+      localStorage.setItem(this.scopedPreferencesKey, JSON.stringify(settings));
+    } catch (error) {
+      console.error('[persistence] failed to save pre-enrolment preferences', error);
+    }
+  }
+
+  clearPreferences(): void {
+    try {
+      localStorage.removeItem(this.scopedPreferencesKey);
+    } catch (error) {
+      console.error('[persistence] failed to clear pre-enrolment preferences', error);
+    }
   }
 
   private loadKey(key: string): PlayerState | null {
@@ -57,6 +98,7 @@ export class PersistenceService {
   clear(): void {
     try {
       localStorage.removeItem(this.scopedSaveKey);
+      localStorage.removeItem(this.scopedPreferencesKey);
     } catch (error) {
       console.error('[persistence] failed to clear save state', error);
     }

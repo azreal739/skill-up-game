@@ -204,6 +204,39 @@ button {
   }
 }
 
+/* Mission briefing equalizer is global to keep the already-dense player
+   component under its per-component stylesheet budget. */
+.briefing__transmission.is-active .briefing__wave span {
+  animation: briefing-wave 1s ease-in-out infinite;
+}
+
+.briefing__transmission.is-active .briefing__wave span:nth-child(2) {
+  animation-delay: 0.12s;
+}
+
+.briefing__transmission.is-active .briefing__wave span:nth-child(3) {
+  animation-delay: 0.24s;
+}
+
+.briefing__transmission.is-active .briefing__wave span:nth-child(4) {
+  animation-delay: 0.36s;
+}
+
+.briefing__transmission.is-active .briefing__wave span:nth-child(5) {
+  animation-delay: 0.48s;
+}
+
+@keyframes briefing-wave {
+  0%,
+  100% {
+    transform: scaleY(0.3);
+  }
+
+  50% {
+    transform: scaleY(1);
+  }
+}
+
 .ea-chip {
   display: inline-flex;
   align-items: center;

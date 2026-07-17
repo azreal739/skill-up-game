@@ -64,7 +64,7 @@ interface CastMember {
       .cast {
         position: fixed;
         inset: 0;
-        z-index: 60;
+        z-index: 80;
         display: grid;
         place-items: center;
         padding: 1.5rem;

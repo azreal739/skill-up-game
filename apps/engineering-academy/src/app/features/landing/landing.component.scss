@@ -55,6 +55,14 @@
   line-height: 1.7;
 }
 
+.hero__privacy {
+  max-width: 36rem;
+  margin: 0.75rem auto 0;
+  color: color-mix(in srgb, var(--ea-accent) 62%, var(--ea-muted));
+  font-family: var(--ea-mono);
+  font-size: 0.72rem;
+}
+
 .hero__actions {
   margin-top: 2rem;
   display: flex;
@@ -129,4 +137,35 @@
 
 .feature__icon {
   font-size: 1.6rem;
+}
+
+.how-it-works {
+  display: grid;
+  grid-template-columns: minmax(12rem, 0.75fr) minmax(18rem, 1.5fr);
+  gap: 2rem;
+  align-items: start;
+
+  h2 {
+    margin-top: 0.35rem;
+    font-size: 1.45rem;
+  }
+
+  ol {
+    margin: 0;
+    padding-left: 1.25rem;
+    display: grid;
+    gap: 0.75rem;
+    color: var(--ea-muted);
+  }
+
+  strong {
+    color: var(--ea-text);
+  }
+}
+
+@media (max-width: 640px) {
+  .how-it-works {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
 }

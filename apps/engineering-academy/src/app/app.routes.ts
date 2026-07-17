@@ -106,7 +106,6 @@ const academyRoutes: Routes = [
   },
   {
     path: 'settings',
-    canActivate: [profileGuard],
     loadComponent: () =>
       import('./features/settings/settings.component').then((m) => m.SettingsComponent),
   },

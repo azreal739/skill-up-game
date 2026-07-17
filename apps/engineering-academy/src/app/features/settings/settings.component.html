@@ -1,7 +1,13 @@
 <div class="settings ea-page">
   <header>
     <p class="ea-eyebrow">Settings</p>
-    <h1>Mission preferences</h1>
+    <h1>{{ gameState.hasProfile() ? 'Mission preferences' : 'Set up your experience' }}</h1>
+    @if (!gameState.hasProfile()) {
+      <p class="settings__intro">
+        Choose your audio, mentor voice and accessibility preferences before you enrol.
+        They will carry into your new operator profile.
+      </p>
+    }
   </header>
 
   <section class="group ea-panel">
@@ -173,6 +179,7 @@
     </label>
   </section>
 
+  @if (gameState.hasProfile()) {
   <section class="group ea-panel">
     <h2>Transfer</h2>
     <p class="group__note">
@@ -200,6 +207,7 @@
       Reset all progress
     </button>
   </section>
+  }
 </div>
 
 @if (speech.status() === 'loading') {

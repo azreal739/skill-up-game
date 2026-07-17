@@ -38,8 +38,17 @@ describe('PersistenceService', () => {
 
   it('clears the save', () => {
     service.save(createPlayerState('Avery'));
+    service.savePreferences(createPlayerState('Avery').settings);
     service.clear();
     expect(service.load()).toBeNull();
+    expect(service.loadPreferences()).toBeNull();
+  });
+
+  it('round-trips preferences before a profile exists', () => {
+    const settings = { ...createPlayerState('Avery').settings, voiceEnabled: false };
+    service.savePreferences(settings);
+
+    expect(service.loadPreferences()).toEqual(settings);
   });
 
   it('migrates a v1 save forward, preserving progress and adding empty collections', () => {

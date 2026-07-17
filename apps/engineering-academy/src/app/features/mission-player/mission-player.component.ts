@@ -303,6 +303,30 @@ export class MissionPlayerComponent implements OnDestroy {
     ];
   });
 
+  /** The briefing equalizer only moves while one of its lines is audible. */
+  protected readonly briefingTransmitting = computed(() => {
+    const now = this.speech.nowPlaying();
+    return (
+      this.session.phase() === 'briefing' &&
+      now?.phase === 'playing' &&
+      this.briefingLines().some(
+        (line) => line.speaker === now.speaker && line.text === now.text
+      )
+    );
+  });
+
+  /** Audio generation is part of the briefing, but is not yet transmission. */
+  protected readonly briefingPreparing = computed(() => {
+    const now = this.speech.nowPlaying();
+    return (
+      this.session.phase() === 'briefing' &&
+      now?.phase === 'generating' &&
+      this.briefingLines().some(
+        (line) => line.speaker === now.speaker && line.text === now.text
+      )
+    );
+  });
+
   /**
    * Who voices the post-answer debrief: Mission Control confirms a correct
    * decision; the Senior Dev coaches a miss. (Keeps the tone right — a win

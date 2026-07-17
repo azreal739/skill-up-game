@@ -111,4 +111,24 @@ describe('CommsHudComponent', () => {
     expect(html().querySelector('.hud__toggle-count')?.textContent).toContain('1');
     expect(html().querySelectorAll('.hud__msg').length).toBe(0);
   });
+
+  it('collapses to a mini avatar with a separately collapsible bubble', () => {
+    speech.status.set('ready');
+    speech.spokenHistory.set([
+      { id: 1, speaker: 'Mission Control', text: 'Your next briefing is ready.' },
+    ]);
+    fixture.detectChanges();
+
+    (html().querySelector('.hud__minimise') as HTMLButtonElement).click();
+    fixture.detectChanges();
+    expect(html().querySelector('.hud__compact-avatar')).not.toBeNull();
+    expect(html().querySelector('.hud__compact-bubble')?.textContent).toContain(
+      'Your next briefing is ready.'
+    );
+
+    (html().querySelector('.hud__bubble-collapse') as HTMLButtonElement).click();
+    fixture.detectChanges();
+    expect(html().querySelector('.hud__compact-bubble')).toBeNull();
+    expect(html().querySelector('.hud__bubble-restore')).not.toBeNull();
+  });
 });

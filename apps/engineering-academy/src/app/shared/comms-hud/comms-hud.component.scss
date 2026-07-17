@@ -5,10 +5,10 @@
 .hud {
   position: fixed;
   right: 1rem;
-  // Tucked into the top-right corner, layered over the nav bar (which keeps
-  // its left/centre clear) so it never covers the page content below.
-  top: 0.45rem;
-  z-index: 60;
+  // Clear the navigation bar so Clerk's account control always remains
+  // visible and clickable in the top-right corner.
+  top: 4.35rem;
+  z-index: 55;
   width: 430px;
   max-width: calc(100vw - 3rem);
   display: flex;
@@ -16,6 +16,11 @@
   gap: 0.7rem;
   // Let clicks through the wrapper's gaps; the panels re-enable pointer events.
   pointer-events: none;
+}
+
+.hud--compact {
+  width: 310px;
+  align-items: flex-end;
 }
 
 .hud > * {
@@ -163,6 +168,7 @@
 }
 
 .hud__live-inner {
+  position: relative;
   display: flex;
   // Portrait top-aligned with the bubble so the face sits beside the speaker
   // name, not below the text.
@@ -170,6 +176,149 @@
   gap: 0.8rem;
   width: 100%;
   animation: hud-fade 0.32s ease;
+}
+
+.hud__minimise {
+  position: absolute;
+  z-index: 2;
+  top: -0.55rem;
+  right: -0.5rem;
+  width: 1.65rem;
+  height: 1.65rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--live-accent, var(--ea-accent)) 55%, var(--ea-border));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ea-bg-0, #070a14) 92%, transparent);
+  color: var(--ea-text);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 5px 16px rgba(0, 0, 0, 0.35);
+
+  &:hover {
+    border-color: var(--live-accent, var(--ea-accent));
+    box-shadow: 0 0 14px color-mix(in srgb, var(--live-accent, var(--ea-accent)) 30%, transparent);
+  }
+}
+
+/* ---- compact speaker: account-sized portrait, bubble underneath ---- */
+
+.hud__compact {
+  width: min(290px, calc(100vw - 1.5rem));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  pointer-events: auto;
+  animation: hud-fade 0.24s ease;
+}
+
+.hud__compact-avatar-button {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  padding: 2px;
+  border: 1px solid color-mix(in srgb, var(--live-accent, var(--ea-accent)) 58%, var(--ea-border));
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--ea-bg-0, #070a14) 84%, transparent);
+  cursor: pointer;
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.42),
+    0 0 16px color-mix(in srgb, var(--live-accent, var(--ea-accent)) 18%, transparent);
+}
+
+.hud__compact-avatar {
+  width: 50px;
+  height: 50px;
+}
+
+.hud__compact-expand {
+  position: absolute;
+  right: -0.3rem;
+  bottom: -0.3rem;
+  width: 1.2rem;
+  height: 1.2rem;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--ea-text);
+  color: var(--ea-bg-0, #070a14);
+  font-size: 0.65rem;
+  font-weight: 900;
+}
+
+.hud__compact-bubble {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 0.75rem;
+  padding: 0.75rem 2.2rem 0.6rem 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--live-accent, var(--ea-accent)) 60%, var(--ea-border));
+  border-radius: 15px;
+  border-top-right-radius: 5px;
+  background:
+    radial-gradient(
+      120% 140% at 88% 0%,
+      color-mix(in srgb, var(--live-accent, var(--ea-accent)) 18%, transparent),
+      transparent 60%
+    ),
+    color-mix(in srgb, var(--ea-bg-0, #070a14) 88%, transparent);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+
+  // Up-pointing tail aimed at the mini speaker portrait.
+  &::before {
+    content: '';
+    position: absolute;
+    top: -7px;
+    right: 20px;
+    width: 13px;
+    height: 13px;
+    transform: rotate(45deg);
+    border-left: 1px solid
+      color-mix(in srgb, var(--live-accent, var(--ea-accent)) 60%, var(--ea-border));
+    border-top: 1px solid
+      color-mix(in srgb, var(--live-accent, var(--ea-accent)) 60%, var(--ea-border));
+    background: color-mix(in srgb, var(--ea-bg-0, #070a14) 92%, transparent);
+  }
+}
+
+.hud__bubble-collapse {
+  position: absolute;
+  top: 0.45rem;
+  right: 0.55rem;
+  width: 1.4rem;
+  height: 1.4rem;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--live-accent, var(--ea-accent)) 14%, transparent);
+  color: var(--ea-muted);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--ea-text);
+  }
+}
+
+.hud__bubble-restore {
+  margin-top: 0.65rem;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--ea-border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ea-bg-0, #070a14) 84%, transparent);
+  color: var(--ea-muted);
+  font-family: var(--ea-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--ea-text);
+    border-color: var(--live-accent, var(--ea-accent));
+  }
 }
 
 .hud__bubble {
@@ -348,7 +497,7 @@
 @media (max-width: 640px) {
   .hud {
     right: 0.75rem;
-    top: 0.5rem;
+    top: 7.8rem;
     width: min(360px, calc(100vw - 1.5rem));
   }
 

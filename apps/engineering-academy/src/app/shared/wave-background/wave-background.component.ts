@@ -31,6 +31,7 @@ const ORANGE: [number, number, number] = [251, 146, 60];
 const RED: [number, number, number] = [248, 113, 113];
 
 const WAVES: WaveSpec[] = [
+  { baseY: 0.28, amplitude: 18, wavelength: 980, speed: 0.00018, seed: 1.2, calm: VIOLET, hot: ORANGE },
   { baseY: 0.42, amplitude: 26, wavelength: 780, speed: 0.00022, seed: 0.0, calm: CYAN, hot: ORANGE },
   { baseY: 0.58, amplitude: 34, wavelength: 620, speed: 0.0003, seed: 2.1, calm: VIOLET, hot: RED },
   { baseY: 0.72, amplitude: 22, wavelength: 900, speed: 0.00026, seed: 4.4, calm: CYAN, hot: ORANGE },
@@ -77,6 +78,7 @@ const NODE_INTERVAL = 3400;
     <canvas #canvas class="waves" aria-hidden="true"></canvas>
     <div class="grid" aria-hidden="true"></div>
     <div class="scanlines" aria-hidden="true"></div>
+    <div class="vignette" aria-hidden="true"></div>
   `,
   styles: [
     `
@@ -126,6 +128,16 @@ const NODE_INTERVAL = 3400;
           transparent 4px
         );
         animation: scan-drift 9s linear infinite;
+      }
+
+      /* Keeps the centre legible while letting the restored waves burn a
+         little brighter around the edges of the command deck. */
+      .vignette {
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(ellipse at 50% 45%, transparent 28%, rgba(7, 10, 20, 0.2) 76%),
+          linear-gradient(180deg, rgba(7, 10, 20, 0.12), transparent 24%, rgba(7, 10, 20, 0.2));
       }
 
       @keyframes grid-drift {
@@ -333,6 +345,7 @@ export class WaveBackgroundComponent implements AfterViewInit, OnDestroy {
 
     ctx.clearRect(0, 0, this.width, this.height);
     ctx.lineCap = 'round';
+    ctx.globalCompositeOperation = 'lighter';
 
     for (const wave of WAVES) {
       this.drawWave(ctx, wave, now);
@@ -342,6 +355,7 @@ export class WaveBackgroundComponent implements AfterViewInit, OnDestroy {
       this.drawParticles(ctx);
       this.drawNodes(ctx, now);
     }
+    ctx.globalCompositeOperation = 'source-over';
   }
 
   private blend(calm: [number, number, number], hot: [number, number, number]): string {
@@ -361,12 +375,14 @@ export class WaveBackgroundComponent implements AfterViewInit, OnDestroy {
     const kRipple = k * 3.7;
 
     const color = this.blend(wave.calm, wave.hot);
-    const alpha = 0.05 + this.brightness * 0.1;
+    const alpha = 0.075 + this.brightness * 0.14;
 
-    // Two passes: a wide faint stroke as glow, a thin brighter core.
+    // Three passes: an atmospheric bloom, a readable wave, then a crisp
+    // carrier core. The additive canvas blend makes crossings light up.
     for (const pass of [
-      { width: 4.5, alpha: alpha * 0.5 },
-      { width: 1.6, alpha },
+      { width: 9, alpha: alpha * 0.16 },
+      { width: 3.5, alpha: alpha * 0.45 },
+      { width: 1.15, alpha },
     ]) {
       ctx.beginPath();
       for (let x = 0; x <= this.width + SEGMENT_PX; x += SEGMENT_PX) {
@@ -384,6 +400,26 @@ export class WaveBackgroundComponent implements AfterViewInit, OnDestroy {
       ctx.lineWidth = pass.width;
       ctx.stroke();
     }
+
+    // A sparse stream of bright telemetry packets rides each sine wave.
+    ctx.setLineDash([2, 34]);
+    ctx.lineDashOffset = -(now * wave.speed * 42 + wave.seed * 18);
+    ctx.beginPath();
+    for (let x = 0; x <= this.width + SEGMENT_PX; x += SEGMENT_PX) {
+      const y =
+        baseY +
+        wave.amplitude * Math.sin(x * k + wave.seed + t) +
+        rippleAmp * Math.sin(x * kRipple + wave.seed * 3 + t * 2.6);
+      if (x === 0) {
+        ctx.moveTo(x, y);
+      } else {
+        ctx.lineTo(x, y);
+      }
+    }
+    ctx.strokeStyle = `rgba(${color}, ${alpha * 1.9})`;
+    ctx.lineWidth = 1.8;
+    ctx.stroke();
+    ctx.setLineDash([]);
   }
 
   private drawParticles(ctx: CanvasRenderingContext2D): void {

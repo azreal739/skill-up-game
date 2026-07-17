@@ -268,8 +268,10 @@ const STYLES: Record<PersonaDefinition['id'], PortraitStyle> = {
           }
         </g>
 
-        <!-- active-speaker ring -->
+        <!-- Active-speaker border: a restrained glow plus a bright carrier
+             segment travelling around the frame only while speech is live. -->
         <rect class="pa__glow" x="3" y="3" width="106" height="122" rx="19" fill="none" [attr.stroke]="persona.accent" stroke-width="2" />
+        <rect class="pa__signal" x="3" y="3" width="106" height="122" rx="19" fill="none" [attr.stroke]="persona.accent" stroke-width="2.8" pathLength="100" />
       </g>
     </svg>
   `,

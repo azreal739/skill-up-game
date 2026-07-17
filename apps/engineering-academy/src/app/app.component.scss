@@ -1,3 +1,9 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  isolation: isolate;
+}
+
 .topbar {
   display: flex;
   align-items: center;
@@ -11,8 +17,8 @@
   z-index: 50;
 }
 
-/* Left and right columns share flex so the nav sits dead-centre; the fixed
-   comms HUD occupies the top-right corner over the right column. */
+/* Left and right columns share flex so the nav sits dead-centre. The comms
+   HUD now starts below the bar, leaving the account control unobstructed. */
 .topbar__left {
   flex: 1 1 0;
   min-width: 0;
@@ -197,16 +203,22 @@
 
 @media (max-width: 700px) {
   .topbar {
+    position: sticky;
     flex-wrap: wrap;
     gap: 0.6rem;
   }
 
   .topbar__left {
     flex: 1 1 100%;
+    padding-right: 2.75rem;
   }
 
   .topbar__right {
-    display: none;
+    position: absolute;
+    top: 0.65rem;
+    right: 1rem;
+    display: flex;
+    min-width: 2rem;
   }
 
   .topbar__status {

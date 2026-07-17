@@ -21,6 +21,19 @@ describe('GameStateService', () => {
     expect(service.xp()).toBe(0);
   });
 
+  it('persists pre-enrolment settings and applies them to the new profile', () => {
+    service.updateSettings({ voiceEnabled: false, reducedMotion: true });
+
+    expect(service.hasProfile()).toBeFalse();
+    expect(service.settings().voiceEnabled).toBeFalse();
+    expect(localStorage.getItem('engineering-academy:preferences')).toContain('voiceEnabled');
+
+    service.createProfile('Avery');
+    expect(service.settings().voiceEnabled).toBeFalse();
+    expect(service.settings().reducedMotion).toBeTrue();
+    expect(localStorage.getItem('engineering-academy:preferences')).toBeNull();
+  });
+
   it('creates a Deck Initiate I profile and persists it', () => {
     service.createProfile('Avery');
     expect(service.hasProfile()).toBeTrue();
