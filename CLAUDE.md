@@ -115,7 +115,42 @@ Deferred (NOT built — would be engine work, ask for review first): fully
 interactive challenge types (animated diagrams, metronome timing, mock-sheet UI)
 and a per-path terminology re-skin (e.g. "Judge Points").
 
-## Done this session (branch `claude/engineering-academy-ui-enhancements-y6i2l1`, PRs #110-#112, all merged)
+## Done this session (branch `claude/academy-auth-account-layer-uoa5ua`)
+
+**Hosted auth (Clerk) is live — PR #122, merged.** The user built it (via
+Codex, branch `codex/clerk-auth-poc`); Claude's role was PR review (two
+rounds; all five actionable findings fixed in `ea19798`). What the next
+session must know:
+
+- **Two modes.** Local/dev/shareable builds stay 100% accountless:
+  `app/core/auth/auth.provider.ts` provides `NoAuthService`. The `hosted`
+  build configuration (project.json) swaps it for `auth.provider.clerk.ts`
+  via `fileReplacements`. `npm run build:academy:site` = hosted build +
+  `apps/engineering-academy/build-sites.mjs` → a Sites worker bundle
+  (serves `/runtime-config.js` from `CLERK_PUBLISHABLE_KEY` env, SPA
+  fallback, security headers, `no-cache` on all text/html).
+- **Per-user local saves.** `SAVE_SCOPE` injection token
+  (persistence.service.ts): hosted signed-in saves live at
+  `engineering-academy:save:<clerkUserId>`; an existing accountless save
+  triggers a one-time adopt/keep prompt (`SaveMigrationComponent`, copy
+  semantics — the unscoped original is never deleted). Sign-out preserves
+  saves. **Invariant: `SAVE_SCOPE` is captured once per page load**, so
+  `syncUser()` forces a full document navigation on every auth transition —
+  never convert that to SPA navigation.
+- **Fragile coupling:** `@clerk/clerk-js` is pinned exactly (6.25.5) and
+  loads the UI via the internal `__internal_ClerkUICtor` + `@clerk/ui@1`
+  CDN URL — bump Clerk only deliberately, testing sign-in.
+- **Security boundary:** the Angular guard is a client-side UX gate, NOT
+  authorization — anonymous visitors would still get the JS bundle. **Do
+  not make the Sites project public**; trusted testers only via Sites
+  allowlist + Clerk waitlist. Threat model, pre-public checklist, and
+  tester runbook: `docs/engineering-academy/22_HOSTED_AUTH_SECURITY.md`.
+- The Supabase auth+sync spec drafted earlier this session was superseded
+  by this Clerk POC before it was built. Cloud saves / cross-device sync
+  remain NOT built (a future phase; the auth user id would be the owner
+  key).
+
+## Done earlier (branch `claude/engineering-academy-ui-enhancements-y6i2l1`, PRs #110-#112, all merged)
 
 Seven user-requested UI enhancements + two device-test feedback rounds, all
 verified (build/test/lint + committed smoke + a seeded-save Playwright visual
