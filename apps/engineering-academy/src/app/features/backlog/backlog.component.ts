@@ -58,7 +58,7 @@ export class BacklogComponent {
           : this.totalItems() > 0
             ? 'Backlog is clear — every item remediated. That is exactly how debt should be handled.'
             : 'No technical debt on the books. Keep shipping.';
-      untracked(() => void this.speech.speak('Senior Dev', text));
+      untracked(() => this.speech.sayAmbient('Senior Dev', text));
     });
   }
 

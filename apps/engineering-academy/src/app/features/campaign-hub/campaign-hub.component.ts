@@ -39,7 +39,7 @@ export class CampaignHubComponent {
       }
       spokenFor = rec.mission.id;
       untracked(() =>
-        void this.speech.speak(
+        this.speech.sayAmbient(
           'Mission Control',
           `Recommended next: ${rec.mission.title}, in ${rec.campaign.title}. Jump in when ready.`
         )
