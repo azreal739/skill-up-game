@@ -33,8 +33,9 @@ export const PERSONAS: readonly PersonaDefinition[] = [
   { id: 'team-lead', speaker: 'Team Lead', accent: '#fcd34d', voiceId: 'af_bella' },
   { id: 'mentor-judge', speaker: 'Mentor Judge', accent: '#e9a3f5', voiceId: 'af_heart' },
   { id: 'head-judge', speaker: 'Head Judge', accent: '#fda4af', voiceId: 'bm_george' },
-  // Reads the Help Centre: calm, soft-spoken (af_nicole is Kokoro's 🎧 voice).
-  { id: 'archivist', speaker: 'Academy Archivist', accent: '#b9c6e8', voiceId: 'af_nicole' },
+  // Reads the Help Centre: bright, engaged British "librarian" (bf_emma) —
+  // af_nicole (Kokoro's whisper voice) tested as too slow and sleepy.
+  { id: 'archivist', speaker: 'Academy Archivist', accent: '#b9c6e8', voiceId: 'bf_emma' },
 ];
 
 const GENERIC_PERSONA: Omit<PersonaDefinition, 'speaker'> = {
