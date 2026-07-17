@@ -115,10 +115,31 @@ Deferred (NOT built — would be engine work, ask for review first): fully
 interactive challenge types (animated diagrams, metronome timing, mock-sheet UI)
 and a per-path terminology re-skin (e.g. "Judge Points").
 
-## Done this session (branch `claude/engineering-academy-ui-enhancements-y6i2l1`)
+## Done this session (branch `claude/engineering-academy-ui-enhancements-y6i2l1`, PRs #110-#112, all merged)
 
-Seven user-requested UI enhancements, all verified (build/test/lint + committed
-smoke + a seeded-save Playwright visual suite with screenshots):
+Seven user-requested UI enhancements + two device-test feedback rounds, all
+verified (build/test/lint + committed smoke + a seeded-save Playwright visual
+suite with screenshots):
+
+- **HUD polish (PR #111, from device feedback):** live portrait top-aligned
+  beside the bubble + bigger (96→116px, 72→88 small screens), tail moved up
+  to point at the face, reading window dropped 0.45rem clear of the name/glow,
+  comms log **collapsed by default** (`commsLogCollapsed` default true in
+  SETTINGS_DEFAULTS + schema; stored prefs win, so pre-existing saves keep
+  their old choice until toggled once).
+- **Narration collisions fixed (PR #112, from device feedback):** on fresh
+  enrolment the greeting / hub recommendation / calibration banter all raced
+  at engine-ready — each speak() cancels the last, so only the final line
+  played, and cancelled lines still hit the comms log (chunk arrived post-
+  cancel). Now: `SpeechService.sayAmbient()` — screen-arrival lines (greeting,
+  hub rec, path/campaign drill-ins, backlog nudge) queue politely behind the
+  current line, one waiter max (newer replaces), explicit speak()/cancel()
+  clears; `speakLine` token-guards recording (no ghost log entries);
+  `ea-mentor-dialogue` got a `voice` input and the calibration overlay sets
+  `voice=false` (its banter had parked speaks behind the loading engine and
+  its ngOnDestroy cancel killed the greeting); path drill-in now speaks the
+  track blurb first. **Found: `speech.service.spec.ts` was never registered
+  in `academy-libs.spec.ts` and had silently never run — registered now.**
 
 - **Header/HUD restructure:** topbar is now brand + player status (rank/XP)
   LEFT, nav CENTERED (flex spacers both sides), and the comms HUD moved from
