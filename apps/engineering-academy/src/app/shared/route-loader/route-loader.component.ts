@@ -64,7 +64,10 @@ const FADE_OUT_MS = 180;
   template: `
     @if (visible()) {
       <div class="route-loader" [class.route-loader--out]="leaving()" role="status" aria-label="Loading">
-        <canvas #canvas class="route-loader__canvas" aria-hidden="true"></canvas>
+        <div class="route-loader__orb">
+          <span class="route-loader__halo" aria-hidden="true"></span>
+          <canvas #canvas class="route-loader__canvas" aria-hidden="true"></canvas>
+        </div>
         <span class="route-loader__label">Tuning in…</span>
       </div>
     }
