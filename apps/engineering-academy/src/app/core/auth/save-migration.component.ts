@@ -15,10 +15,10 @@ import { GameStateService, PersistenceService } from '@academy/data-access';
             signed-in profile on this device. The original local save will be kept either way.
           </p>
           <div class="migration-card__actions">
-            <button type="button" class="ea-button ea-button--primary" (click)="useExisting()">
+            <button type="button" class="ea-btn ea-btn--primary" (click)="useExisting()">
               Use existing progress
             </button>
-            <button type="button" class="ea-button ea-button--secondary" (click)="startFresh()">
+            <button type="button" class="ea-btn" (click)="startFresh()">
               Start fresh
             </button>
           </div>

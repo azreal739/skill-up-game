@@ -46,7 +46,8 @@ function secureResponse(response, options = {}) {
   headers.set('permissions-policy', 'camera=(), microphone=(), geolocation=()');
   headers.set('x-frame-options', 'DENY');
   headers.set('content-security-policy', "base-uri 'self'; frame-ancestors 'none'; object-src 'none'");
-  if (options.html) headers.set('cache-control', 'no-cache');
+  const isHtml = options.html || headers.get('content-type')?.includes('text/html');
+  if (isHtml) headers.set('cache-control', 'no-cache');
   return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,

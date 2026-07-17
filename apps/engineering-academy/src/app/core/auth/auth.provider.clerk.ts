@@ -34,6 +34,7 @@ class ClerkAuthService implements AuthService {
 
   private clerk: Clerk | null = null;
   private removeListener: (() => void) | null = null;
+  private hasSyncedUser = false;
 
   async initialize(): Promise<void> {
     const publishableKey =
@@ -88,11 +89,17 @@ class ClerkAuthService implements AuthService {
   private syncUser(): void {
     const wasSignedIn = this.signedIn();
     const user = this.clerk?.user;
+    const isSignedIn = Boolean(user);
     this.userId.set(user?.id ?? null);
-    this.signedIn.set(Boolean(user));
-    if (wasSignedIn && !user) {
-      window.location.assign('/sign-in');
+    this.signedIn.set(isSignedIn);
+
+    if (this.hasSyncedUser && wasSignedIn !== isSignedIn) {
+      // SAVE_SCOPE is captured when PersistenceService is constructed. Force a
+      // new document after either auth transition so saves can never continue
+      // under the previous account's scope if Clerk changes its SPA behavior.
+      window.location.assign(isSignedIn ? window.location.href : '/sign-in');
     }
+    this.hasSyncedUser = true;
   }
 
   private fail(message: string): void {
@@ -119,6 +126,8 @@ async function loadClerkUi(publishableKey: string): Promise<void> {
   const clerkDomain = atob(encodedDomain).slice(0, -1);
   await new Promise<void>((resolve, reject) => {
     const script = document.createElement('script');
+    // This internal UI constructor is coupled to the exact clerk-js version
+    // pinned in package.json and the Clerk UI major pinned in this URL.
     script.src = `https://${clerkDomain}/npm/@clerk/ui@1/dist/ui.browser.js`;
     script.async = true;
     script.crossOrigin = 'anonymous';
