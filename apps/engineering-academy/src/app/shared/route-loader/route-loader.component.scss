@@ -3,7 +3,11 @@
   inset: 0;
   z-index: 40;
   display: grid;
-  place-items: center;
+  // place-CONTENT (not just items): with auto rows in a full-viewport grid,
+  // stretched rows floated the rings high and the label low — the loader
+  // must read as ONE centred cluster.
+  place-content: center;
+  justify-items: center;
   gap: 0.6rem;
   pointer-events: none;
   background: radial-gradient(
@@ -19,9 +23,46 @@
   opacity: 0;
 }
 
+.route-loader__orb {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+/*
+ * Glow sphere behind the rings: a soft cyan core inside a violet-edged halo,
+ * breathing gently so the loader pops against any page. Sits behind the
+ * canvas; the breathe animation is killed globally under reduced motion.
+ */
+.route-loader__halo {
+  position: absolute;
+  width: 210px;
+  height: 210px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at center, rgba(34, 211, 238, 0.45), transparent 42%),
+    radial-gradient(circle at center, rgba(167, 139, 250, 0.28), transparent 70%);
+  filter: blur(8px);
+  animation: route-loader-breathe 2.4s ease-in-out infinite;
+}
+
 .route-loader__canvas {
+  position: relative;
   width: 120px;
   height: 120px;
+}
+
+@keyframes route-loader-breathe {
+  0%,
+  100% {
+    opacity: 0.75;
+    transform: scale(0.94);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
 }
 
 .route-loader__label {
