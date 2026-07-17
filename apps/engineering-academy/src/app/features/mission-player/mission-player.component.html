@@ -43,11 +43,23 @@
             <ea-mentor-dialogue [blocks]="mission.briefing" [instant]="true" />
           } @else {
             <!-- Voice on: the transmission is carried by the comms HUD. -->
-            <div class="briefing__transmission" role="status">
+            <div
+              class="briefing__transmission"
+              [class.is-active]="briefingTransmitting()"
+              role="status"
+            >
               <span class="briefing__wave" aria-hidden="true">
                 <span></span><span></span><span></span><span></span><span></span>
               </span>
-              <p>Incoming transmission — your mentors are briefing you. Watch the comms panel ↘</p>
+              <p>
+                @if (briefingTransmitting()) {
+                  Incoming transmission — your mentors are briefing you. Watch the comms panel ↘
+                } @else if (briefingPreparing()) {
+                  Preparing the next transmission — your briefing will continue in a moment.
+                } @else {
+                  Transmission complete — replay it from the briefing title or continue when ready.
+                }
+              </p>
             </div>
           }
 

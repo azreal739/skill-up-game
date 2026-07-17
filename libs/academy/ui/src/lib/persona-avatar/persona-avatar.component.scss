@@ -19,6 +19,13 @@
   transition: opacity 0.5s ease;
 }
 
+.pa__signal {
+  opacity: 0;
+  stroke-linecap: round;
+  stroke-dasharray: 9 91;
+  transition: opacity 0.35s ease;
+}
+
 .pa__open {
   opacity: 0;
 }
@@ -69,8 +76,14 @@
 
 // Speaking: ring held (with a soft glow breath), mouth talks, bust bobs.
 :host(.pa-talking) .pa__glow {
-  opacity: 1;
+  opacity: 0.58;
   animation: pa-ring 2.6s ease-in-out infinite;
+}
+
+:host(.pa-talking) .pa__signal {
+  opacity: 1;
+  animation: pa-signal-lap 1.7s linear infinite;
+  filter: drop-shadow(0 0 2px var(--pa-accent)) drop-shadow(0 0 5px var(--pa-accent));
 }
 
 :host(.pa-talking) .pa__bust {
@@ -92,6 +105,12 @@
   }
   50% {
     filter: drop-shadow(0 0 7px var(--pa-accent));
+  }
+}
+
+@keyframes pa-signal-lap {
+  to {
+    stroke-dashoffset: -100;
   }
 }
 

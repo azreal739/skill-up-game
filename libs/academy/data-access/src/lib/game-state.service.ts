@@ -22,6 +22,7 @@ import {
   playerStateSchema,
   rankForXp,
   rankProgress,
+  SETTINGS_DEFAULTS,
 } from '@academy/content-model';
 import { PersistenceService } from './persistence.service';
 import { createId } from './id';
@@ -122,7 +123,11 @@ export interface NoteInput {
 export class GameStateService {
   private readonly persistence = inject(PersistenceService);
 
-  private readonly stateSignal = signal<PlayerState | null>(this.persistence.load());
+  private readonly initialState = this.persistence.load();
+  private readonly stateSignal = signal<PlayerState | null>(this.initialState);
+  private readonly pendingSettingsSignal = signal<PlayerSettings>(
+    this.initialState?.settings ?? this.persistence.loadPreferences() ?? { ...SETTINGS_DEFAULTS }
+  );
 
   readonly state = this.stateSignal.asReadonly();
   readonly hasProfile = computed(() => this.stateSignal() !== null);
@@ -134,9 +139,7 @@ export class GameStateService {
   readonly levelProgress = computed(() => levelProgress(this.xp()));
   readonly badges = computed(() => this.stateSignal()?.badges ?? []);
   readonly meters = computed(() => this.stateSignal()?.meters ?? initialMeters());
-  readonly settings = computed(
-    () => this.stateSignal()?.settings ?? createPlayerState('').settings
-  );
+  readonly settings = computed(() => this.stateSignal()?.settings ?? this.pendingSettingsSignal());
 
   // Technical Debt Review Loop read surface (Review Loop spec 04/07).
   readonly technicalDebtItems = computed(() => this.stateSignal()?.technicalDebtItems ?? []);
@@ -167,12 +170,17 @@ export class GameStateService {
   }
 
   createProfile(name: string, callsign = ''): void {
-    this.commit(createPlayerState(name, callsign));
+    this.commit({
+      ...createPlayerState(name, callsign),
+      settings: { ...this.pendingSettingsSignal() },
+    });
+    this.persistence.clearPreferences();
   }
 
   resetProgress(): void {
     this.persistence.clear();
     this.stateSignal.set(null);
+    this.pendingSettingsSignal.set({ ...SETTINGS_DEFAULTS });
   }
 
   /** Adopt a validated accountless save after the player explicitly opts in. */
@@ -211,6 +219,11 @@ export class GameStateService {
   }
 
   updateSettings(patch: Partial<PlayerSettings>): void {
+    if (!this.stateSignal()) {
+      this.pendingSettingsSignal.update((settings) => ({ ...settings, ...patch }));
+      this.persistence.savePreferences(this.pendingSettingsSignal());
+      return;
+    }
     this.mutate((state) => ({ ...state, settings: { ...state.settings, ...patch } }));
   }
 

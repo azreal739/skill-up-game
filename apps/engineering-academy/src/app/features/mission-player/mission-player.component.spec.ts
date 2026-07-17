@@ -22,6 +22,7 @@ describe('MissionPlayerComponent narration lifecycle', () => {
   let speakAll: jasmine.Spy;
   let cancel: jasmine.Spy;
   let setAlert: jasmine.Spy;
+  let nowPlaying: ReturnType<typeof signal<Record<string, string> | null>>;
 
   beforeEach(async () => {
     const mission = signal<{ id: string } | null>(null);
@@ -30,6 +31,7 @@ describe('MissionPlayerComponent narration lifecycle', () => {
     speakAll = jasmine.createSpy('speakAll').and.returnValue(Promise.resolve());
     cancel = jasmine.createSpy('cancel');
     setAlert = jasmine.createSpy('setAlert');
+    nowPlaying = signal<Record<string, string> | null>(null);
 
     const settings = signal({
       voiceEnabled: true,
@@ -83,6 +85,7 @@ describe('MissionPlayerComponent narration lifecycle', () => {
             active: () => active,
             speakAll,
             speak: jasmine.createSpy('speak').and.returnValue(Promise.resolve()),
+            nowPlaying,
             cancel,
           },
         },
@@ -109,6 +112,32 @@ describe('MissionPlayerComponent narration lifecycle', () => {
 
     expect(cancel).toHaveBeenCalled();
     expect(setAlert).toHaveBeenCalledWith(false);
+  });
+
+  it('stops the briefing equalizer when the transmission finishes', () => {
+    const component = fixture.componentInstance as unknown as {
+      briefingTransmitting: () => boolean;
+      briefingPreparing: () => boolean;
+    };
+    nowPlaying.set({
+      phase: 'generating',
+      speaker: 'Mission Control',
+      text: 'Mission: Mission one. Summary',
+    });
+    expect(component.briefingPreparing()).toBeTrue();
+    expect(component.briefingTransmitting()).toBeFalse();
+
+    nowPlaying.set({
+      phase: 'playing',
+      speaker: 'Mission Control',
+      text: 'Mission: Mission one. Summary',
+    });
+    expect(component.briefingTransmitting()).toBeTrue();
+    expect(component.briefingPreparing()).toBeFalse();
+
+    nowPlaying.set(null);
+    expect(component.briefingTransmitting()).toBeFalse();
+    expect(component.briefingPreparing()).toBeFalse();
   });
 
   it('auto-narrates the briefing again when the mission is replayed', () => {

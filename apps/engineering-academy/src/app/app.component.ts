@@ -96,9 +96,7 @@ import { SaveMigrationComponent } from './core/auth/save-migration.component';
           <a routerLink="/profile" routerLinkActive="is-active">Profile</a>
         }
         <a routerLink="/help" routerLinkActive="is-active">Help Centre</a>
-        @if (gameState.hasProfile()) {
-          <a routerLink="/settings" routerLinkActive="is-active">Settings</a>
-        }
+        <a routerLink="/settings" routerLinkActive="is-active">Settings</a>
       </nav>
         <div class="topbar__right">
           @if (auth.enabled) {

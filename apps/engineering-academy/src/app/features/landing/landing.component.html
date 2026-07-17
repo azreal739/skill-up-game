@@ -9,6 +9,11 @@
       and cloud delivery — and climb from Deck Initiate to Mission Sovereign, one incident at a time.
     </p>
 
+    <p class="hero__privacy">
+      No account is needed for the local Academy. Your progress, notes and generated mentor audio
+      stay on this device.
+    </p>
+
     @if (gameState.hasProfile()) {
       <div class="hero__actions">
         <button type="button" class="ea-btn ea-btn--primary" (click)="continueGame()">
@@ -22,6 +27,7 @@
           Enrol at the Academy
         </button>
         <a class="ea-btn" routerLink="/help">Browse the Help Centre</a>
+        <a class="ea-btn" routerLink="/settings">Set up voice &amp; accessibility</a>
       </div>
     } @else {
       <form class="enrol ea-panel" (ngSubmit)="createProfile()">
@@ -73,5 +79,32 @@
       <h3>Never stuck</h3>
       <p>A four-level hint ladder and a searchable Help Centre back every challenge.</p>
     </div>
+    <div class="feature ea-panel">
+      <span class="feature__icon" aria-hidden="true">🎧</span>
+      <h3>A full mentor cast</h3>
+      <p>Optional on-device AI voices turn briefings, hints and feedback into a guided conversation.</p>
+    </div>
+    <div class="feature ea-panel">
+      <span class="feature__icon" aria-hidden="true">🛠️</span>
+      <h3>Learn through decisions</h3>
+      <p>Review code, compare contracts and make trade-offs with realistic production consequences.</p>
+    </div>
+    <div class="feature ea-panel">
+      <span class="feature__icon" aria-hidden="true">🔁</span>
+      <h3>Turn mistakes into mastery</h3>
+      <p>Missed decisions become a Technical Debt backlog you can revisit in Academy Review mode.</p>
+    </div>
+  </section>
+
+  <section class="how-it-works ea-panel" aria-labelledby="how-it-works-title">
+    <div>
+      <p class="ea-eyebrow">Your first shift</p>
+      <h2 id="how-it-works-title">How the Academy works</h2>
+    </div>
+    <ol>
+      <li><strong>Choose a path.</strong> Join Mission Control for engineering simulations or open the field notes for focused lessons.</li>
+      <li><strong>Make the call.</strong> Read the evidence, ask mentors for layered hints and commit to an engineering decision.</li>
+      <li><strong>Build judgement.</strong> See the impact, capture notes, remediate weak spots and unlock harder campaigns.</li>
+    </ol>
   </section>
 </div>

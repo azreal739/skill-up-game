@@ -39,10 +39,86 @@ const CHARS_PER_TICK = 1;
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (visible()) {
-      <aside class="hud" aria-label="Mentor comms">
+      <aside class="hud" [class.hud--compact]="compact()" aria-label="Mentor comms">
+        @if (compact()) {
+          @for (l of liveList(); track l.id) {
+            <section class="hud__compact" [style.--live-accent]="accentFor(l.speaker)">
+              <button
+                type="button"
+                class="hud__compact-avatar-button"
+                (click)="toggleCompact()"
+                aria-label="Expand mentor comms"
+                title="Expand mentor comms"
+              >
+                <ea-persona-avatar
+                  class="hud__compact-avatar"
+                  [speaker]="l.speaker"
+                  [talking]="speaking()"
+                />
+                <span class="hud__compact-expand" aria-hidden="true">↙</span>
+              </button>
+
+              @if (!compactBubbleCollapsed()) {
+                <div class="hud__compact-bubble">
+                  <button
+                    type="button"
+                    class="hud__bubble-collapse"
+                    (click)="toggleCompactBubble()"
+                    aria-label="Hide speech bubble"
+                    title="Hide speech bubble"
+                  >
+                    −
+                  </button>
+                  <span class="hud__live-name">
+                    {{ l.speaker }}
+                    @if (speaking()) {
+                      <span class="hud__transmit" aria-hidden="true">▮ transmitting</span>
+                    }
+                  </span>
+                  <div class="hud__bubble-window">
+                    <p class="hud__live-text">
+                      {{ typed()
+                      }}<span class="hud__cursor" [class.is-on]="speaking()" aria-hidden="true">▊</span>
+                    </p>
+                  </div>
+                  <div class="hud__controls">
+                    @if (paused()) {
+                      <button type="button" class="hud__ctl" (click)="resume()">▶ Resume</button>
+                    } @else if (speaking()) {
+                      <button type="button" class="hud__ctl" (click)="pause()">⏸ Pause</button>
+                    } @else {
+                      <button type="button" class="hud__ctl" (click)="replay()">↻ Replay</button>
+                    }
+                    @if (speaking() || paused()) {
+                      <button type="button" class="hud__ctl hud__ctl--stop" (click)="stop()">■ Stop</button>
+                    }
+                  </div>
+                </div>
+              } @else {
+                <button
+                  type="button"
+                  class="hud__bubble-restore"
+                  (click)="toggleCompactBubble()"
+                  aria-label="Show speech bubble"
+                >
+                  <span aria-hidden="true">▰</span> Show transmission
+                </button>
+              }
+            </section>
+          }
+        } @else {
         <section class="hud__live" [style.--live-accent]="accentFor(live()!.speaker)">
           @for (l of liveList(); track l.id) {
             <div class="hud__live-inner">
+              <button
+                type="button"
+                class="hud__minimise"
+                (click)="toggleCompact()"
+                aria-label="Collapse mentor comms"
+                title="Collapse mentor comms"
+              >
+                −
+              </button>
               <div class="hud__bubble">
                 <span class="hud__live-name">
                   {{ l.speaker }}
@@ -125,6 +201,7 @@ const CHARS_PER_TICK = 1;
             }
           </section>
         }
+        }
       </aside>
     }
   `,
@@ -173,6 +250,11 @@ export class CommsHudComponent {
   /** Log messages the player has expanded past the 3-line clamp. */
   protected readonly expanded = signal<ReadonlySet<number>>(new Set());
 
+  /** Compact mode keeps a mini mentor portrait and moves the bubble below it. */
+  protected readonly compact = signal(false);
+  /** The speech bubble can be independently tucked away in compact mode. */
+  protected readonly compactBubbleCollapsed = signal(false);
+
   protected readonly typed = signal('');
   private typeTimer: ReturnType<typeof setInterval> | null = null;
 
@@ -202,6 +284,14 @@ export class CommsHudComponent {
 
   protected toggleCollapsed(): void {
     this.gameState.updateSettings({ commsLogCollapsed: !this.collapsed() });
+  }
+
+  protected toggleCompact(): void {
+    this.compact.update((compact) => !compact);
+  }
+
+  protected toggleCompactBubble(): void {
+    this.compactBubbleCollapsed.update((collapsed) => !collapsed);
   }
 
   protected toggleExpanded(id: number): void {
