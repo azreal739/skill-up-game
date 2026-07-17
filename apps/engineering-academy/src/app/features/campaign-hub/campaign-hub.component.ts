@@ -38,10 +38,13 @@ export class CampaignHubComponent {
         return;
       }
       spokenFor = rec.mission.id;
+      // Name the path the recommendation comes from — with several parallel
+      // paths, "where does this drop me?" is the first question.
       untracked(() =>
         this.speech.sayAmbient(
           'Mission Control',
-          `Recommended next: ${rec.mission.title}, in ${rec.campaign.title}. Jump in when ready.`
+          `Recommended next, on the ${rec.track.title} path: ${rec.mission.title}, ` +
+            `in ${rec.campaign.title}. Jump in when ready.`
         )
       );
     });
