@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { createPlayerState } from '@academy/content-model';
-import { PersistenceService } from './persistence.service';
+import { PersistenceService, SAVE_SCOPE } from './persistence.service';
 
 describe('PersistenceService', () => {
   let service: PersistenceService;
@@ -99,5 +99,51 @@ describe('PersistenceService', () => {
     const loaded = service.load();
     expect(loaded).not.toBeNull();
     expect(loaded?.settings.voiceEnabled).toBeFalse();
+  });
+
+  describe('with a signed-in user scope', () => {
+    beforeEach(() => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({ providers: [{ provide: SAVE_SCOPE, useValue: 'user_123' }] });
+      service = TestBed.inject(PersistenceService);
+    });
+
+    it('keeps each Clerk user in a separate device-local save slot', () => {
+      const state = createPlayerState('Avery');
+      service.save(state);
+
+      expect(localStorage.getItem('engineering-academy:save')).toBeNull();
+      expect(JSON.parse(localStorage.getItem('engineering-academy:save:user_123') ?? '{}')).toEqual(
+        state
+      );
+    });
+
+    it('requires an explicit choice before copying an accountless save', () => {
+      const state = createPlayerState('Legacy Operator');
+      localStorage.setItem('engineering-academy:save', JSON.stringify(state));
+
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({ providers: [{ provide: SAVE_SCOPE, useValue: 'user_456' }] });
+      service = TestBed.inject(PersistenceService);
+
+      expect(service.load()).toBeNull();
+      expect(service.migrationPending()).toBeTrue();
+      expect(service.adoptUnscopedSave()).toEqual(state);
+      expect(service.load()).toEqual(state);
+      expect(localStorage.getItem('engineering-academy:save')).not.toBeNull();
+    });
+
+    it('can keep the accountless save without adopting it', () => {
+      localStorage.setItem('engineering-academy:save', JSON.stringify(createPlayerState('Legacy')));
+
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({ providers: [{ provide: SAVE_SCOPE, useValue: 'user_789' }] });
+      service = TestBed.inject(PersistenceService);
+      service.dismissUnscopedSave();
+
+      expect(service.migrationPending()).toBeFalse();
+      expect(service.load()).toBeNull();
+      expect(localStorage.getItem('engineering-academy:save')).not.toBeNull();
+    });
   });
 });

@@ -1,13 +1,14 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { AppComponent } from './app.component';
+import { provideAcademyAuth } from './core/auth/auth.provider';
 
 describe('AppComponent (Engineering Academy shell)', () => {
   beforeEach(async () => {
     localStorage.clear();
     await TestBed.configureTestingModule({
       imports: [AppComponent],
-      providers: [provideRouter([])],
+      providers: [provideRouter([]), provideAcademyAuth()],
     }).compileComponents();
   });
 

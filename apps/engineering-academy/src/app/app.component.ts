@@ -6,6 +6,9 @@ import { WaveBackgroundComponent } from './shared/wave-background/wave-backgroun
 import { RouteLoaderComponent } from './shared/route-loader/route-loader.component';
 import { CommsHudComponent } from './shared/comms-hud/comms-hud.component';
 import { VoiceSetupOverlayComponent } from './features/settings/voice-setup-overlay.component';
+import { AuthService } from './core/auth/auth.service';
+import { AuthUserButtonComponent } from './core/auth/auth-user-button.component';
+import { SaveMigrationComponent } from './core/auth/save-migration.component';
 
 @Component({
   selector: 'ea-root',
@@ -18,11 +21,18 @@ import { VoiceSetupOverlayComponent } from './features/settings/voice-setup-over
     RouteLoaderComponent,
     CommsHudComponent,
     VoiceSetupOverlayComponent,
+    AuthUserButtonComponent,
+    SaveMigrationComponent,
   ],
   template: `
     <ea-wave-background />
-    <a class="ea-visually-hidden" href="#ea-main">Skip to content</a>
-    <header class="topbar">
+    @if (auth.enabled && !auth.signedIn()) {
+      <main id="ea-main" class="auth-shell">
+        <router-outlet />
+      </main>
+    } @else {
+      <a class="ea-visually-hidden" href="#ea-main">Skip to content</a>
+      <header class="topbar">
       <div class="topbar__left">
         <a class="topbar__brand" routerLink="/">
           <span class="topbar__logo" aria-hidden="true">⬡</span>
@@ -90,23 +100,29 @@ import { VoiceSetupOverlayComponent } from './features/settings/voice-setup-over
           <a routerLink="/settings" routerLinkActive="is-active">Settings</a>
         }
       </nav>
-      <!-- Right column balances the flex layout; the fixed comms HUD floats over it. -->
-      <div class="topbar__right" aria-hidden="true"></div>
-    </header>
-    <main id="ea-main" (click)="onFirstInteraction()">
-      <router-outlet />
-    </main>
-    <ea-route-loader />
-    <ea-comms-hud />
-    @if (showFirstLoadSetup()) {
-      <!-- Enrolment kicked off the first voice calibration: hold the moment
-           with a friendlier variant of the setup screen, then greet. -->
-      <ea-voice-setup-overlay eyebrow="Welcome aboard" title="Getting things ready for you" />
+        <div class="topbar__right">
+          @if (auth.enabled) {
+            <ea-auth-user-button />
+          }
+        </div>
+      </header>
+      <main id="ea-main" (click)="onFirstInteraction()">
+        <router-outlet />
+      </main>
+      <ea-route-loader />
+      <ea-comms-hud />
+      <ea-save-migration />
+      @if (showFirstLoadSetup()) {
+        <!-- Enrolment kicked off the first voice calibration: hold the moment
+             with a friendlier variant of the setup screen, then greet. -->
+        <ea-voice-setup-overlay eyebrow="Welcome aboard" title="Getting things ready for you" />
+      }
     }
   `,
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
+  protected readonly auth = inject(AuthService);
   protected readonly gameState = inject(GameStateService);
   private readonly audio = inject(AudioService);
   private readonly speech = inject(SpeechService);

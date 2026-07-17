@@ -10,6 +10,7 @@ import { SpeechService } from '@academy/data-access';
 import { EA_SPEECH_PLAYER } from '@academy/ui';
 import { appRoutes } from './app.routes';
 import { environment } from '../environments/environment';
+import { provideAcademyAuth } from './core/auth/auth.provider';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -26,6 +27,7 @@ export const appConfig: ApplicationConfig = {
       ...(environment.useHashRouting ? [withHashLocation()] : [])
     ),
     provideAnimationsAsync(),
+    provideAcademyAuth(),
     // Mentor narration: the presentational dialogue speaks through this port
     // when the voice setting is on; without it briefings just type silently.
     { provide: EA_SPEECH_PLAYER, useExisting: SpeechService },

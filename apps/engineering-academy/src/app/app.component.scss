@@ -24,6 +24,13 @@
 .topbar__right {
   flex: 1 1 0;
   min-width: 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.auth-shell {
+  min-height: 100vh;
 }
 
 .topbar__brand {
