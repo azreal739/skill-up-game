@@ -14,11 +14,6 @@
       [hintsUsed]="totalHintsUsed()"
       [animateNumbers]="!gameState.settings().reducedMotion"
     >
-      @if (session.phase() !== 'briefing') {
-        <button hud-actions type="button" class="ea-btn hud-brief-btn" (click)="briefOpen.set(true)">
-          📋 Mission Brief
-        </button>
-      }
     </ea-hud>
 
     @switch (session.phase()) {
@@ -234,6 +229,17 @@
             </section>
 
             <aside class="workspace__support">
+              <!-- Mission recap card: the brief button used to sit in the top
+                   HUD bar, where the fixed comms HUD covered it. -->
+              <div class="support ea-panel">
+                <p class="ea-eyebrow">Mission Briefing</p>
+                <h2 class="support__mission-title">{{ mission.title }}</h2>
+                <p class="support__mission-summary">{{ mission.summary }}</p>
+                <button type="button" class="ea-btn support__brief-btn" (click)="briefOpen.set(true)">
+                  📋 Mission Brief
+                </button>
+              </div>
+
               <div class="support ea-panel senior-dev" [attr.data-stress]="seniorDevStress()">
                 <div class="senior-dev__header">
                   <ea-persona-avatar

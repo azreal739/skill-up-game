@@ -745,12 +745,25 @@
   }
 }
 
-/* ---- Mission brief overlay ---- */
+/* ---- Mission briefing recap card (sidebar) ---- */
 
-.hud-brief-btn {
-  font-size: 0.78rem;
-  padding: 0.35rem 0.8rem;
+.support__mission-title {
+  margin: 0.15rem 0 0.35rem;
+  font-size: 1.05rem;
 }
+
+.support__mission-summary {
+  margin: 0 0 0.85rem;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--ea-muted);
+}
+
+.support__brief-btn {
+  font-size: 0.8rem;
+}
+
+/* ---- Mission brief overlay ---- */
 
 .brief-backdrop {
   position: fixed;
