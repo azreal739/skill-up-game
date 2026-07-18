@@ -80,7 +80,7 @@ export const fnSig005CdCycle: MissionDefinition = {
       hints: [
         { level: 1, title: 'Direction', content: 'The keystroke and the cards share no data. What DO they share?' },
         { level: 2, title: 'Concept', content: 'zone.js patches async entry points; each one ends in a tree-wide check.' },
-        { level: 3, title: 'Specific clue', content: '{{ fn() }} means: run fn once per component, per cycle, forever.' },
+        { level: 3, title: 'Specific clue', content: 'Calling a function directly in the template means it runs once per component, per change-detection cycle, forever.' },
         { level: 4, title: 'Guided solution', content: 'Pick the every-cycle-re-evaluates answer.' },
       ],
       rewards: [{ type: 'xp', amount: 25, label: 'Trace explained' }],

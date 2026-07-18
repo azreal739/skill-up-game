@@ -73,6 +73,39 @@ GameStateService, MissionSessionService, persistence) → `ui` / `challenges`
 - Active development branch has also been `claude/engineering-academy-enhancements-t0g5is`
   (reset from `origin/main` per PR, force-with-lease over already-merged history).
 
+## Done this session (branch `claude/path-wording-voice-tagging-tfagky`)
+
+Voice-readout + wording pass across the paths (goal: make code read out better
+and tighten descriptions/instructions). **On the branch, not merged — includes
+an engine change to `toSpokenText`, so it wants a review per the working
+agreement.** Verified: build + lint (7 projects) + **171 tests** (was 166).
+
+- **Engine — `toSpokenText` upgrade (`data-access/src/lib/speech-text.ts`):**
+  improves how the narrator reads code across **all 40 paths at once**. New:
+  arithmetic/comparison between operands read as words (`a * b` "times", `a % b`
+  "modulo", `a < b`/`a > b` "less/greater than"), the dancer's `1 & 2 & 3`
+  count reads "and", and `NaN` says "nan" instead of the letters "Na N". 5 new
+  unit tests; the corpus sweep now also guards a raw `NaN` from reaching the
+  voice. Multi-statement code jammed into a single-line spoken field still
+  reads awkwardly — that's a **content** fix (reword or move to a `code`
+  artefact), not an engine one.
+- **Content voice/clarity fixes** where a distinction was inaudible or code was
+  embedded in spoken prose: `ts-fundamentals/mission-001` (embedded `function`
+  in `storyContext` → described in words), `foundations/mission-005` (the
+  `{{ visitors }}` vs `{{ visitors() }}` feedback/hints, indistinguishable
+  aloud → reworded), `ng-signals-cd/mission-001` + `mission-005` (`{{ … }}` in
+  spoken hints/feedback → plain words). Corpus scan confirmed the rest of the
+  content is already voice-clean.
+- **New doc `docs/engineering-academy/23_VOICE_AND_CODE_TAGGING.md`:** the
+  authoring conventions (what the voice reads, what `toSpokenText` handles, the
+  spoken-field rules) so the pattern rolls out consistently, **plus the design
+  for the two deferred asks** — (1) a richer read-out/highlight renderer
+  (`ea-rich-text` for inline `` `code` `` spans + a display/voice split so tagged
+  code can have a spoken alias), and (2) stronger wrong-answer explanations
+  (assemble from the correct feedback + unspent hints + helpLink summary, read
+  via the Senior Dev debrief; gated so hint-users aren't re-taught). Both are
+  engine/UI work → propose → go-ahead → MR before building.
+
 ## Project status / history (keep current for the next session)
 
 **Engineering Academy is feature-complete against its spec pack.** Built so far:

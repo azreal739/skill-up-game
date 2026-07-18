@@ -28,6 +28,31 @@ describe('toSpokenText (code-to-speech)', () => {
     expect(toSpokenText('http.get<User> trusts the shape')).toContain('of User');
   });
 
+  it('speaks arithmetic between operands as words', () => {
+    expect(toSpokenText('seats * 55 is the total')).toContain('seats times 55');
+    expect(toSpokenText('index % 2 picks the row')).toContain('index modulo 2');
+  });
+
+  it('speaks spaced comparisons instead of dropping them', () => {
+    expect(toSpokenText('score > 7 promotes the couple')).toContain('score greater than 7');
+    expect(toSpokenText('when x < y the guard trips')).toContain('x less than y');
+  });
+
+  it("reads the dancer's & count as 'and'", () => {
+    expect(toSpokenText('count 1 & 2 & 3 & 4')).toBe('count 1 and 2 and 3 and 4');
+  });
+
+  it('says NaN as a word, not the letters "Na N"', () => {
+    const spoken = toSpokenText('the multiplication yields NaN at runtime');
+    expect(spoken).toContain('nan');
+    expect(spoken).not.toContain('Na N');
+  });
+
+  it('leaves hyphens and multiplication-free stars in prose alone', () => {
+    // No operand spacing → not arithmetic; hyphenated prose stays readable.
+    expect(toSpokenText('a well-typed model')).toBe('a well-typed model');
+  });
+
   it('spells error codes', () => {
     expect(toSpokenText('fails with TS2365 at build time')).toContain('T S 2365');
   });
@@ -54,7 +79,10 @@ describe('toSpokenText (code-to-speech)', () => {
   // Corpus sweep: every string the app can speak, across all packs and help
   // topics, must come out clean — no backticks, braces, or raw operators.
   it('cleans every spoken field in the full content corpus', () => {
-    const leftovers = /[`{}]|===|!==|=>|\|\||&&/;
+    // `NaN` must always be spoken as a word — if it survives to the output the
+    // identifier splitter would say the letters "Na N". The rest are raw code
+    // tokens that should never reach the voice.
+    const leftovers = /[`{}]|===|!==|=>|\|\||&&|\bNaN\b/;
     const spokenStrings: string[] = [];
     const content = new ContentService();
 

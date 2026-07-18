@@ -77,7 +77,7 @@ export const fnSig001SignalsAsValues: MissionDefinition = {
         },
       ],
       hints: [
-        { level: 1, title: 'Direction', content: 'Explain the bug first: why did {{ count }} render garbage?' },
+        { level: 1, title: 'Direction', content: 'Explain the bug first: why did interpolating count, without calling it, render garbage?' },
         {
           level: 2,
           title: 'Concept',
@@ -96,7 +96,7 @@ export const fnSig001SignalsAsValues: MissionDefinition = {
       ],
       helpLinks: [{ topicId: 'angular.signals', label: 'Signals' }],
       successFeedback: 'Container, call, notify — you can now read every slide that follows.',
-      failureFeedback: 'Start from the bug: what does {{ count }} bind if count is a function?',
+      failureFeedback: 'Start from the bug: what does the template bind if you interpolate count but never call it?',
     },
     {
       id: 'sig-001-c2',

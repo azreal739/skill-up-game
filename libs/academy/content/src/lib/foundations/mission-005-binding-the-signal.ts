@@ -40,7 +40,7 @@ export const mission005BindingTheSignal: MissionDefinition = {
       title: 'Read the Signal',
       difficulty: 'easy',
       tags: ['angular'],
-      storyContext: 'The count element shows "() => …" instead of a number.',
+      storyContext: 'The count element shows a line of code where the number should be.',
       prompt: 'How should the template render the current visitor count?',
       options: [
         {
@@ -148,7 +148,7 @@ export const mission005BindingTheSignal: MissionDefinition = {
           label: 'The template interpolates visitors without calling it',
           isCorrect: true,
           feedback:
-            'Rendering {{ visitors }} shows the signal function itself. It must be {{ visitors() }}.',
+            'Interpolating the signal without calling it shows the function itself. The template must call the signal — with parentheses — to read its value.',
         },
       ],
       hints: [
@@ -174,7 +174,7 @@ export const mission005BindingTheSignal: MissionDefinition = {
           level: 4,
           title: 'Guided solution',
           content:
-            'Flag the uncalled {{ visitors }} interpolation and the history().push mutation. The computed and the set() call are fine.',
+            'Flag the interpolation that never calls the signal, and the history push that mutates the array in place. The computed value and the set call are fine.',
         },
       ],
       rewards: [{ type: 'xp', amount: 10, label: 'Signals reviewed' }],

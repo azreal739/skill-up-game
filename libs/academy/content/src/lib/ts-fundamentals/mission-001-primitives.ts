@@ -116,7 +116,7 @@ export const fnTs001Primitives: MissionDefinition = {
       difficulty: 'easy',
       tags: ['typescript'],
       storyContext:
-        'A helper from the session: function total(seats) { return seats * 55; } — no type on the parameter, and noImplicitAny is off.',
+        'A helper from the session multiplies a seats parameter by the ticket price and returns the total — but the seats parameter has no type annotation, and noImplicitAny is off.',
       prompt: 'What does TypeScript infer for the untyped seats parameter — and what does that cost?',
       options: [
         {

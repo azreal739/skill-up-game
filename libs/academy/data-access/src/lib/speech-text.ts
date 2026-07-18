@@ -8,10 +8,14 @@
  *     token — the eyes have the code; the voice says so and carries on.
  *  2. Inline code spans and bare operators become the words an engineer would
  *     say at a whiteboard (`===` → "triple equals", `=>` → "arrow", …).
- *  3. camelCase / PascalCase / snake_case identifiers are split into words;
- *     runs of capitals (DTO, HTTP) stay spelled out.
- *  4. Error codes like TS2365 are read as "T S 2365".
- *  5. Leftover code punctuation in prose turns into pauses, not noise.
+ *  3. Arithmetic and comparison symbols between operands become words too
+ *     (`a * b` → "a times b", `score > 7` → "score greater than 7"), and the
+ *     dancer's "&" count reads as "and".
+ *  4. camelCase / PascalCase / snake_case identifiers are split into words;
+ *     runs of capitals (DTO, HTTP) stay spelled out; `NaN` reads as "nan"
+ *     rather than the letters "Na N".
+ *  5. Error codes like TS2365 are read as "T S 2365".
+ *  6. Leftover code punctuation in prose turns into pauses, not noise.
  */
 
 const BLOCK_CODE_PLACEHOLDER = ' — the code is shown on screen — ';
@@ -36,6 +40,20 @@ const OPERATORS: ReadonlyArray<[RegExp, string]> = [
   [/\+\+/g, ' plus plus '],
   [/\[\]/g, ' array '],
   [/\(\)/g, ' '],
+];
+
+/**
+ * Arithmetic, comparison and the dancer's "&" count — only when they sit
+ * between operands (a space on each side), so hyphens in prose, glob stars and
+ * angle brackets in markup are left alone. Longest first is not needed here
+ * because every pattern is space-delimited and mutually exclusive.
+ */
+const OPERANDS: ReadonlyArray<[RegExp, string]> = [
+  [/\s\*\s/g, ' times '],
+  [/\s%\s/g, ' modulo '],
+  [/\s<\s/g, ' less than '],
+  [/\s>\s/g, ' greater than '],
+  [/\s&\s/g, ' and '],
 ];
 
 /** `<User>` / `<string[]>` generics → "of User" / "of string array". */
@@ -66,10 +84,17 @@ function speakInline(text: string): string {
   for (const [pattern, spoken] of OPERATORS) {
     out = out.replace(pattern, spoken);
   }
+  // Comparison/arithmetic between operands, before the leftover `<`/`>` become
+  // pauses below — otherwise `score > 7` would lose its operator entirely.
+  for (const [pattern, spoken] of OPERANDS) {
+    out = out.replace(pattern, spoken);
+  }
   out = out.replace(OBSERVABLE, '$1 stream');
   out = out.replace(ERROR_CODE, (_, letters: string, digits: string) =>
     `${letters.split('').join(' ')} ${digits}`
   );
+  // `NaN` is an all-caps concept, not camelCase — say it, don't spell "Na N".
+  out = out.replace(/\bNaN\b/g, 'nan');
   out = out.replace(IDENTIFIER, (word) => splitIdentifier(word));
   // Decorators and member access read naturally as words with pauses.
   out = out.replace(/@([A-Za-z])/g, 'at $1');
