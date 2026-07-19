@@ -1,12 +1,17 @@
-<h2>About</h2>
-<p>
-  Up Skill Game is a playground of mini-games — Tic Tac Toe, Black Jack, Chess,
-  New Year's Resolutions, and a Calculator — built with Angular standalone
-  components to practice and level up front-end skills.
-</p>
+<section class="ea-page about">
+  <div class="ea-panel about__intro">
+    <p class="ea-eyebrow">About this project</p>
+    <h2 class="about__title">Up Skill Game</h2>
+    <p class="about__lede">
+      Up Skill Game is a playground of mini-games — Tic Tac Toe, Black Jack, Chess, New Year's
+      Resolutions, and a Calculator — built with Angular standalone components to practise and level
+      up front-end skills.
+    </p>
+  </div>
 
-<div class="right-side">
-    <div class="pill-group">
+  <div class="ea-panel about__links">
+    <h3 class="about__section-title">Learn Angular</h3>
+    <div class="about__pill-group">
       @for (item of [
       { title: 'Explore the Docs', link: 'https://angular.dev' },
       { title: 'Learn with Tutorials', link: 'https://angular.dev/tutorials' },
@@ -14,7 +19,7 @@
       { title: 'Angular Language Service', link: 'https://angular.dev/tools/language-service' },
       { title: 'Angular DevTools', link: 'https://angular.dev/tools/devtools' },
       ]; track item.title) {
-      <a class="pill" [href]="item.link" target="_blank" rel="noopener">
+      <a class="ea-btn about__pill" [href]="item.link" target="_blank" rel="noopener">
         <span>{{ item.title }}</span>
         <svg xmlns="http://www.w3.org/2000/svg" height="14" viewBox="0 -960 960 960" width="14" fill="currentColor">
           <path
@@ -23,9 +28,8 @@
       </a>
       }
     </div>
-    <div class="divider" role="separator" aria-label="Divider"></div>
 
-    <div class="social-links">
+    <div class="about__social">
       <a href="https://github.com/angular/angular" aria-label="Github" target="_blank" rel="noopener">
         <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg" alt="Github">
           <path
@@ -46,5 +50,5 @@
         </svg>
       </a>
     </div>
-
   </div>
+</section>

@@ -1,0 +1,68 @@
+:host {
+  display: block;
+}
+
+.about {
+  display: grid;
+  gap: 1.25rem;
+  max-width: 46rem;
+}
+
+.about__title {
+  margin-top: 0.4rem;
+  font-size: 1.9rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.about__lede {
+  margin-top: 0.75rem;
+  color: var(--ea-muted);
+  line-height: 1.6;
+}
+
+.about__section-title {
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ea-muted);
+  margin-bottom: 0.9rem;
+}
+
+.about__pill-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.about__pill {
+  font-weight: 500;
+
+  svg {
+    opacity: 0.8;
+  }
+}
+
+.about__social {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--ea-border);
+
+  a {
+    display: inline-flex;
+    color: var(--ea-muted);
+    transition: color 0.2s ease, transform 0.2s ease;
+
+    &:hover {
+      color: var(--ea-accent);
+      transform: translateY(-2px);
+    }
+  }
+
+  svg path {
+    fill: currentColor;
+  }
+}

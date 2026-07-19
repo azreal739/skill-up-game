@@ -1,0 +1,33 @@
+<section class="ea-page academy">
+  <a class="academy__back" routerLink="/">&larr; Back to the arcade</a>
+
+  <div class="ea-panel academy__hero">
+    <span class="academy__emblem" aria-hidden="true">🎓</span>
+    <p class="ea-eyebrow">Engineering Mission Control</p>
+    <h2 class="academy__title">Engineering <span class="academy__glow">Academy</span></h2>
+    <p class="academy__lede">
+      Ready for a bigger challenge? The Engineering Academy is a story-driven training game for
+      Angular platform engineers — learn, build, defend and lead across full campaigns. It runs as
+      its own app; the button below opens it in a new tab.
+    </p>
+
+    <div class="academy__actions">
+      <a class="ea-btn ea-btn--primary" [href]="academyUrl" target="_blank" rel="noopener">
+        Launch Engineering Academy
+        <span aria-hidden="true">↗</span>
+      </a>
+      <a class="ea-btn" routerLink="/">Maybe later</a>
+    </div>
+    <p class="academy__url">{{ academyUrl }}</p>
+  </div>
+
+  <div class="academy__features">
+    @for (feature of features; track feature.title) {
+      <div class="ea-panel academy__feature">
+        <span class="academy__feature-emblem" aria-hidden="true">{{ feature.emblem }}</span>
+        <h3 class="academy__feature-title">{{ feature.title }}</h3>
+        <p class="academy__feature-blurb">{{ feature.blurb }}</p>
+      </div>
+    }
+  </div>
+</section>

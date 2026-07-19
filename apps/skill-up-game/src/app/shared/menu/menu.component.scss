@@ -1,21 +1,25 @@
 :host {
-  background: white;
-  border-left: solid 1px black;
+  background: var(--ea-panel-solid);
+  border-left: 1px solid var(--ea-border);
   bottom: 0;
-  filter: drop-shadow(0 0 0.75em rgba(black, 0.5));
+  box-shadow: -18px 0 44px rgba(2, 6, 18, 0.5);
+  color: var(--ea-text);
   isolation: isolate;
   position: absolute;
   right: 0;
   top: 0;
   transition: 0.15s ease-in translate;
-  width: 15rem;
+  width: 16rem;
+  backdrop-filter: blur(14px);
+  z-index: 80;
 
   h3 {
-    background: black;
-    color: white;
-    font-size: 1.5rem;
+    background: rgba(7, 10, 20, 0.6);
+    border-bottom: 1px solid var(--ea-border);
+    color: var(--ea-text);
+    font-size: 1.25rem;
     margin: 0;
-    padding: 1.25em 1.5em;
+    padding: 1.15em 1.5em;
   }
 
   button {
@@ -36,21 +40,32 @@ ul {
 }
 
 li {
-  border-bottom: solid 1px black;
-  padding: 1.25em 1.5em;
+  border-bottom: 1px solid var(--ea-border);
+  padding: 1.1em 1.5em;
+  transition: background 0.15s ease;
 
   &:hover {
     cursor: pointer;
-    opacity: 0.5;
+    background: var(--ea-panel);
   }
 }
+
 .sub-heading {
   display: flex;
   justify-content: center;
   margin: 1em 0 0;
-  text-decoration: underline;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ea-muted);
 }
 
 a {
-  font-size: 1.125rem;
+  font-size: 1.05rem;
+  color: var(--ea-text);
+  text-decoration: none;
+}
+
+li:hover a {
+  color: var(--ea-accent);
 }

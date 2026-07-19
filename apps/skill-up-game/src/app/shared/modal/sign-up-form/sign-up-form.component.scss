@@ -12,6 +12,7 @@ label {
     display: block;
     font-size: 0.75em;
     margin-bottom: 0.25em;
+    color: var(--ea-muted);
   }
 
   &:last-child {
@@ -20,16 +21,22 @@ label {
 }
 
 input {
-  border: solid 1px #999;
-  border-radius: 0.375em;
+  border: 1px solid var(--ea-border);
+  border-radius: 10px;
   padding: 0.75em;
   width: 100%;
   max-width: 20rem;
   box-sizing: border-box;
+  background: rgba(7, 10, 20, 0.6);
+  color: var(--ea-text);
+
+  &::placeholder {
+    color: var(--ea-muted);
+  }
 }
 
 .error {
-  color: #dc2626;
+  color: var(--ea-danger);
   display: block;
   font-size: 0.75em;
   font-style: normal;
@@ -37,18 +44,20 @@ input {
 }
 
 button {
-  background-color: black;
+  background: linear-gradient(110deg, rgba(34, 211, 238, 0.92), rgba(167, 139, 250, 0.92));
   border: none;
-  border-radius: 0.375em;
-  color: white;
+  border-radius: 10px;
+  color: #06121a;
   display: block;
+  font-weight: 600;
   min-height: 2.75rem;
-  transition: opacity 0.25s ease-out;
+  transition: filter 0.2s ease-out, transform 0.12s ease;
   width: 100%;
   cursor: pointer;
 
   &:hover {
-    opacity: 0.7;
+    filter: brightness(1.08);
+    transform: translateY(-1px);
   }
 }
 
@@ -59,7 +68,7 @@ button {
   }
 
   .detail {
-    color: #555;
+    color: var(--ea-muted);
     font-size: 0.875rem;
     margin-bottom: 1.5rem;
   }

@@ -4,6 +4,7 @@ import { animate, style, transition, trigger } from '@angular/animations';
 
 import { ModalComponent } from './shared/modal/modal.component';
 import { PageMenuComponent } from './shared/menu/menu.component';
+import { WaveBackgroundComponent } from './shared/wave-background/wave-background.component';
 import { ModalService, ModalTemplate } from 'src/services/ModalService';
 
 const hidden = { transform: 'translateX(120%)' };
@@ -13,7 +14,7 @@ const timing = '0.3s ease-in-out';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterModule, ModalComponent, PageMenuComponent],
+  imports: [RouterOutlet, RouterModule, ModalComponent, PageMenuComponent, WaveBackgroundComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   animations: [

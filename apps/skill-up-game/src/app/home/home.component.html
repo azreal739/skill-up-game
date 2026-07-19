@@ -1,0 +1,31 @@
+<section class="ea-page home">
+  <header class="home__hero">
+    <p class="ea-eyebrow">Skill Up · Mission Deck</p>
+    <h2 class="home__title">Pick your <span class="home__glow">challenge</span></h2>
+    <p class="home__lede">
+      A playground of mini-games to sharpen your reflexes and your Angular chops. Choose a module
+      below to begin — or launch the Engineering Academy for the full training campaign.
+    </p>
+  </header>
+
+  <div class="home__grid">
+    @for (game of games; track game.route) {
+      <a
+        class="ea-panel game-card"
+        [class.game-card--featured]="game.featured"
+        [routerLink]="game.route"
+        [style.--card-accent]="game.accent"
+      >
+        <span class="game-card__emblem" aria-hidden="true">{{ game.emblem }}</span>
+        <div class="game-card__body">
+          <h3 class="game-card__title">{{ game.title }}</h3>
+          <p class="game-card__desc">{{ game.description }}</p>
+        </div>
+        <span class="game-card__cta">
+          {{ game.cta }}
+          <span class="game-card__chevron" aria-hidden="true"></span>
+        </span>
+      </a>
+    }
+  </div>
+</section>
