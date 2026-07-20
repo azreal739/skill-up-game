@@ -1,45 +1,44 @@
-<main class="main">
-  <div class="content">
-    <div class="left-side">
-      <h1 class="app-header">{{ title }}</h1>
-      <button (click)="openSignUpModal()" class="signUp">
-        Sign Up
-      </button>
-      <div class="divider heading" role="separator" aria-label="Divider"></div>
-      <p>Welcome! To our up skilling game APP. 🎉</p>
-      <div class="pill-group top-nav">
-        <a class="pill" [routerLink]="['/tic-tac-toe']">
-          <span>Tic Tac Toe</span>
-        </a>
-        <a class="pill" [routerLink]="['/black-jack']">
-          <span>Black Jack</span>
-        </a>
-        <a class="pill" [routerLink]="['/resolutions']">
-          <span>Resolutions</span>
-        </a>
-        <a class="pill" [routerLink]="['/chess']">
-          <span>Chess</span>
-        </a>
-        <a class="pill" [routerLink]="['/calculator']">
-          <span>Calculator</span>
-        </a>
-        <a class="pill" [routerLink]="['/about']">
-          <span>About</span>
-        </a>
-        <button (click)="menuOpen = true" class="menu pill">
-          <span>Menu</span>
+<app-wave-background />
 
-          <svg viewBox="0 0 24 24">
-            <path d="M0 3.2A1.2 1.2 0 011.2 2h21.6a1.2 1.2 0 010 2.4H1.2A1.2 1.2 0 010 3.2zm0 8.4a1.2 1.2 0 011.2-1.2h21.6a1.2 1.2 0 010 2.4H1.2A1.2 1.2 0 010 11.6zM0 20a1.2 1.2 0 011.2-1.2h21.6a1.2 1.2 0 010 2.4H1.2A1.2 1.2 0 010 20z" clip-rule="evenodd" fill-rule="evenodd"/>
-          </svg>
-        </button>
-      </div>
-    </div>
-    <div class="divider" role="separator" aria-label="Divider"></div>
+<a class="skip-link" href="#main-content">Skip to content</a>
+
+<header class="topbar">
+  <div class="topbar__left">
+    <a class="topbar__brand" routerLink="/" aria-label="Up Skill Game — home">
+      <span class="topbar__logo" aria-hidden="true">◆</span>
+      <h1 class="topbar__name">{{ title }}</h1>
+    </a>
+    <span class="topbar__tag ea-chip">Arcade</span>
   </div>
+
+  <nav class="topbar__nav" aria-label="Primary">
+    <a routerLink="/tic-tac-toe" routerLinkActive="is-active">Tic Tac Toe</a>
+    <a routerLink="/black-jack" routerLinkActive="is-active">Black Jack</a>
+    <a routerLink="/chess" routerLinkActive="is-active">Chess</a>
+    <a routerLink="/calculator" routerLinkActive="is-active">Calculator</a>
+    <a routerLink="/resolutions" routerLinkActive="is-active">Resolutions</a>
+    <a routerLink="/about" routerLinkActive="is-active">About</a>
+    <a class="topbar__academy" routerLink="/academy" routerLinkActive="is-active">
+      Academy <span aria-hidden="true">↗</span>
+    </a>
+  </nav>
+
+  <div class="topbar__right">
+    <button type="button" class="ea-btn" (click)="openSignUpModal()">Sign Up</button>
+    <button type="button" class="ea-btn topbar__menu-btn" (click)="menuOpen = true" aria-label="Open menu">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M0 3.2A1.2 1.2 0 011.2 2h21.6a1.2 1.2 0 010 2.4H1.2A1.2 1.2 0 010 3.2zm0 8.4a1.2 1.2 0 011.2-1.2h21.6a1.2 1.2 0 010 2.4H1.2A1.2 1.2 0 010 11.6zM0 20a1.2 1.2 0 011.2-1.2h21.6a1.2 1.2 0 010 2.4H1.2A1.2 1.2 0 010 20z" clip-rule="evenodd" fill-rule="evenodd"/>
+      </svg>
+      <span>Menu</span>
+    </button>
+  </div>
+</header>
+
+<main id="main-content" class="app-main">
   <router-outlet />
-  <main-modal></main-modal>
-  @if (menuOpen) {
-    <app-page-menu @openClose (close)="menuOpen = false"></app-page-menu>
-  }
 </main>
+
+<main-modal></main-modal>
+@if (menuOpen) {
+  <app-page-menu @openClose (close)="menuOpen = false"></app-page-menu>
+}

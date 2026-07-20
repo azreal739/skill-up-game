@@ -10,11 +10,11 @@
 
     li {
       padding: 0.75rem 1rem;
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid var(--ea-border);
       transition: background 0.2s ease;
 
       &:hover {
-        background: #f9f9f9;
+        background: var(--ea-panel);
       }
     }
   }
@@ -22,16 +22,18 @@
   button {
     display: block;
     margin: 1rem auto 0;
-    padding: 0.5rem 1.5rem;
-    border: none;
-    background: #333;
-    color: #fff;
-    border-radius: 4px;
+    padding: 0.55rem 1.5rem;
+    border: 1px solid var(--ea-border);
+    background: var(--ea-panel);
+    color: var(--ea-text);
+    border-radius: 10px;
     cursor: pointer;
-    transition: background 0.2s ease;
+    font-weight: 600;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
     &:hover {
-      background: #555;
+      border-color: var(--ea-accent);
+      box-shadow: 0 6px 18px rgba(34, 211, 238, 0.14);
     }
   }
 }

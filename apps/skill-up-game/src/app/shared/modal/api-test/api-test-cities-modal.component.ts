@@ -39,7 +39,7 @@ import { ApiService } from 'src/services/ApiService';
 
         li {
           padding: 0.375rem 1rem;
-          border-bottom: 1px solid #eee;
+          border-bottom: 1px solid var(--ea-border);
         }
       }
 
@@ -49,16 +49,19 @@ import { ApiService } from 'src/services/ApiService';
         justify-content: center;
 
         input {
-          border: 1px solid #ccc;
-          border-radius: 0.375em;
+          border: 1px solid var(--ea-border);
+          border-radius: 10px;
           padding: 0.5em 0.75em;
+          background: rgba(7, 10, 20, 0.6);
+          color: var(--ea-text);
         }
 
         button {
-          background-color: black;
+          background: linear-gradient(110deg, rgba(34, 211, 238, 0.92), rgba(167, 139, 250, 0.92));
           border: none;
-          border-radius: 0.375em;
-          color: white;
+          border-radius: 10px;
+          color: #06121a;
+          font-weight: 600;
           padding: 0.5em 1em;
           cursor: pointer;
 
@@ -70,7 +73,7 @@ import { ApiService } from 'src/services/ApiService';
       }
 
       .error {
-        color: #dc2626;
+        color: var(--ea-danger);
         margin-top: 0.5rem;
       }
     `,

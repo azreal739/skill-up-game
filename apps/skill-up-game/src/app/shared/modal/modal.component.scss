@@ -10,7 +10,8 @@
 .shield {
   position: absolute;
   inset: 0;
-  background: rgba(black, 0.6);
+  background: rgba(2, 6, 18, 0.6);
+  backdrop-filter: blur(4px);
   border: 0;
   padding: 0;
   cursor: pointer;
@@ -18,14 +19,16 @@
 
 .main {
   position: relative;
-  background: #fff;
-  border-radius: 8px;
-  padding: 1.5rem;
+  background: var(--ea-panel-solid);
+  border: 1px solid var(--ea-border);
+  border-radius: 14px;
+  padding: 1.75rem;
   width: 100%;
   max-width: 540px;
   max-height: min(80vh, 640px);
   overflow-y: auto;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 22px 48px rgba(2, 6, 18, 0.55);
+  color: var(--ea-text);
   text-align: center;
 }
 
@@ -36,17 +39,20 @@
 
   h2 {
     margin: 0;
+    font-size: 1.4rem;
+    font-weight: 700;
   }
 }
 
 .modal-message {
   margin: 0.5rem 0 1rem;
-  color: #555;
+  color: var(--ea-muted);
 }
 
 .close {
   background-color: transparent;
   border: none;
+  color: var(--ea-muted);
   font-size: 1.125rem;
   line-height: 1;
   padding: 0.25em;
@@ -56,6 +62,6 @@
 
   &:hover {
     cursor: pointer;
-    opacity: 0.6;
+    color: var(--ea-text);
   }
 }

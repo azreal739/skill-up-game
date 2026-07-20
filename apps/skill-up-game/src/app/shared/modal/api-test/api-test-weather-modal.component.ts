@@ -39,16 +39,17 @@ import { ApiService, WeatherForecast } from 'src/services/ApiService';
           justify-content: space-between;
           gap: 1rem;
           padding: 0.375rem 1rem;
-          border-bottom: 1px solid #eee;
+          border-bottom: 1px solid var(--ea-border);
 
           .temp {
             font-weight: 600;
+            color: var(--ea-accent);
           }
         }
       }
 
       .error {
-        color: #dc2626;
+        color: var(--ea-danger);
         margin-top: 0.5rem;
       }
     `,

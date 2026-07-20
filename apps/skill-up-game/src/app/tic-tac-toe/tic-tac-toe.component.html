@@ -10,7 +10,7 @@
     } @else {
       <div id="statusArea" class="status">
         Next player:
-        <span [ngStyle]="{ color: currentPlayer === 'X' ? '#0000FF' : '#FF0000' }">
+        <span [ngStyle]="{ color: currentPlayer === 'X' ? '#22d3ee' : '#a78bfa' }">
           {{ currentPlayer }}
         </span>
       </div>
@@ -22,8 +22,8 @@
         @for (colIndex of [0, 1, 2]; track colIndex) {
           <button class="square" (click)="handleClick(rowIndex * 3 + colIndex)"
         [disabled]="!!board[rowIndex * 3 + colIndex] || gameOver" [ngStyle]="{
-                'color': board[rowIndex * 3 + colIndex] === 'X' ? '#0000FF' :
-                         (board[rowIndex * 3 + colIndex] === 'O' ? '#FF0000' : '#333')
+                'color': board[rowIndex * 3 + colIndex] === 'X' ? '#22d3ee' :
+                         (board[rowIndex * 3 + colIndex] === 'O' ? '#a78bfa' : '#94a3b8')
               }">
             {{ board[rowIndex * 3 + colIndex] }}
           </button>

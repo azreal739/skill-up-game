@@ -2,6 +2,10 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
+    path: '',
+    loadComponent: () => import('./home/home.component').then(m => m.HomeComponent),
+  },
+  {
     path: 'tic-tac-toe',
     loadComponent: () =>
       import('./tic-tac-toe/tic-tac-toe.component').then(m => m.TicTacToeComponent),
@@ -31,6 +35,9 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./calculator/skill-up-calculator.component').then(m => m.SkillUpCalculatorComponent),
   },
-  { path: '', redirectTo: '/tic-tac-toe', pathMatch: 'full' },
-  { path: '**', redirectTo: '/tic-tac-toe' },
+  {
+    path: 'academy',
+    loadComponent: () => import('./academy/academy.component').then(m => m.AcademyComponent),
+  },
+  { path: '**', redirectTo: '' },
 ];

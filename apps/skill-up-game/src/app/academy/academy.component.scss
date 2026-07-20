@@ -1,0 +1,112 @@
+:host {
+  display: block;
+}
+
+.academy__back {
+  display: inline-block;
+  margin-bottom: 1.25rem;
+  color: var(--ea-muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+
+  &:hover {
+    color: var(--ea-text);
+  }
+}
+
+.academy__hero {
+  text-align: center;
+  padding: 2.5rem 1.75rem;
+  background:
+    radial-gradient(30rem 16rem at 50% -20%, rgba(167, 139, 250, 0.16), transparent 70%),
+    var(--ea-panel);
+}
+
+.academy__emblem {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  margin-bottom: 0.75rem;
+  border-radius: 18px;
+  font-size: 2.2rem;
+  background: color-mix(in srgb, var(--ea-accent-2) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ea-accent-2) 40%, var(--ea-border));
+}
+
+.academy__title {
+  margin-top: 0.4rem;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.academy__glow {
+  background: linear-gradient(90deg, var(--ea-accent), var(--ea-accent-2));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: academy-glow 3s ease-in-out infinite alternate;
+}
+
+@keyframes academy-glow {
+  from {
+    filter: drop-shadow(0 0 6px rgba(34, 211, 238, 0.35));
+  }
+
+  to {
+    filter: drop-shadow(0 0 14px rgba(167, 139, 250, 0.55));
+  }
+}
+
+.academy__lede {
+  max-width: 40rem;
+  margin: 1rem auto 0;
+  color: var(--ea-muted);
+  line-height: 1.6;
+}
+
+.academy__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.academy__url {
+  margin-top: 0.9rem;
+  font-family: var(--ea-mono);
+  font-size: 0.72rem;
+  color: var(--ea-muted);
+  word-break: break-all;
+}
+
+.academy__features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.academy__feature {
+  text-align: center;
+}
+
+.academy__feature-emblem {
+  font-size: 1.8rem;
+}
+
+.academy__feature-title {
+  margin-top: 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.academy__feature-blurb {
+  margin-top: 0.35rem;
+  color: var(--ea-muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
