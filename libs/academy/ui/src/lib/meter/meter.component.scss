@@ -49,9 +49,77 @@
 }
 
 .meter__fill {
+  animation: ea-fill-grow 0.8s cubic-bezier(0.22, 0.9, 0.35, 1) both;
   height: 100%;
   border-radius: 3px;
   background: var(--meter-color);
   box-shadow: 0 0 8px color-mix(in srgb, var(--meter-color) 60%, transparent);
   transition: width 0.4s ease;
+}
+
+/*
+ * Consequence pulse: when the value changes mid-session the whole meter
+ * flashes in its health colour so the hit (or recovery) lands emotionally.
+ * The health colour already encodes good/bad; 'down' just hits harder.
+ * One-shot; neutralized by the global reduced-motion rules.
+ */
+/* ea-fill-grow stays FIRST in every state: keeping the same name at the same
+   list index means adding/removing the pulse never restarts the grow-in. */
+.meter[data-pulse] .meter__fill {
+  animation:
+    ea-fill-grow 0.8s cubic-bezier(0.22, 0.9, 0.35, 1) both,
+    meter-pulse 0.9s ease-out;
+}
+
+.meter[data-pulse] .meter__value {
+  display: inline-block;
+  animation: meter-value-pop 0.9s ease-out;
+}
+
+.meter[data-pulse='down'] .meter__fill {
+  animation:
+    ea-fill-grow 0.8s cubic-bezier(0.22, 0.9, 0.35, 1) both,
+    meter-pulse-hard 0.9s ease-out;
+}
+
+@keyframes meter-pulse {
+  0% {
+    box-shadow: 0 0 18px var(--meter-color);
+    filter: brightness(1.6);
+  }
+
+  100% {
+    box-shadow: 0 0 8px color-mix(in srgb, var(--meter-color) 60%, transparent);
+    filter: none;
+  }
+}
+
+@keyframes meter-pulse-hard {
+  0%,
+  30%,
+  60% {
+    box-shadow: 0 0 22px var(--meter-color);
+    filter: brightness(1.9);
+  }
+
+  15%,
+  45% {
+    box-shadow: 0 0 8px color-mix(in srgb, var(--meter-color) 60%, transparent);
+    filter: brightness(1.1);
+  }
+
+  100% {
+    box-shadow: 0 0 8px color-mix(in srgb, var(--meter-color) 60%, transparent);
+    filter: none;
+  }
+}
+
+@keyframes meter-value-pop {
+  0% {
+    transform: scale(1.25);
+  }
+
+  100% {
+    transform: none;
+  }
 }

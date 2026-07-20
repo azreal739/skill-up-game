@@ -114,6 +114,14 @@
   text-align: center;
 }
 
+.enrol__settings {
+  margin-top: 0.15rem;
+  font-size: 0.75rem;
+  color: var(--ea-muted);
+  text-align: center;
+  line-height: 1.5;
+}
+
 .features {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));

@@ -80,4 +80,14 @@ describe('ChallengeHostComponent', () => {
     expect(element().textContent).toContain('✓ this was correct');
     expect(element().querySelector<HTMLButtonElement>('.option')?.disabled).toBeTrue();
   });
+
+  it('removes the submit button once the decision is locked', () => {
+    expect(element().textContent).toContain('Submit Decision');
+
+    fixture.componentRef.setInput('locked', true);
+    fixture.detectChanges();
+
+    // The verdict is the next thing the player should see — no dead button.
+    expect(element().textContent).not.toContain('Submit Decision');
+  });
 });
