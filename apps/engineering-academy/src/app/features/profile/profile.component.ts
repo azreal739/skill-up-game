@@ -8,7 +8,7 @@ import {
   LearningAnalyticsService,
   TrackProgressService,
 } from '@academy/data-access';
-import { BadgeChipComponent } from '@academy/ui';
+import { BadgeChipComponent, ToastService } from '@academy/ui';
 
 @Component({
   selector: 'ea-profile',
@@ -19,6 +19,7 @@ import { BadgeChipComponent } from '@academy/ui';
 })
 export class ProfileComponent {
   protected readonly gameState = inject(GameStateService);
+  private readonly toast = inject(ToastService);
   private readonly content = inject(ContentService);
   private readonly analytics = inject(LearningAnalyticsService);
   private readonly tracks = inject(TrackProgressService);
@@ -118,6 +119,7 @@ export class ProfileComponent {
   resetProgress(): void {
     if (confirm('Reset all Academy progress on this device? This cannot be undone.')) {
       this.gameState.resetProgress();
+      this.toast.show('All progress on this device was reset', 'warn');
       this.router.navigateByUrl('/');
     }
   }

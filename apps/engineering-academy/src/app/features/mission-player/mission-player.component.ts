@@ -36,6 +36,7 @@ import {
   MentorDialogueComponent,
   PersonaAvatarComponent,
   VoiceButtonComponent,
+  ToastService,
 } from '@academy/ui';
 import { ChallengeHostComponent } from '@academy/challenges';
 import { HelpDrawerComponent } from './help-drawer.component';
@@ -71,6 +72,7 @@ export class MissionPlayerComponent implements OnDestroy {
   protected readonly session = inject(MissionSessionService);
   protected readonly gameState = inject(GameStateService);
   private readonly speech = inject(SpeechService);
+  private readonly toast = inject(ToastService);
 
   private readonly missionId = toSignal(
     this.route.paramMap.pipe(map((params) => params.get('missionId') ?? '')),
@@ -503,6 +505,11 @@ export class MissionPlayerComponent implements OnDestroy {
     this.noteOpen.set(false);
     this.audio.play(evaluation.correct ? 'correct' : 'incorrect');
     this.waves.pulse(evaluation.correct ? 'correct' : 'incorrect');
+  }
+
+  onNoteSaved(): void {
+    this.toast.show('Note saved');
+    this.noteOpen.set(false);
   }
 
   toggleNote(): void {

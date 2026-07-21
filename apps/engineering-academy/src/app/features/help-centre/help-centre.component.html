@@ -126,7 +126,7 @@
                   [linkId]="topic.id"
                   [suggestedTitle]="topic.title"
                   [nudge]="noteNudge"
-                  (saved)="noteOpen.set(false)"
+                  (saved)="onNoteSaved()"
                   (dismissed)="noteOpen.set(false)"
                 />
               </div>

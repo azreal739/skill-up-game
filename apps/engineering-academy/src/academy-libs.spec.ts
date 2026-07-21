@@ -21,3 +21,4 @@ import '../../../libs/academy/data-access/src/lib/learning-analytics.service.spe
 import '../../../libs/academy/challenges/src/lib/challenge-host/challenge-host.component.spec';
 import '../../../libs/academy/ui/src/lib/code-viewer/syntax-highlight.spec';
 import '../../../libs/academy/ui/src/lib/code-viewer/code-viewer.component.spec';
+import '../../../libs/academy/ui/src/lib/toast/toast.spec';

@@ -232,7 +232,7 @@
                         [linkId]="run.challenge.id"
                         [suggestedTitle]="run.challenge.title + ' — lesson'"
                         [nudge]="noteNudge"
-                        (saved)="noteOpen.set(false)"
+                        (saved)="onNoteSaved()"
                         (dismissed)="noteOpen.set(false)"
                       />
                     </div>

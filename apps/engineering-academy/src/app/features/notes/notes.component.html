@@ -24,7 +24,7 @@
       <h2 class="notes__editor-title">New note</h2>
       <ea-note-composer
         linkType="general"
-        (saved)="closeEditor()"
+        (saved)="onSaved()"
         (dismissed)="closeEditor()"
       />
     </section>
@@ -60,7 +60,7 @@
           @if (editing() === note.id) {
             <ea-note-composer
               [note]="note"
-              (saved)="closeEditor()"
+              (saved)="onSaved()"
               (dismissed)="closeEditor()"
             />
           } @else {
