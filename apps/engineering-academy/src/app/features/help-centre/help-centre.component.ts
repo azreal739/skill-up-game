@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ContentService, GameStateService } from '@academy/data-access';
 import { HelpTopic } from '@academy/content-model';
-import { VoiceButtonComponent } from '@academy/ui';
+import { VoiceButtonComponent, ToastService } from '@academy/ui';
 import { NoteComposerComponent } from '../../shared/note-composer/note-composer.component';
 
 /** Tag chips shown before the player expands the full tag list. */
@@ -20,6 +20,7 @@ export class HelpCentreComponent {
   private readonly content = inject(ContentService);
   private readonly route = inject(ActivatedRoute);
   protected readonly gameState = inject(GameStateService);
+  private readonly toast = inject(ToastService);
 
   protected readonly query = signal(this.route.snapshot.queryParamMap.get('q') ?? '');
   protected readonly tagFilter = signal<string | null>(null);
@@ -115,6 +116,11 @@ export class HelpCentreComponent {
   clearFilters(): void {
     this.query.set('');
     this.tagFilter.set(null);
+  }
+
+  onNoteSaved(): void {
+    this.toast.show('Note saved');
+    this.noteOpen.set(false);
   }
 
   toggleNote(): void {

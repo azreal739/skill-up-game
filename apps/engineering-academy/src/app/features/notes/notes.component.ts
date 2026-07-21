@@ -2,7 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NoteLinkType, PlayerNote } from '@academy/content-model';
 import { AudioService, ContentService, GameStateService } from '@academy/data-access';
-import { VoiceButtonComponent } from '@academy/ui';
+import { VoiceButtonComponent, ToastService } from '@academy/ui';
 import { NoteComposerComponent } from '../../shared/note-composer/note-composer.component';
 
 /** Friendly names for each link context, shown on a note card. */
@@ -32,6 +32,7 @@ export class NotesComponent {
   protected readonly gameState = inject(GameStateService);
   private readonly content = inject(ContentService);
   private readonly audio = inject(AudioService);
+  private readonly toast = inject(ToastService);
 
   /** Which note is open in the editor, or 'new' for a fresh general note. */
   protected readonly editing = signal<string | 'new' | null>(null);
@@ -71,6 +72,11 @@ export class NotesComponent {
     this.editing.set(note.id);
   }
 
+  protected onSaved(): void {
+    this.toast.show('Note saved');
+    this.closeEditor();
+  }
+
   protected closeEditor(): void {
     this.editing.set(null);
   }
@@ -78,6 +84,7 @@ export class NotesComponent {
   protected deleteNote(note: PlayerNote): void {
     this.audio.play('click');
     this.gameState.deleteNote(note.id);
+    this.toast.show('Note deleted', 'info');
     if (this.editing() === note.id) {
       this.editing.set(null);
     }

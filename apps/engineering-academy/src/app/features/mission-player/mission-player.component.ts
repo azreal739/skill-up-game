@@ -1,5 +1,6 @@
 import {
   Component,
+  ElementRef,
   HostListener,
   OnDestroy,
   computed,
@@ -7,6 +8,7 @@ import {
   inject,
   signal,
   untracked,
+  viewChild,
 } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -34,6 +36,7 @@ import {
   MentorDialogueComponent,
   PersonaAvatarComponent,
   VoiceButtonComponent,
+  ToastService,
 } from '@academy/ui';
 import { ChallengeHostComponent } from '@academy/challenges';
 import { HelpDrawerComponent } from './help-drawer.component';
@@ -69,6 +72,7 @@ export class MissionPlayerComponent implements OnDestroy {
   protected readonly session = inject(MissionSessionService);
   protected readonly gameState = inject(GameStateService);
   private readonly speech = inject(SpeechService);
+  private readonly toast = inject(ToastService);
 
   private readonly missionId = toSignal(
     this.route.paramMap.pipe(map((params) => params.get('missionId') ?? '')),
@@ -203,7 +207,21 @@ export class MissionPlayerComponent implements OnDestroy {
       const lines = this.debriefLines();
       untracked(() => void this.speech.speakAll(lines));
     });
+
+    // The verdict must not land below the fold: when the feedback panel
+    // renders after a submit, bring it into view (instant under reduced
+    // motion). viewChild-signal effect, so it fires once the @if adds it.
+    effect(() => {
+      const panel = this.feedbackPanel()?.nativeElement;
+      if (panel) {
+        const reduced = this.gameState.settings().reducedMotion;
+        panel.scrollIntoView({ block: 'nearest', behavior: reduced ? 'auto' : 'smooth' });
+      }
+    });
   }
+
+  /** The post-submit verdict panel (present only once a decision is made). */
+  private readonly feedbackPanel = viewChild<ElementRef<HTMLElement>>('feedbackPanel');
 
   /** Keys of the last auto-played beats, so each plays at most once. */
   private lastBriefingPlayed = '';
@@ -487,6 +505,11 @@ export class MissionPlayerComponent implements OnDestroy {
     this.noteOpen.set(false);
     this.audio.play(evaluation.correct ? 'correct' : 'incorrect');
     this.waves.pulse(evaluation.correct ? 'correct' : 'incorrect');
+  }
+
+  onNoteSaved(): void {
+    this.toast.show('Note saved');
+    this.noteOpen.set(false);
   }
 
   toggleNote(): void {

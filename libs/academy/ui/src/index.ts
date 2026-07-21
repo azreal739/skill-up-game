@@ -8,3 +8,5 @@ export * from './lib/icon/icon.component';
 export * from './lib/count-up/count-up.component';
 export * from './lib/mentor-dialogue/speech-player';
 export * from './lib/voice-button/voice-button.component';
+export * from './lib/toast/toast.service';
+export * from './lib/toast/toast-host.component';

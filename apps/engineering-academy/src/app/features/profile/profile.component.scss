@@ -51,6 +51,7 @@
 }
 
 .identity__xpfill {
+  animation: ea-fill-grow 0.8s cubic-bezier(0.22, 0.9, 0.35, 1) both;
   height: 100%;
   background: linear-gradient(90deg, var(--ea-accent), var(--ea-accent-2));
   transition: width 0.5s ease;
@@ -230,6 +231,7 @@
 }
 
 .learning__fill {
+  animation: ea-fill-grow 0.8s cubic-bezier(0.22, 0.9, 0.35, 1) both;
   height: 100%;
   border-radius: inherit;
 

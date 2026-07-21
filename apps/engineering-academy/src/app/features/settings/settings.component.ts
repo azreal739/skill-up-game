@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { AudioService, GameStateService, SpeechService } from '@academy/data-access';
 import { VoiceSetupOverlayComponent } from './voice-setup-overlay.component';
 import { PersonaVoicesDialogComponent } from './persona-voices-dialog.component';
+import { ToastService } from '@academy/ui';
 
 @Component({
   selector: 'ea-settings',
@@ -14,6 +15,7 @@ import { PersonaVoicesDialogComponent } from './persona-voices-dialog.component'
 })
 export class SettingsComponent {
   protected readonly gameState = inject(GameStateService);
+  private readonly toast = inject(ToastService);
   protected readonly speech = inject(SpeechService);
   private readonly audio = inject(AudioService);
   private readonly router = inject(Router);
@@ -119,6 +121,7 @@ export class SettingsComponent {
   resetProgress(): void {
     if (confirm('Reset all Academy progress on this device? This cannot be undone.')) {
       this.gameState.resetProgress();
+      this.toast.show('All progress on this device was reset', 'warn');
       this.router.navigateByUrl('/');
     }
   }

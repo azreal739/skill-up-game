@@ -473,6 +473,11 @@
   gap: 0.8rem;
   margin: 0;
 
+  /* Zero-value tiles fade back so the earned numbers pop. */
+  .results__stat--zero {
+    opacity: 0.45;
+  }
+
   div {
     padding: 0.7rem 0.9rem;
     border: 1px solid var(--ea-border);

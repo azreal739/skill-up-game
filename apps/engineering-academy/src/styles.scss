@@ -237,6 +237,15 @@ button {
   }
 }
 
+/* Progress-bar fills grow from 0 to their bound width on first paint. The
+   final width comes from each fill's inline style; reduced-motion rules
+   below neutralize the animation. Referenced from component styles. */
+@keyframes ea-fill-grow {
+  from {
+    width: 0;
+  }
+}
+
 .ea-chip {
   display: inline-flex;
   align-items: center;

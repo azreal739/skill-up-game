@@ -133,7 +133,7 @@
                     [linkId]="item.id"
                     [suggestedTitle]="item.challengeTitle + ' — what changed'"
                     [nudge]="noteNudge"
-                    (saved)="noteOpen.set(false)"
+                    (saved)="onNoteSaved()"
                     (dismissed)="noteOpen.set(false)"
                   />
                 </div>

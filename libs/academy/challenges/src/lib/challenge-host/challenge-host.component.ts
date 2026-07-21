@@ -79,16 +79,20 @@ import { OptionListComponent } from '../option-list/option-list.component';
         }
       }
 
-      <div class="challenge__actions">
-        <button
-          type="button"
-          class="ea-btn ea-btn--primary"
-          [disabled]="selectedIds.length === 0 || locked"
-          (click)="submitted.emit(selectedIds)"
-        >
-          Submit Decision
-        </button>
-      </div>
+      <!-- Once the decision is locked the button has no future (first attempt
+           is final) — remove it so the verdict below is the next thing seen. -->
+      @if (!locked) {
+        <div class="challenge__actions">
+          <button
+            type="button"
+            class="ea-btn ea-btn--primary"
+            [disabled]="selectedIds.length === 0"
+            (click)="submitted.emit(selectedIds)"
+          >
+            Submit Decision
+          </button>
+        </div>
+      }
     </section>
   `,
   styleUrls: ['./challenge-host.component.scss'],

@@ -2,6 +2,7 @@ import { Component, computed, effect, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { TRACKS } from '@academy/content-model';
 import { AudioService, GameStateService, SpeechService } from '@academy/data-access';
+import { ToastHostComponent, ToastService } from '@academy/ui';
 import { WaveBackgroundComponent } from './shared/wave-background/wave-background.component';
 import { RouteLoaderComponent } from './shared/route-loader/route-loader.component';
 import { CommsHudComponent } from './shared/comms-hud/comms-hud.component';
@@ -23,6 +24,7 @@ import { SaveMigrationComponent } from './core/auth/save-migration.component';
     VoiceSetupOverlayComponent,
     AuthUserButtonComponent,
     SaveMigrationComponent,
+    ToastHostComponent,
   ],
   template: `
     <ea-wave-background />
@@ -110,6 +112,7 @@ import { SaveMigrationComponent } from './core/auth/save-migration.component';
       <ea-route-loader />
       <ea-comms-hud />
       <ea-save-migration />
+      <ea-toast-host />
       @if (showFirstLoadSetup()) {
         <!-- Enrolment kicked off the first voice calibration: hold the moment
              with a friendlier variant of the setup screen, then greet. -->
@@ -124,6 +127,7 @@ export class AppComponent {
   protected readonly gameState = inject(GameStateService);
   private readonly audio = inject(AudioService);
   private readonly speech = inject(SpeechService);
+  private readonly toast = inject(ToastService);
   /** Signal so the greeting effect can wait for the first user gesture. */
   private readonly interacted = signal(false);
   /** The profile was created in THIS session (enrolment just happened). */
@@ -149,6 +153,35 @@ export class AppComponent {
   }
 
   constructor() {
+    // Screen-reader parity for the visual "conversation": announce each new
+    // comms line to the polite live region (no visual toast — the HUD
+    // already shows it). History restored at boot is skipped.
+    let lastSpokenId: number | undefined;
+    effect(() => {
+      const latest = this.speech.spokenHistory().at(-1);
+      if (!latest) {
+        return;
+      }
+      const isBoot = lastSpokenId === undefined;
+      const isNew = latest.id !== lastSpokenId;
+      lastSpokenId = latest.id;
+      if (!isBoot && isNew) {
+        this.toast.announce(`${latest.speaker}: ${latest.text}`);
+      }
+    });
+
+    // Rank-ups deserve a moment wherever they happen — review remediation
+    // can promote the player far from the results screen.
+    let lastRankId: string | undefined;
+    effect(() => {
+      const rank = this.gameState.rank();
+      const previous = lastRankId;
+      lastRankId = rank.id;
+      if (previous !== undefined && previous !== rank.id) {
+        this.toast.show(`⬆ Promoted: ${rank.title}`, 'info');
+      }
+    });
+
     // Reflect accessibility settings onto <body> so global styles apply
     // everywhere, including overlays (16_ACCESSIBILITY_AND_INCLUSION.md).
     effect(() => {

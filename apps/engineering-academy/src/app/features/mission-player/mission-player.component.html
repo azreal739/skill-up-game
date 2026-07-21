@@ -168,6 +168,7 @@
 
               @if (attemptEvaluation(); as evaluation) {
                 <div
+                  #feedbackPanel
                   class="feedback"
                   [class.feedback--success]="evaluation.correct"
                   [class.feedback--failure]="!evaluation.correct"
@@ -231,7 +232,7 @@
                         [linkId]="run.challenge.id"
                         [suggestedTitle]="run.challenge.title + ' — lesson'"
                         [nudge]="noteNudge"
-                        (saved)="noteOpen.set(false)"
+                        (saved)="onNoteSaved()"
                         (dismissed)="noteOpen.set(false)"
                       />
                     </div>
@@ -346,10 +347,11 @@
             }
 
             <dl class="results__score">
-              <div><dt>Challenge XP</dt><dd>{{ result.score.challengeXp }}</dd></div>
-              <div><dt>Perfect bonus</dt><dd>{{ result.score.perfectBonus }}</dd></div>
-              <div><dt>No-hint bonus</dt><dd>{{ result.score.noHintBonus }}</dd></div>
-              <div><dt>Mission bonus</dt><dd>{{ result.missionXpBonus }}</dd></div>
+              <!-- Zero tiles are dimmed so the earned numbers carry the eye. -->
+              <div [class.results__stat--zero]="result.score.challengeXp === 0"><dt>Challenge XP</dt><dd>{{ result.score.challengeXp }}</dd></div>
+              <div [class.results__stat--zero]="result.score.perfectBonus === 0"><dt>Perfect bonus</dt><dd>{{ result.score.perfectBonus }}</dd></div>
+              <div [class.results__stat--zero]="result.score.noHintBonus === 0"><dt>No-hint bonus</dt><dd>{{ result.score.noHintBonus }}</dd></div>
+              <div [class.results__stat--zero]="result.missionXpBonus === 0"><dt>Mission bonus</dt><dd>{{ result.missionXpBonus }}</dd></div>
               <div class="results__total"><dt>Run total</dt><dd><ea-count-up [value]="result.totalXp" suffix=" XP" [duration]="900" [instant]="gameState.settings().reducedMotion" /></dd></div>
               <div class="results__awarded"><dt>Credited</dt><dd><ea-count-up [value]="result.completion.xpAwarded" prefix="+" suffix=" XP" [duration]="1100" [instant]="gameState.settings().reducedMotion" /></dd></div>
             </dl>

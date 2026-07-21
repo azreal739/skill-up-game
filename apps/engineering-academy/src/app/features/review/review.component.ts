@@ -11,7 +11,7 @@ import {
   SpeechService,
 } from '@academy/data-access';
 import { ChallengeHostComponent } from '@academy/challenges';
-import { CodeViewerComponent, VoiceButtonComponent } from '@academy/ui';
+import { CodeViewerComponent, VoiceButtonComponent, ToastService } from '@academy/ui';
 import { NoteComposerComponent } from '../../shared/note-composer/note-composer.component';
 
 /**
@@ -38,6 +38,7 @@ export class ReviewComponent {
   private readonly content = inject(ContentService);
   private readonly audio = inject(AudioService);
   protected readonly gameState = inject(GameStateService);
+  private readonly toast = inject(ToastService);
   protected readonly reviewService = inject(AcademyReviewService);
   private readonly speech = inject(SpeechService);
 
@@ -117,6 +118,11 @@ export class ReviewComponent {
   /** Post-remediation nudge (Review Loop spec 06). */
   protected readonly noteNudge =
     'Add a short note about what changed in your understanding.';
+
+  onNoteSaved(): void {
+    this.toast.show('Note saved');
+    this.noteOpen.set(false);
+  }
 
   toggleNote(): void {
     this.audio.play('click');
