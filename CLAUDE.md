@@ -117,7 +117,32 @@ and a per-path terminology re-skin (e.g. "Judge Points").
 
 ## Done this session (branch `claude/engineering-academy-ui-enhancements-y6i2l1` + PR #125)
 
-Two streams this session — Claude-authored UI/voice refinement rounds, and a
+**Full-app UI/UX review + first two enhancement batches (PR #128, merged).**
+A Playwright click-through of EVERY screen (desktop 1440×900 + mobile 390×844,
+25 shots; script survives the sandbox voice-init overlay by disabling voice in
+the save) produced an 18-item findings list (user-approved; kept in the plan
+file `/root/.claude/plans/please-review-the-ui-streamed-hanrahan.md` — re-derive
+from this summary if gone). Shipped in #128:
+- Batch 1: challenge Submit button removed once the decision locks + verdict
+  panel scrolls into view (challenge-host spec pins it); results zero-tiles
+  dimmed; enrol form keeps a "set up voice & accessibility first" link; all
+  progress-bar fills grow in via shared `ea-fill-grow` keyframe (kept FIRST in
+  every animation list so state changes never restart it); `ea-meter` pulses on
+  value change (health-colour flash, harder on drops).
+- Batch 2: `ToastService` + `<ea-toast-host>` in the ui lib (bottom-centre,
+  polite live region, 3.5s, stack cap 3) — wired for note saved/deleted (notes,
+  help, mission feedback, review), progress reset, rank promotions; and
+  `announce()` SR-only live region — the app shell announces every new
+  comms-HUD line (app previously had ZERO aria-live).
+**Still queued from the review** (build next, in order): mobile nav hamburger
+drawer + compact mobile mission HUD; focus-trap directive for the 5 overlays
+(mission-brief, help drawer, meet-the-mentors, voice-setup, save-migration);
+then polish: shared empty-state component, consistent breadcrumbs, coach
+marks, keyboard shortcuts + `?` overlay, route skeletons.
+NOTE: a parallel Codex session restyled `apps/skill-up-game` with the Academy
+design system (PR #127) — legacy app is no longer "rarely touched".
+
+Earlier in this session — Claude-authored UI/voice refinement rounds, and a
 review of a parallel agent PR. **All merged.**
 
 **Claude-authored refinements (PRs #110-#123, incremental, each verified +
